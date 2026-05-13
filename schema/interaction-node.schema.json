@@ -2,14 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/janjanecek/SIA/schema/interaction-node.schema.json",
   "title": "Semantic Interaction Node",
-  "description": "Minimal draft schema for the declarative metadata contract described by SIA v0.1.",
+  "description": "Minimal draft schema profile for the declarative metadata contract described by SIA v0.1. This is intended as an implementable subset of a broader ontology language.",
   "type": "object",
   "required": [
     "node",
     "since_version",
     "direction",
-    "target_role",
-    "pii_class"
+    "target_role"
   ],
   "properties": {
     "node": {

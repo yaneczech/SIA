@@ -4,7 +4,7 @@
 
 > What if a collision warning could declare, in machine-readable terms, that it cannot be suppressed, must reach the driver within 200 ms, requires a signed origin, and degrades to voice if the HUD is unavailable, without any of that logic living inside a renderer?
 
-This repository contains a draft position paper proposing a Semantic Interaction Architecture for software-defined vehicles. SIA decouples the meaning, trust requirements, attention cost, and context fitness of in-vehicle interactions from concrete screens, widgets, input devices, and renderers.
+This repository contains a draft position paper proposing a semantic mediation layer for high-value interactions in software-defined vehicles. SIA decouples the meaning, trust requirements, attention demand, and context fitness of in-vehicle interactions from concrete screens, widgets, input devices, and renderers.
 
 ## The Problem
 
@@ -14,14 +14,15 @@ This costs engineering time, produces inconsistent experiences, and creates a se
 
 ## The Proposal
 
-SIA defines a typed node ontology: Actions, Events, States, and Tasks. Each node carries machine-readable metadata for:
+SIA is framed as a scalable ontology language exposed initially through a small typed event/command schema profile plus policy mediation, not as a replacement HMI platform. The ontology is the long-term language of meaning; the schema profile is the first implementable compatibility target. The first version focuses on three cores:
 
-- **Attention**: predicted glance time, task steps, cognitive load, and auditable thresholds.
-- **Trust**: required actor class, signed origin, freshness window, and replay protection.
-- **Context**: a multi-axis vector such as SAE level, road type, driver state, and regulatory regime.
-- **Capability negotiation**: measurable renderer and input-device capabilities used by the Translation Layer.
+- **Intent/action abstraction**: common primitives for high-value commands and interaction events.
+- **Attention policy**: predictive attention-demand proxies, priority, interruptibility, and driving context.
+- **Trust provenance**: who may emit which interaction type, with what authority and freshness.
 
-A six-layer architecture sits above existing SDV data and service abstractions such as COVESA VSS, Eclipse Kuksa, and uProtocol, and below concrete renderers. It is intended as connective tissue, not a replacement for existing SDV infrastructure.
+The proposal uses Actions, Events, States, and Tasks as semantic primitives and treats backward compatibility as a first-order requirement. Broader cross-domain generalisation and full vehicle-wide runtime behavior remain future specification work.
+
+A mediation architecture sits above existing SDV data and service abstractions such as COVESA VSS, Eclipse Kuksa, and uProtocol, and below concrete renderers. It is intended as connective tissue, not a replacement for existing SDV infrastructure.
 
 ## Who This Is For
 
@@ -35,7 +36,7 @@ A six-layer architecture sits above existing SDV data and service abstractions s
 
 ## Read The Paper
 
-- [Position paper](./01_Semantic-Interaction-Architecture-sdv.md) — six-layer architecture, node taxonomy, metadata contracts, trust model, attention model, context model, versioning, relations to existing standards, and a path toward Eclipse SDV standardisation.
+- [Position paper](./01_Semantic-Interaction-Architecture-sdv.md) — mediation architecture, semantic primitives, metadata contracts, trust provenance, attention policy, context model, versioning, relations to existing standards, and a path toward Eclipse SDV standardisation.
 - [Appendix A: Worked example](./02_Appendix-a-worked-example.md) — `Alert.Collision.Warning` traced end-to-end through trust verification, translation, renderer dispatch, and adversarial scenarios.
 - [Schema draft](./schema/interaction-node.schema.json) — minimal JSON Schema sketch for the metadata contract.
 
@@ -50,7 +51,7 @@ A six-layer architecture sits above existing SDV data and service abstractions s
 
 ## Status
 
-Version 0.1 is a draft for circulation and critique. The proposal is not a standard, implementation, or safety-certified architecture. Open questions include schema language, cryptographic substrate, attention metric validation, renderer conflict resolution, and a reference implementation on top of Eclipse Kuksa.
+Version 0.1 is a draft for circulation and critique. The proposal is not a standard, implementation, or safety-certified architecture. Open questions include ontology/schema formalism, compatibility rules, cryptographic substrate, attention metric validation, renderer conflict resolution, and a reference prototype integrated with existing SDV middleware.
 
 ## Citation
 

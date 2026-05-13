@@ -1,6 +1,6 @@
 # Toward a Semantic Interaction Architecture for Software-Defined Vehicles
 
-**A Position Paper on Decoupling Interaction Meaning from Implementation**
+**A Position Paper on Semantic Mediation for In-Vehicle Interaction**
 
 ---
 
@@ -13,7 +13,7 @@
 
 ## Abstract
 
-As vehicles evolve into multimodal, AI-augmented, software-defined platforms, the Human–Machine Interface (HMI) is becoming the most volatile and most fragile layer of the in-vehicle stack. Current automotive HMI architectures remain hardware-centric, vendor-specific, and tightly coupled to particular renderers and input devices, producing high rework cost, inconsistent user experience, and a growing attack surface. This paper argues that the industry needs a *semantic interaction layer* — an open, vendor-neutral abstraction in which interactions are described by their meaning, attention demand, contextual fitness, and authority of origin, rather than by buttons, screens, or widgets. We position this layer above existing Software-Defined Vehicle (SDV) data and service abstractions (COVESA VSS, Eclipse Kuksa, Eclipse uProtocol, AUTOSAR Adaptive), describe a six-layer architecture and a typed node taxonomy with measurable metadata, and outline how trust and attention can be promoted to first-class properties of every interaction. We close with a path toward standardisation within the Eclipse SDV Working Group and an open research agenda.
+As vehicles evolve into multimodal, AI-augmented, software-defined platforms, the Human–Machine Interface (HMI) is becoming one of the most volatile and fragile layers of the in-vehicle stack. Current automotive HMI architectures remain hardware-centric, vendor-specific, and tightly coupled to particular renderers and input devices, producing high rework cost, inconsistent user experience, and a growing attack surface. This position paper argues that there is a case for a *semantic mediation layer for high-value in-vehicle interactions*: a vendor-neutral interface in which selected interactions are described by their meaning, predicted attention demand, contextual fitness, and authority of origin, rather than by buttons, screens, or widgets. We position this mediation layer above existing Software-Defined Vehicle (SDV) data and service abstractions (COVESA VSS, Eclipse Kuksa, Eclipse uProtocol, AUTOSAR Adaptive), describe a scalable ontology language exposed initially through a typed event/command schema profile, and define policy hooks for attention and trust provenance. The goal is not to specify a complete HMI platform, but to define principles and interface boundaries that can be implemented incrementally while preserving backward compatibility across long vehicle lifecycles.
 
 ---
 
@@ -25,7 +25,9 @@ Despite this, the interaction layer has not received the abstraction work that d
 
 The cost of this tight coupling compounds along three axes. **Engineering cost** rises as each new screen size, input modality, or in-cabin AI feature triggers cascading rework. **User experience cost** rises as the same intent (*return to previous view*, *increase volume*, *acknowledge alert*) acquires inconsistent behaviour across vehicles, generations, and contexts. **Security cost** rises as third-party applications, cloud services, and AI agents acquire the ability to emit interactions that are indistinguishable, from the user's standpoint, from interactions originating in safety-critical subsystems.
 
-We argue that these costs are not solved by better tooling, more screens, or larger language models. They are symptoms of a missing layer of abstraction.
+We argue that these costs are not solved by better tooling, more screens, or larger language models alone. They are symptoms of a missing mediation boundary between SDV services and concrete HMI implementations.
+
+The first version of such a boundary should be deliberately narrow. We scope it to three cores: **intent/action abstraction** for high-value commands and interaction events, **attention policy** for priority, interruptibility, and driving context, and **trust provenance** for determining which actors may emit which interaction types with which authority. The ontology language must nevertheless be designed for scale from the beginning: new domains, node families, metadata fields, and renderer capabilities should be additive where possible, and older vehicles must be able to ignore or degrade newer constructs safely. Cross-domain portability and a vehicle-wide interaction runtime are treated as future specification work rather than as requirements for initial adoption.
 
 ---
 
@@ -39,61 +41,61 @@ Significant abstraction work exists below and around the interaction layer, but 
 
 **Middleware and runtime.** AUTOSAR Classic and Adaptive standardise ECU software architecture and middleware. SOAFEE introduces cloud-native, mixed-criticality runtime patterns. These layers sit below the interaction layer and are orthogonal to it.
 
-**HMI frameworks.** Android Automotive's Car App Library is the closest existing analogue to a semantic interaction layer: applications declare templates (List, Message, Navigation) and a host renders them with built-in distraction optimisation. Its scope is narrow (a small set of application categories, single-OEM ecosystem) and it remains closed to the wider SDV stack. Qt Automotive, Kanzi, and similar tools offer renderer-side abstractions but not semantic ones.
+**HMI frameworks.** Android Automotive's Car App Library is the closest production-grade hosted HMI model with semantic constraints: applications declare templates (List, Message, Navigation) and a host renders them with built-in distraction optimisation. Its scope is intentionally bounded to supported app categories and host-rendered templates; it is not a general interaction schema for the wider SDV stack. Qt Automotive, Kanzi, and similar tools offer renderer-side abstractions but not cross-renderer interaction semantics.
 
-**Multimodal interaction.** The W3C Multimodal Architecture and Interfaces (MMI) Recommendation, with its EMMA annotation format, defines a generic semantic model for multimodal input. It has had limited automotive uptake, but its vocabulary is a candidate substrate.
+**Multimodal interaction.** The W3C Multimodal Architecture and Interfaces (MMI) Recommendation, with its EMMA annotation format, defines a generic semantic model for multimodal input. It has had limited automotive uptake, but it can inform input-side mapping and event annotation.
 
-**Adjacent domains.** Game engines such as Unreal's Enhanced Input and Unity's Input System routinely abstract input actions from devices. ARIA performs an analogous role for web accessibility. These prior arts demonstrate that the proposed abstraction is tractable; they have not been adapted to the automotive constraint set (safety, multi-renderer, ASIL, regulated distraction limits).
+**Adjacent domains.** Game engines such as Unreal's Enhanced Input and Unity's Input System routinely abstract input actions from devices. ARIA performs an analogous role for web accessibility. These prior arts are useful analogies, but the remainder of this paper keeps the scope automotive-specific: safety, multi-renderer behavior, ASIL-related constraints, regulated distraction limits, and long vehicle lifecycles.
 
 Figure 1 positions the proposed layer in the SDV stack.
 
 ![Figure 1: Position in the SDV stack](./figures/fig1-stack-position.svg)
 
-The proposed Semantic Interaction Architecture (SIA) sits **above** existing service and data abstractions and **below** concrete renderers. It is not a replacement for any current SDV project; it is the missing connective tissue between them and the occupant.
+The proposed Semantic Interaction Architecture (SIA) sits **above** existing service and data abstractions and **below** concrete renderers. It is not a replacement for any current SDV project or HMI stack; it is a mediation boundary between them and occupant-facing interaction.
 
 ---
 
 ## 3. Architecture Overview
 
-We propose six functional layers, illustrated in Figure 2. Layers are listed below from foundational to occupant-facing; Trust and Context Engine span the stack laterally rather than occupying a single position in the vertical order.
+We propose four functional components and two cross-cutting policy functions, illustrated in Figure 2. This is a mediation architecture rather than an interaction operating system: it defines what crosses the boundary and how policy is applied, while leaving renderer implementation and most HMI runtime behavior to existing stacks.
 
 ![Figure 2: Six-layer architecture](./figures/fig2-six-layer-architecture.svg)
 
-**Ontology Layer.** A typed taxonomy of interaction nodes with formal metadata contracts. The vocabulary is open, hierarchical, and versioned. This is the single source of meaning.
+**Ontology Language and Schema Profile.** A stable ontology language defines the long-term vocabulary of interaction meaning, inheritance, metadata contracts, and compatibility rules. The initial standardisation target should be a small typed event/command schema profile for high-value interactions. This keeps the first implementation tractable without sacrificing a scalable naming and evolution model.
 
-**Translation Layer.** A bidirectional adaptor that maps semantic nodes to concrete input and output modalities given a capability set and a context. Its inputs are: the node, available renderers and input devices declaring measurable capabilities, the active context vector, and user accessibility profile. Its output is a concrete rendering or input mapping decision.
+**Translation Layer.** A bidirectional adaptor that maps semantic nodes to concrete input and output modalities given a capability set and a context. Its inputs are: the node, available renderers and input devices declaring measurable capabilities, the active context vector, and user accessibility profile. Its output is a candidate modality set and a rendering or input mapping decision.
 
-**Interaction Runtime.** State management for focus, in-flight task flows, modal stacks, acknowledgement timeouts, and consistency across distributed renderers. Equivalent in role to a window manager, but operating on semantics rather than pixels.
+**Interaction Coordination Runtime.** A coordination function for focus, in-flight task flows, acknowledgement timers, and consistency across distributed renderers. It does not replace a GUI framework; it coordinates semantic state that multiple renderers need to handle consistently.
 
-**Renderer Layer.** A heterogeneous set of consumers — HUD, cluster, IVI, voice, haptic, AR — each declaring its capabilities and consuming the semantic stream filtered by Translation. Renderers are interchangeable; the ontology is not.
+**Renderer Layer.** A heterogeneous set of consumers — HUD, cluster, IVI, voice, haptic, AR — each declaring its capabilities and consuming the semantic stream filtered by Translation. Renderers remain implementation-specific; the schema defines the meaning they receive.
 
-**Context Engine.** A continuously updated vector of contextual axes (driving state, autonomy level, road type, occupant state, regulatory regime) that modulates priority, modality preference, and suppression policy. Context is not a tree; it is a composable predicate.
+**Context Policy.** A continuously updated vector of contextual axes (driving state, autonomy level, road type, occupant state, market or regulatory jurisdiction) that modulates priority, modality preference, and suppression policy. Context is not a tree; it is a set of composable predicates.
 
-**Trust Layer.** Spans all five layers above. Validates message origin, freshness, and authority before semantic propagation. Applies policy to which actor classes may emit which node classes at which trust levels.
+**Trust and Provenance Policy.** A cross-cutting verification function that validates message origin, freshness, and authority before semantic propagation. It applies policy to which actor classes may emit which node classes at which trust levels.
 
 ---
 
 ## 4. Node Taxonomy
 
-A common failure mode in interaction ontologies is conflating semantically different node types into a single schema. We separate four primary node types, each with its own metadata contract.
+A common failure mode in interaction schemas is conflating semantically different node types into a single generic message model. We separate four primary semantic primitives, each with its own metadata contract.
 
 ![Figure 3: Node taxonomy](./figures/fig3-node-taxonomy.svg)
 
-**Action.** Occupant-initiated. May be discrete (`Navigate.Back`), sustained (`Media.Volume.Increase`), or continuous (`Map.Zoom`). Carries `recommended_modality`, `attention_cost`, `temporal_type`.
+**Action.** An intended command or operation. Many actions are occupant-initiated (`Navigate.Back`), but some are gesture-neutral commands or system-mediated intents. Actions may be discrete (`Navigate.Back`), sustained (`Media.Volume.Increase`), or continuous (`Map.Zoom`). Carries `recommended_modality`, `attention_cost`, `temporal_type`.
 
 **Event.** System-initiated. Splits into **Alert** (safety-relevant, may require acknowledgement) and **Notification** (informational, suppressible). Carries `priority`, `interruptibility`, `requires_ack`, `trust_requirements`.
 
-**State.** Focus, mode, and context transitions. Not user-facing on its own; consumed by Runtime to coordinate renderers. Carries `scope`, `target_role`, `consistency_class`.
+**State.** Focus, mode, and context transitions consumed by the coordination runtime. State is not usually user-facing on its own. Carries `scope`, `target_role`, `consistency_class`.
 
-**Task.** A composed multi-step flow over Actions and States, with start/end conditions and resumption semantics. Carries `step_count`, `interruptible_at`, `resumable_across_contexts`.
+**Task.** A composed multi-step flow over Actions and States, with start/end conditions and resumption semantics. In an initial standard this can be limited to a small set of high-value flows. Carries `step_count`, `interruptible_at`, `resumable_across_contexts`.
 
-Naming follows reverse-DNS hierarchy (`Interaction.Action.Navigate.Back`). Inheritance is supported: subclasses inherit parent metadata and may strengthen but not weaken contracts. Versioning is mandatory on every node.
+Naming follows a stable hierarchy (`Interaction.Action.Navigate.Back`). Inheritance is part of the ontology language, but first-version work should prefer explicit typed schemas over a deep class tree: subclasses may strengthen but not weaken metadata contracts. Versioning is mandatory on every node, and compatibility behavior must be defined for unknown subclasses and unknown optional fields.
 
 ---
 
 ## 5. Metadata Contracts
 
-Every node carries a typed metadata block. Fields are partitioned into **declarative** (defined in the ontology and stable across deployments) and **runtime** (filled by emitter at the moment of emission). We summarise the contract for each node type.
+Every node carries a typed metadata block. Fields are partitioned into **declarative** (defined in the ontology language and stable across deployments) and **runtime** (filled by emitter at the moment of emission). The first schema profile should expose only the subset needed for interoperability, while reserving extension points for future node families and domain-specific bindings. We summarise the contract for each node type.
 
 | Field | Action | Alert | Notification | State | Task |
 | --- | --- | --- | --- | --- | --- |
@@ -108,8 +110,8 @@ Every node carries a typed metadata block. Fields are partitioned into **declara
 | `trust_requirements` | ○ | ● | ○ | ○ | ○ |
 | `target_role` | ● | ● | ● | ● | ● |
 | `accessibility_alt` | ● | ● | ● | — | ● |
-| `regulatory_basis` | ○ | ● | — | — | ○ |
-| `pii_class` | ● | ● | ● | — | ● |
+| `regulatory_basis` | — | ● | ○ | — | ○ |
+| `pii_class` | ○ | ● | ● | — | ○ |
 | `temporal_freshness_ms` | — | ● | ● | ● | — |
 | `suppression_class` | — | ● | ● | — | — |
 | `merges_with` | — | ● | ● | — | — |
@@ -120,7 +122,7 @@ Every node carries a typed metadata block. Fields are partitioned into **declara
 
 Two design decisions warrant emphasis.
 
-**Attention is measurable, not enumerated.** The `attention_metrics` field carries quantitative predicted values — estimated glance time in milliseconds, mean single glance, task step count — rather than qualitative levels. This permits mechanical compliance checks against published distraction guidelines (NHTSA, JAMA, UNECE) and allows context-dependent scaling without overloading enum semantics. A qualitative fallback (`cognitive_load: minimal | moderate | high | locked_while_driving`) is permitted for legacy and rapid prototyping use.
+**Attention demand is represented by predictive proxies, not only enums.** The `attention_metrics` field carries predicted values — estimated glance time in milliseconds, mean single glance, task step count — rather than qualitative levels alone. These values are not direct measurements of driver attention; they are auditable proxies that can be compared against published distraction guidelines (NHTSA, JAMA, UNECE) and adjusted by context. A qualitative fallback (`cognitive_load: minimal | moderate | high | locked_while_driving`) is permitted for legacy and rapid prototyping use.
 
 **Trust is split between requirement and attestation.** A node declares what trust properties consumers should require; an instance carries the attestation that those properties hold. The two are deliberately decoupled (Section 6).
 
@@ -128,13 +130,13 @@ Two design decisions warrant emphasis.
 
 ## 6. Trust Model
 
-In current automotive cybersecurity practice, trust is largely concerned with firmware integrity, ECU authentication, OTA signatures, and CAN-bus isolation. ISO/SAE 21434 and UNECE R155 codify this concern at the management-system level. None of these standards address what we term *interaction integrity*: the property that the meaning, priority, and origin of an interaction reaching the occupant is what it claims to be.
+In current automotive cybersecurity practice, trust is largely concerned with firmware integrity, ECU authentication, OTA signatures, platform integrity, transport integrity, and CAN-bus isolation. ISO/SAE 21434 and UNECE R155 codify much of this concern at the management-system level. These standards provide necessary foundations, but they do not fully specify what we term *interaction integrity*: the property that the meaning, priority, and origin of an interaction reaching the occupant is what it claims to be.
 
 As in-vehicle AI agents, third-party applications, and cloud services proliferate, the interaction layer becomes a new attack surface. An attacker who cannot take the brakes can still suppress a collision warning, inject a fake low-trust alert, or coerce the priority of a benign notification to displace a critical one.
 
 The proposed trust model separates two artefacts:
 
-**Trust requirements** are declared on the node in the ontology. They specify what the consumer (Translation Layer, Renderer) must verify before propagating or rendering. Example fields:
+**Trust requirements** are declared on the node in the semantic schema. They specify what the consumer (Translation Layer, Renderer) must verify before propagating or rendering. Example fields:
 
 ```yaml
 Alert.Collision.Warning:
@@ -157,9 +159,9 @@ attestation:
   provenance_chain: [adas → trust_verifier → runtime]
 ```
 
-The Trust Layer is responsible for verifying that attestation satisfies requirements before the node propagates. Mismatches are not silently rendered; they degrade through a declared `degradation_policy`.
+The Trust and Provenance Policy verifies that attestation satisfies requirements before the node propagates. Mismatches are not silently rendered; they degrade through a declared `degradation_policy`.
 
-We propose an explicit `actor_class` taxonomy, since it drives policy:
+An explicit `actor_class` taxonomy is one practical way to drive policy:
 
 | Class | Description | Example |
 | --- | --- | --- |
@@ -172,15 +174,15 @@ We propose an explicit `actor_class` taxonomy, since it drives policy:
 | `service` | Internal vehicle service | Climate |
 | `third_party_app` | App-store application | Music app |
 
-Policy can then be expressed mechanically: *"`agent_cloud` may not emit nodes with `min_trust_level: critical`"*; *"`third_party_app` notifications are subject to `suppression_class: third_party`"*. This is the layer at which current SDV trust work — token-based authentication between services, workload integrity — does not reach, and at which we believe an open contribution is most needed.
+Policy can then be expressed mechanically: *"`agent_cloud` may not emit nodes with `min_trust_level: critical`"*; *"`third_party_app` notifications are subject to `suppression_class: third_party`"*. This complements current SDV trust work — token-based authentication between services, workload integrity, and platform security — by constraining not only whether an actor may speak, but what semantic authority it has when it speaks.
 
 ---
 
 ## 7. Attention Model
 
-The Attention Model is the second area in which the proposed ontology departs from current practice. Where contemporary automotive HMI guidelines (NHTSA Driver Distraction Guidelines, ISO 15005, JAMA) prescribe measurable thresholds — total eyes-off-road time, single glance duration, task completion time — most software-side HMI frameworks operate on qualitative tags ("distraction-optimised: true/false") that are not directly auditable against those thresholds.
+The Attention Policy is the second area in which the proposed mediation layer departs from current practice. Where contemporary automotive HMI guidelines (NHTSA Driver Distraction Guidelines, ISO 15005, JAMA) prescribe measurable thresholds — total eyes-off-road time, single glance duration, task completion time — most software-side HMI frameworks operate on qualitative tags ("distraction-optimised: true/false") that are not directly auditable against those thresholds.
 
-The proposed model attaches measurable predicted metrics to every interaction-bearing node:
+The proposed model attaches predicted attention-demand proxies to interaction-bearing nodes:
 
 ```yaml
 attention_metrics:
@@ -191,7 +193,7 @@ attention_metrics:
   cognitive_load: moderate
 ```
 
-The Translation Layer composes the static node metric with a context modifier produced by the Context Engine, producing a context-effective attention cost. Example composition:
+The Translation Layer composes the static node metric with a context modifier produced by context policy, producing a context-effective attention cost. One possible composition rule is:
 
 ```text
 effective_cost(node, context) =
@@ -200,7 +202,7 @@ effective_cost(node, context) =
         f(autonomy_level, road_type, traffic_density, driver_state)
 ```
 
-Renderers and Runtime can then apply explicit budgets (*"maximum 2000 ms total eyes-off-road time (TEORT) during manual highway driving"*) and reject, defer, or transform interactions that exceed them. This makes regulatory compliance an observable property of the system rather than a designer's responsibility.
+Renderers and Runtime can then apply explicit budgets (*"maximum 2000 ms total eyes-off-road time (TEORT) during manual highway driving"*) and reject, defer, or transform interactions that exceed them. This does not make compliance automatic, but it makes compliance checks more explicit, auditable, and testable than renderer-local qualitative tags.
 
 ---
 
@@ -208,20 +210,20 @@ Renderers and Runtime can then apply explicit budgets (*"maximum 2000 ms total e
 
 Current automotive HMI architectures often model context as a flat enumeration (`city / highway / parking / autonomous`). Real context is multi-dimensional; collapsing it into a single label discards information that the Translation Layer needs.
 
-We model context as a vector of orthogonal axes:
+We model context as a vector of orthogonal axes. First-version work should distinguish core axes, needed for most policies, from extended axes that may be supplied by richer deployments.
 
-| Axis | Example values |
-| --- | --- |
-| `sae_level` | 0 .. 5 |
-| `road_type` | urban, rural, highway, off-road |
-| `traffic_density` | free, dense, congested |
-| `weather` | clear, rain, snow, fog |
-| `time_of_day` | day, dusk, night |
-| `autonomy_engaged` | boolean |
-| `driver_state` | attentive, drowsy, distracted, unknown |
-| `regulatory_regime` | UNECE, NHTSA, GB, … |
+| Axis | Class | Example values |
+| --- | --- | --- |
+| `sae_level` | Core | 0 .. 5 |
+| `autonomy_engaged` | Core | boolean |
+| `road_type` | Core | urban, rural, highway, off-road |
+| `driver_state` | Core | attentive, drowsy, distracted, unknown |
+| `market_jurisdiction` | Core | UNECE, NHTSA, GB, … |
+| `traffic_density` | Extended | free, dense, congested |
+| `weather` | Extended | clear, rain, snow, fog |
+| `time_of_day` | Extended | day, dusk, night |
 
-Translation and suppression policies become composable predicates over the vector (`autonomy_engaged ∧ sae_level ≥ 3 ⇒ permit Task.Media.Browse`). VSS data populates several of these axes directly; others (driver state, regulatory regime) require dedicated input.
+Translation and suppression policies become composable predicates over the vector (`autonomy_engaged ∧ sae_level ≥ 3 ⇒ permit Task.Media.Browse`). VSS data populates several of these axes directly; others (driver state, market jurisdiction, or homologation context) require dedicated input.
 
 ---
 
@@ -236,7 +238,7 @@ Renderer.HUD:
   refresh_rate_hz: 60
   color_count: 4
   supports_animation: false
-  safety_certified: ASIL-B
+  safety_profile: safety_relevant_visual
   glance_optimized: true
 ```
 
@@ -246,16 +248,16 @@ InputDevice.SteeringWheel.Right:
   buttons: [press, tilt_4way]
   haptic: [pulse, sustained_vibration]
   reachable_during: [driving, parking]
-  safety_certified: ASIL-A
+  safety_profile: driver_reachable_control
 ```
 
-The Translation Layer can then mechanically compute, for a given node and context, the set of renderers capable of conveying it within its attention budget — and select among them using user accessibility profile and explicit policy. Capability declarations are versioned with the same scheme as ontology nodes.
+The Translation Layer can then compute candidate renderers for a given node and context, filter them by capability and policy, and select among remaining candidates using user accessibility profile and deployment-specific preferences. This should not be framed initially as a global optimisation problem; deterministic candidate filtering is sufficient for a first version. Capability declarations are versioned with the same scheme as semantic nodes.
 
 ---
 
 ## 10. Versioning and Evolution
 
-A vehicle in service for 15 years must remain interoperable with newer ontology versions delivered over the air. The ontology therefore mandates explicit versioning on every node, capability, and policy:
+A vehicle in service for 15 years must remain interoperable with newer ontology and schema versions delivered over the air. The mediation layer therefore needs explicit versioning on every node, capability, and policy:
 
 ```yaml
 since_version: 1.4.0
@@ -264,7 +266,15 @@ replaced_by: Interaction.Action.Navigate.Hierarchical.Back
 compatible_with_min_version: 1.2.0
 ```
 
-Translation Layer is required to honour the lowest version present in the vehicle's renderer and input device set. Ontology changes follow semantic versioning: minor versions add nodes and optional fields; major versions may deprecate. Deprecation requires a transition period and a `replaced_by` pointer.
+Translation Layer should advertise supported ontology/schema versions and apply explicit fallback behavior when a renderer or input device cannot support a newer node. Schema changes follow semantic versioning: minor versions add nodes and optional fields; major versions may deprecate. Deprecation requires a transition period, a `replaced_by` pointer where possible, and a declared behavior for unsupported nodes.
+
+Backward compatibility is not an implementation detail; it is a core design constraint. The ontology language should follow these rules:
+
+1. New optional fields are additive and must be safely ignored by consumers that do not understand them.
+2. New subclasses inherit parent contracts and may strengthen, but not weaken, safety, attention, or trust requirements.
+3. Required-field additions need a major version or a feature flag with explicit fallback behavior.
+4. Deprecated nodes remain resolvable for a defined support window and should point to `replaced_by` where semantics can be preserved.
+5. Unknown critical nodes must fail closed or degrade through policy; unknown non-critical nodes may be suppressed, deferred, or mapped to a parent class.
 
 ---
 
@@ -272,17 +282,17 @@ Translation Layer is required to honour the lowest version present in the vehicl
 
 | Standard | Layer | Relationship |
 | --- | --- | --- |
-| COVESA VSS | Data | Populates Context axes; Action nodes may reference VSS signals |
-| W3C MMI / EMMA | Multimodal input | Candidate substrate for Translation Layer input mapping |
-| ISO 15005 / ISO 17287 | Ergonomics | Source for `attention_metrics` field semantics |
-| NHTSA Driver Distraction Guidelines | Regulation | Compliance check on `effective_cost` |
-| JAMA Guidelines | Regulation | Compliance check on `effective_cost` |
-| UNECE R79 | Lane-keep / steering | Constrains `regulatory_basis` of relevant Alerts |
-| UNECE R155 / ISO 21434 | Cybersecurity | Trust Layer extends CSMS to interaction integrity |
-| Eclipse Kuksa / uProtocol | Transport | Carries Trust-validated semantic messages |
-| Eclipse S-CORE | Middleware | Hosts Runtime and Translation Layer |
-| Eclipse LMOS | AI agents | Emitters of `agent_local` / `agent_cloud` class |
-| Android Car App Library | App-level HMI | Closed-ecosystem analogue; not a substitute |
+| COVESA VSS | Data | Can populate context axes; Action nodes may reference VSS signals |
+| W3C MMI / EMMA | Multimodal input | Can inform Translation Layer input mapping |
+| ISO 15005 / ISO 17287 | Ergonomics | Informs `attention_metrics` field semantics |
+| NHTSA Driver Distraction Guidelines | Regulation | Informs checks on `effective_cost` |
+| JAMA Guidelines | Regulation | Informs checks on `effective_cost` |
+| UNECE R79 | Lane-keep / steering | Informs `regulatory_basis` of relevant Alerts |
+| UNECE R155 / ISO 21434 | Cybersecurity | Provides platform and process context for interaction integrity |
+| Eclipse Kuksa / uProtocol | Transport | Can carry trust-validated semantic messages |
+| Eclipse S-CORE | Middleware | Possible host environment for coordination and translation |
+| Eclipse LMOS | AI agents | Potential source of `agent_local` / `agent_cloud` emitters |
+| Android Car App Library | App-level HMI | Hosted template model with semantic constraints; not a substitute |
 
 ---
 
@@ -290,13 +300,13 @@ Translation Layer is required to honour the lowest version present in the vehicl
 
 The proposal is deliberately scoped to a position paper; concrete specification work remains open. We identify the following near-term questions:
 
-1. *Schema formalism.* JSON Schema, OWL, SHACL, or a hybrid (VSS uses a custom `.vspec` format generating to JSON Schema). The choice has long-term tooling consequences.
+1. *Ontology and schema formalism.* JSON Schema, OWL, SHACL, or a hybrid (VSS uses a custom `.vspec` format generating to JSON Schema). The choice has long-term tooling and compatibility consequences.
 2. *Cryptographic substrate for Trust.* JWS, COSE, W3C Verifiable Credentials, or a domain-specific scheme. Alignment with R155-mandated key management is required.
-3. *Empirical validation of attention metric composition.* The proposed `effective_cost = base × context_modifier` formulation requires user study evidence.
+3. *Empirical validation of attention metric composition.* Any `effective_cost` formulation, including the simple multiplicative example above, requires user study evidence.
 4. *Conflict resolution between renderers.* When two renderers can serve a node within budget, the selection policy needs principled grounding.
-5. *Reference open-source implementation.* A prototype on top of Eclipse Kuksa would provide concrete grounding for further discussion.
+5. *Reference open-source implementation.* A prototype integrated with existing SDV middleware, for example Kuksa/uProtocol, would provide concrete grounding for further discussion.
 
-**On cross-domain generalisation.** The pattern described in this paper — typed interaction nodes with measurable attention and trust contracts, capability-negotiated translation, and multi-axis context — is not, in principle, automotive-specific. Analogous coupling problems are visible in aviation flight-deck HMI, surgical and intensive-care environments (alarm fatigue, multi-role trust), industrial control rooms (ISA-18.2), and emerging XR interaction surfaces. We treat domain *bindings* — regulatory hooks, actor-class taxonomies, attention-metric units, capability vocabularies — as the unit of value, with the underlying grammar being potentially reusable across these domains. Cross-domain generalisation is nevertheless explicitly out of scope for this paper. Premature genericity has been a recurring failure mode in multimodal interaction standardisation (the W3C MMI architecture being the canonical example); useful generality, where it emerges at all, emerges from at least one worked specificity. We accordingly recommend that any cross-domain effort be deferred until the automotive binding has been validated through implementation and adoption.
+**Future scope.** The pattern described in this paper may later generalise beyond automotive HMI, but this should not be part of the first standardisation target. Aviation flight decks, surgical and intensive-care environments, industrial control rooms, and XR surfaces have analogous coupling problems, but each domain has different regulatory hooks, actor-class taxonomies, attention metrics, and capability vocabularies. Useful generality should emerge from a validated automotive binding, not precede it.
 
 We propose three coordinated paths:
 
@@ -330,4 +340,4 @@ A worked example tracing one `Alert.Collision.Warning` end-to-end is provided as
 
 ---
 
-*Comments, corrections, and counter-positions are explicitly invited. Contact: dizencz@gmail.com*
+*Comments, corrections, and counter-positions are explicitly invited. Contact: <dizencz@gmail.com>*
