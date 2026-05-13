@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 480" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
-  <title id="title">Six-layer Semantic Interaction Architecture</title>
-  <desc id="desc">Architecture diagram showing Renderer, Runtime, Translation, Ontology, Context Engine, and Trust Layer responsibilities.</desc>
+  <title id="title">Semantic mediation architecture</title>
+  <desc id="desc">Architecture diagram showing Renderer, Interaction Coordination Runtime, Translation, Ontology Language and Schema Profile, Context Policy, and Trust and Provenance Policy responsibilities.</desc>
   <style>
     .box { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.2; }
     .box-light { fill: #fafafa; stroke: #1a1a1a; stroke-width: 1.2; }
@@ -35,7 +35,7 @@
 
   <!-- Runtime -->
   <rect x="160" y="120" width="440" height="50" class="box-light" rx="3"/>
-  <text x="380" y="141" text-anchor="middle" class="label">Interaction Runtime</text>
+  <text x="380" y="141" text-anchor="middle" class="label">Interaction Coordination Runtime</text>
   <text x="380" y="158" text-anchor="middle" class="desc">Focus · task-flow state · acknowledgement · cross-renderer consistency</text>
 
   <!-- Translation -->
@@ -45,26 +45,26 @@
 
   <!-- Ontology at the heart -->
   <rect x="160" y="264" width="440" height="58" class="span-box" rx="3"/>
-  <text x="380" y="287" text-anchor="middle" class="label-accent">Ontology Layer</text>
-  <text x="380" y="304" text-anchor="middle" class="desc-accent">Typed node taxonomy · metadata contracts · versioning</text>
-  <text x="380" y="318" text-anchor="middle" class="annot">— single source of meaning —</text>
+  <text x="380" y="287" text-anchor="middle" class="label-accent">Ontology Language + Schema Profile</text>
+  <text x="380" y="304" text-anchor="middle" class="desc-accent">Typed primitives · metadata contracts · compatibility</text>
+  <text x="380" y="318" text-anchor="middle" class="annot">— long-term language of meaning —</text>
 
-  <!-- Side: Context Engine (right) -->
+  <!-- Side: Context Policy (right) -->
   <rect x="620" y="120" width="120" height="122" class="box-light" rx="3"/>
   <text x="680" y="143" text-anchor="middle" class="label">Context</text>
-  <text x="680" y="158" text-anchor="middle" class="label">Engine</text>
+  <text x="680" y="158" text-anchor="middle" class="label">Policy</text>
   <text x="680" y="178" text-anchor="middle" class="desc">SAE level</text>
   <text x="680" y="193" text-anchor="middle" class="desc">Road type</text>
   <text x="680" y="208" text-anchor="middle" class="desc">Driver state</text>
-  <text x="680" y="223" text-anchor="middle" class="desc">Regulatory</text>
-  <text x="680" y="238" text-anchor="middle" class="desc">regime</text>
+  <text x="680" y="223" text-anchor="middle" class="desc">Market</text>
+  <text x="680" y="238" text-anchor="middle" class="desc">jurisdiction</text>
 
-  <!-- Side: Trust Layer (left) -->
+  <!-- Side: Trust and Provenance Policy (left) -->
   <rect x="20" y="48" width="120" height="274" class="box-light" rx="3"/>
   <text x="80" y="72" text-anchor="middle" class="label">Trust</text>
-  <text x="80" y="88" text-anchor="middle" class="label">Layer</text>
-  <text x="80" y="115" text-anchor="middle" class="desc">spans all</text>
-  <text x="80" y="130" text-anchor="middle" class="desc">vertical layers</text>
+  <text x="80" y="88" text-anchor="middle" class="label">Policy</text>
+  <text x="80" y="115" text-anchor="middle" class="desc">cross-cutting</text>
+  <text x="80" y="130" text-anchor="middle" class="desc">verification</text>
   <text x="80" y="160" text-anchor="middle" class="desc">requirement</text>
   <text x="80" y="175" text-anchor="middle" class="desc">vs.</text>
   <text x="80" y="190" text-anchor="middle" class="desc">attestation</text>
@@ -94,5 +94,5 @@
   <text x="150" y="207" text-anchor="start" class="annot">validates</text>
 
   <!-- caption -->
-  <text x="380" y="460" text-anchor="middle" class="figcap">Figure 2. Six-layer architecture. Trust spans vertically; Context modulates Translation; Ontology is the canonical source of meaning.</text>
+  <text x="380" y="460" text-anchor="middle" class="figcap">Figure 2. Mediation architecture. Trust and context are policy functions; ontology language and schema profile define meaning.</text>
 </svg>

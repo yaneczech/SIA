@@ -107,7 +107,7 @@ context:
   weather: clear
   autonomy_engaged: false
   driver_state: attentive
-  regulatory_regime: UNECE
+  market_jurisdiction: UNECE
 ```
 
 Translation Layer decision:
@@ -128,7 +128,7 @@ context:
   traffic_density: none
   autonomy_engaged: false
   driver_state: unknown
-  regulatory_regime: UNECE
+  market_jurisdiction: UNECE
 ```
 
 The alert is suppressed by an upstream rule: ADAS does not emit `Collision.Warning` while stationary. If emitted anyway (e.g., during diagnostics), Translation Layer renders to IVI only with an inline label "Diagnostic mode — not a real warning". The label is not free-form text generated at runtime; it is a static string bound to a policy rule of the form `context.road_type = stationary ∧ actor_class = adas → inject_override_label: "Diagnostic mode — not a real warning"`. This is policy-encoded behaviour, not designer judgement.
@@ -141,7 +141,7 @@ context:
   road_type: highway
   autonomy_engaged: true
   driver_state: not_monitoring
-  regulatory_regime: UNECE
+  market_jurisdiction: UNECE
 ```
 
 Translation Layer decision:
@@ -196,14 +196,14 @@ Trust and provenance policy rejects: `agent_local ∉ permitted_actor_classes`. 
 
 ### A.5.4 Priority injection
 
-An adversary attempts to emit a benign notification with elevated `priority: 99` to displace a real alert. Because `priority` is a property of the ontology node, not the instance, the runtime `priority` is recomputed from the ontology declaration and the spoofed value is discarded.
+An adversary attempts to emit a benign notification with elevated `priority: 99` to displace a real alert. Because `priority` is a property of the semantic node declaration, not the instance, the runtime `priority` is recomputed from the declaration and the spoofed value is discarded.
 
 ---
 
 ## A.6 What this example demonstrates
 
 1. **A single declarative node** governs behaviour across heterogeneous renderers, contexts, and accessibility profiles, without per-vehicle, per-screen redesign.
-2. **Attention is auditable.** A regulator can verify, mechanically, that the alert's effective cost in any declared context is below the applicable threshold.
+2. **Attention checks are more auditable.** A regulator or safety team can inspect the declared attention-demand proxies and verify that policy decisions are traceable to explicit thresholds.
 3. **Trust is enforced at a chokepoint** before rendering, and the policy is expressed in the semantic schema rather than embedded in renderer code.
 4. **AI agents are not categorically blocked from interaction**, but they cannot impersonate safety-critical subsystems. This is a different and stronger property than service-level authentication: it constrains *what kinds of things an authenticated agent may say*, not merely *whether it may speak*.
 5. **Adversarial cases reduce to schema checks.** Spoofing, replay, and priority injection are caught by mechanical validation of declared contracts rather than ad-hoc detection.

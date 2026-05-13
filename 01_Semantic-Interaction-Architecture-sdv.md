@@ -27,7 +27,7 @@ The cost of this tight coupling compounds along three axes. **Engineering cost**
 
 We argue that these costs are not solved by better tooling, more screens, or larger language models alone. They are symptoms of a missing mediation boundary between SDV services and concrete HMI implementations.
 
-The first version of such a boundary should be deliberately narrow. We scope it to three cores: **intent/action abstraction** for high-value commands and interaction events, **attention policy** for priority, interruptibility, and driving context, and **trust provenance** for determining which actors may emit which interaction types with which authority. The ontology language must nevertheless be designed for scale from the beginning: new domains, node families, metadata fields, and renderer capabilities should be additive where possible, and older vehicles must be able to ignore or degrade newer constructs safely. Cross-domain portability and a vehicle-wide interaction runtime are treated as future specification work rather than as requirements for initial adoption.
+The first version of such a boundary should be deliberately narrow. We scope it to three cores: **intent/action abstraction** for high-value commands and interaction events, **attention policy** for priority, interruptibility, and driving context, and **trust provenance** for determining which actors may emit which interaction types with which authority. The ontology language must nevertheless be designed for scale from the beginning: new domains, node families, metadata fields, and renderer capabilities should be additive where possible, and older vehicles must be able to ignore or degrade newer constructs safely. It must also be ergonomic for human authors: the language should mirror the structure of natural communication rather than expose only machine-oriented transport fields. Cross-domain portability and a vehicle-wide interaction runtime are treated as future specification work rather than as requirements for initial adoption.
 
 ---
 
@@ -59,7 +59,7 @@ The proposed Semantic Interaction Architecture (SIA) sits **above** existing ser
 
 We propose four functional components and two cross-cutting policy functions, illustrated in Figure 2. This is a mediation architecture rather than an interaction operating system: it defines what crosses the boundary and how policy is applied, while leaving renderer implementation and most HMI runtime behavior to existing stacks.
 
-![Figure 2: Six-layer architecture](./figures/fig2-six-layer-architecture.svg)
+![Figure 2: Mediation architecture](./figures/fig2-six-layer-architecture.svg)
 
 **Ontology Language and Schema Profile.** A stable ontology language defines the long-term vocabulary of interaction meaning, inheritance, metadata contracts, and compatibility rules. The initial standardisation target should be a small typed event/command schema profile for high-value interactions. This keeps the first implementation tractable without sacrificing a scalable naming and evolution model.
 
@@ -72,6 +72,28 @@ We propose four functional components and two cross-cutting policy functions, il
 **Context Policy.** A continuously updated vector of contextual axes (driving state, autonomy level, road type, occupant state, market or regulatory jurisdiction) that modulates priority, modality preference, and suppression policy. Context is not a tree; it is a set of composable predicates.
 
 **Trust and Provenance Policy.** A cross-cutting verification function that validates message origin, freshness, and authority before semantic propagation. It applies policy to which actor classes may emit which node classes at which trust levels.
+
+---
+
+## 3.1 Human-Ergonomic Language Design
+
+SIA should be machine-verifiable without becoming machine-shaped. Automotive interaction is ultimately communication between actors: an occupant asks, a vehicle informs or warns, an agent proposes, a safety system interrupts, and the recipient may acknowledge, ignore, defer, or recover. The ontology should therefore preserve communicative structure explicitly.
+
+This does not mean the language should become free-form natural language. Natural communication should inform the ergonomics of the ontology — its primitives, naming, and authoring model — while the representation itself remains deterministic, typed, parsable, testable, and safe to validate at runtime. A node must be readable by humans and mechanically enforceable by software.
+
+A useful node should answer a small set of human-readable questions:
+
+| Communicative role | SIA representation |
+| --- | --- |
+| What is being requested, asserted, or coordinated? | Node identity and type (`Action`, `Event`, `State`, `Task`) |
+| Who is speaking or acting? | `actor_class`, `actor_id`, attestation |
+| Who is the intended recipient? | `target_role`, scope |
+| How urgent or interruptive is it? | `priority`, `interruptibility`, `suppression_class` |
+| What response is expected? | `requires_ack`, `ack_kind`, timeout and authority |
+| What context changes its meaning? | Context vector and policy predicates |
+| What happens if the preferred channel fails? | `fallback_chain`, `degradation_policy` |
+
+This is an ergonomics requirement on the language itself. A schema that is technically valid but hard for HMI engineers, safety engineers, or UX researchers to read will not scale socially, even if it scales computationally. Conversely, a readable language that cannot be validated, diffed, tested, versioned, or safely degraded is not usable in an SDV stack. Naming should therefore prefer domain language over implementation jargon, preserve stable parent-child meaning, and make safety-relevant obligations visible at the node boundary.
 
 ---
 

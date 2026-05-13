@@ -22,6 +22,8 @@ SIA is framed as a scalable ontology language exposed initially through a small 
 
 The proposal uses Actions, Events, States, and Tasks as semantic primitives and treats backward compatibility as a first-order requirement. Broader cross-domain generalisation and full vehicle-wide runtime behavior remain future specification work.
 
+The language is also intended to be ergonomic for humans without becoming free-form natural language. Its primitives mirror the structure of natural communication: what is being requested or asserted, who is speaking, who the target is, how urgent it is, whether acknowledgement is required, what context changes its meaning, and how the system should repair or degrade the interaction when the preferred channel is unavailable. Those primitives must remain deterministic, typed, parsable, testable, and safe to validate at runtime.
+
 A mediation architecture sits above existing SDV data and service abstractions such as COVESA VSS, Eclipse Kuksa, and uProtocol, and below concrete renderers. It is intended as connective tissue, not a replacement for existing SDV infrastructure.
 
 ## Who This Is For
@@ -44,8 +46,8 @@ A mediation architecture sits above existing SDV data and service abstractions s
 
 | | |
 | --- | --- |
-| ![Stack position](./figures/fig1-stack-position.svg) | ![Six-layer architecture](./figures/fig2-six-layer-architecture.svg) |
-| Figure 1: Where SIA sits in the SDV stack | Figure 2: The six layers and how they interact |
+| ![Stack position](./figures/fig1-stack-position.svg) | ![Mediation architecture](./figures/fig2-six-layer-architecture.svg) |
+| Figure 1: Where SIA sits in the SDV stack | Figure 2: Components and policy functions |
 | ![Node taxonomy](./figures/fig3-node-taxonomy.svg) | ![Alert flow](./figures/figA1-alert-flow.svg) |
 | Figure 3: Four node types and their metadata contracts | Figure A.1: Sequence flow for a collision warning |
 
