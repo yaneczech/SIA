@@ -154,8 +154,9 @@ implementation and GUI framework behaviour to existing stacks.
     with Trust Policy and Context Policy as cross-cutting functions.
     Insert PDF export of Mermaid diagram here.]}
   \vspace{2em}}}
-  \caption{Mediation architecture. Trust and Context are cross-cutting policy
-    functions; the Ontology Language is the canonical source of meaning.}
+  \caption{Mediation architecture. Trust Policy and Context Policy are
+    cross-cutting functions within SIA; the Ontology Language + Schema Profile
+    is the canonical source of meaning.}
   \label{fig:architecture}
 \end{figure}
 
@@ -204,7 +205,9 @@ primary semantic primitives, each with its own metadata contract.
     State, Task; Event splits into Alert and Notification.
     Insert PDF export of Mermaid diagram here.]}
   \vspace{2em}}}
-  \caption{Four primary node types; Event splits into Alert and Notification.}
+  \caption{Node taxonomy. Four primary types with distinct metadata contracts;
+    Event splits into Alert and Notification. Subclasses may strengthen but not
+    weaken contracts.}
   \label{fig:taxonomy}
 \end{figure}
 
@@ -345,7 +348,9 @@ fallback_chain: [hud, cluster, voice, haptic]
     node propagates to Translation, Runtime, Renderers; ack closes loop.
     Insert PDF export of Mermaid sequenceDiagram here.]}
   \vspace{2em}}}
-  \caption{Sequence flow. Trust Policy is a chokepoint before Translation.}
+  \caption{Sequence flow for Alert.Collision.Warning. Trust Policy is a
+    chokepoint before Translation. Renderer dispatch is multicast;
+    acknowledgement is tracked by Runtime.}
   \label{fig:sequence}
 \end{figure}
 

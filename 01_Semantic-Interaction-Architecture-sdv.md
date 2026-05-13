@@ -90,17 +90,16 @@ We propose four functional components and two cross-cutting policy functions, il
 ```mermaid
 graph TB
     EXT1(["Occupant input · output"])
+    EXT2(["SDV transport — Kuksa · uProtocol · service registry"])
 
-    subgraph STACK [" "]
+    subgraph SIA ["Semantic Interaction Architecture"]
+        TL["Trust Policy\nReq. vs attestation\nactor_class · freshness · replay · provenance"]
+        CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
         R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
         RT["Interaction Coordination Runtime\nFocus · task-flow state · acknowledgement · cross-renderer consistency"]
         T["Translation Layer\nnode × capabilities × context → modality decision"]
         O["Ontology Language + Schema Profile\nTyped primitives · metadata contracts · compatibility\n— long-term language of meaning —"]
     end
-
-    CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
-    TL["Trust Policy\nReq. vs attestation\nactor_class · freshness\nreplay · provenance"]
-    EXT2(["SDV transport — Kuksa · uProtocol · service registry"])
 
     EXT1 --> R
     R --> RT
@@ -116,7 +115,7 @@ graph TB
     style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 2. Mediation architecture. Trust and context are policy functions; ontology language and schema profile define meaning.*
+*Figure 2. Mediation architecture. Trust Policy and Context Policy are cross-cutting functions within SIA; the Ontology Language + Schema Profile is the canonical source of meaning.*
 
 ## 3.1 Human-Ergonomic Language Design
 

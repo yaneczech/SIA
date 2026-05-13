@@ -44,17 +44,16 @@ We propose a mediation architecture of four functional components and two cross-
 ```mermaid
 graph TB
     EXT1(["Occupant input · output"])
+    EXT2(["SDV transport — Kuksa · uProtocol · service registry"])
 
-    subgraph STACK [" "]
+    subgraph SIA ["Semantic Interaction Architecture"]
+        TL["Trust Policy\nReq. vs attestation\nactor_class · freshness · replay · provenance"]
+        CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
         R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
         RT["Interaction Coordination Runtime\nFocus · task-flow · acknowledgement · cross-renderer consistency"]
         T["Translation Layer\nnode × capabilities × context → modality decision"]
         O["Ontology Language + Schema Profile\nTyped primitives · metadata contracts · compatibility\n— long-term language of meaning —"]
     end
-
-    CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
-    TL["Trust Policy\nReq. vs attestation\nactor_class · freshness\nreplay · provenance"]
-    EXT2(["SDV transport — Kuksa · uProtocol · service registry"])
 
     EXT1 --> R
     R --> RT
@@ -70,7 +69,7 @@ graph TB
     style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 1. Mediation architecture. Trust and context are cross-cutting policy functions; the Ontology Language is the canonical source of meaning.*
+*Figure 1. Mediation architecture. Trust Policy and Context Policy are cross-cutting functions within SIA; the Ontology Language + Schema Profile is the canonical source of meaning.*
 
 **Ontology Language and Schema Profile.** A stable language defines the long-term vocabulary of interaction meaning, inheritance, metadata contracts, and compatibility rules. The first standardisation target is a small typed event/command schema profile for high-value interactions — tractable to implement without locking in a deep class hierarchy.
 
@@ -104,7 +103,7 @@ graph TB
     style I fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 2. Four primary node types; Event splits into Alert and Notification.*
+*Figure 2. Node taxonomy. Four primary types with distinct metadata contracts; Event splits into Alert and Notification. Subclasses may strengthen but not weaken contracts.*
 
 **Action** — occupant-initiated; discrete, sustained, or continuous. Carries `attention_metrics`, `temporal_type`, `recommended_modality`.
 
@@ -192,17 +191,18 @@ sequenceDiagram
     participant Renderers as Renderers
 
     ADAS->>Trust: emit instance + attestation
-    alt verification fails
+    alt trust verification fails
         Trust-->>ADAS: reject + log SecurityEvent
-    else verification passes
+    else trust verification passes
         Trust->>Trans: verified node propagates
         Trans->>Runtime: allocate focus slot · arm ack timer
         Runtime->>Renderers: dispatch (multicast)
         Renderers->>Runtime: ack (input | gaze | timeout)
+        Runtime->>Trust: close interaction · log outcome
     end
 ```
 
-*Figure 3. Sequence flow. Trust Policy is a chokepoint before Translation.*
+*Figure 3. Sequence flow for Alert.Collision.Warning. Trust Policy is a chokepoint before Translation. Renderer dispatch is multicast; acknowledgement is tracked by Runtime.*
 
 **Context-dependent translation.** Under manual highway driving (`sae_level: 1`, `traffic_density: dense`), the Translation Layer selects HUD as primary with concurrent cluster and haptic, and rejects IVI touchscreen (off-axis, exceeds attention budget under dense-traffic modifier). Under L4 autonomous driving (`driver_state: not_monitoring`), HUD is de-prioritised in favour of cluster and full-sentence voice prompt; `ack_timeout_ms` extends from 3000 ms to 6000 ms via context modifier.
 
