@@ -47,8 +47,8 @@ graph TB
     EXT1(["Occupant input · output"])
 
     subgraph SIA ["Semantic Interaction Architecture"]
-        TL["Trust Policy\nReq. vs attestation\nactor_class · freshness · replay · provenance"]
         O["Ontology Language + Schema Profile\nTyped primitives · metadata contracts · compatibility\n— long-term language of meaning —"]
+        TL["Trust Policy\nReq. vs attestation\nactor_class · freshness · replay · provenance"]
         CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
         T["Translation Layer\nnode × capabilities × context → modality decision"]
         RT["Interaction Coordination Runtime\nFocus · task-flow · acknowledgement · cross-renderer consistency"]
@@ -56,8 +56,10 @@ graph TB
     end
 
     EXT2 -->|"emit node + attestation"| TL
-    TL -->|"verified"| O
-    O --> T
+    O -->|"schema"| TL
+    TL -->|"verified"| T
+    O -->|"contract"| T
+    R -->|"capabilities"| T
     CE -->|"modulates"| T
     CE -->|"modulates"| RT
     T --> RT
@@ -67,7 +69,7 @@ graph TB
     style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 1. Mediation architecture. Trust Policy gates all incoming nodes; the Ontology Language + Schema Profile is the canonical source of meaning; Context Policy modulates Translation and Runtime throughout.*
+*Figure 1. Mediation architecture. The Ontology Language + Schema Profile is the authoritative reference — Trust Policy validates against it, Translation Layer interprets by it. Context Policy modulates Translation and Runtime; renderer capabilities feed back into Translation.*
 
 **Ontology Language and Schema Profile.** A stable language defines the long-term vocabulary of interaction meaning, inheritance, metadata contracts, and compatibility rules. The first standardisation target is a small typed event/command schema profile for high-value interactions — tractable to implement without locking in a deep class hierarchy.
 

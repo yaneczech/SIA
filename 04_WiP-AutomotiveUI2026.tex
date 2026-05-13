@@ -149,15 +149,18 @@ implementation and GUI framework behaviour to existing stacks.
   % Mermaid source in 01_Semantic-Interaction-Architecture-sdv.md (Fig 2)
   % and uncomment: \includegraphics[width=\columnwidth]{figures/fig2-mediation-architecture}
   \fbox{\parbox{0.92\columnwidth}{\centering\vspace{2em}
-    \textit{[Figure 1: Mediation architecture — Trust Policy gates entry;
-    Ontology Language + Schema Profile defines meaning; Translation Layer
-    selects modalities; Runtime coordinates; Renderer Layer faces occupant.
-    Context Policy modulates Translation and Runtime.
+    \textit{[Figure 1: Mediation architecture — Ontology Language + Schema
+    Profile is the authoritative reference (provides schema to Trust Policy,
+    contract to Translation Layer); runtime flow is
+    Agents/ADAS → Trust Policy → Translation → Runtime → Renderer ↔ Occupant;
+    renderer capabilities feed back into Translation; Context Policy modulates
+    Translation and Runtime.
     Insert PDF export of Mermaid diagram here.]}
   \vspace{2em}}}
-  \caption{Mediation architecture. Trust Policy gates all incoming nodes;
-    the Ontology Language + Schema Profile is the canonical source of meaning;
-    Context Policy modulates Translation and Runtime throughout.}
+  \caption{Mediation architecture. The Ontology Language + Schema Profile is
+    the authoritative reference --- Trust Policy validates against it,
+    Translation Layer interprets by it. Context Policy modulates Translation
+    and Runtime; renderer capabilities feed back into Translation.}
   \label{fig:architecture}
 \end{figure}
 
@@ -187,15 +190,16 @@ measurable capabilities; the Translation Layer selects among them. All nodes
 reaching the Renderer Layer have already been verified and coordinated.
 
 \paragraph{Trust Policy.}
-A gate at the entry point of SIA: all nodes emitted by agents, services, or
-ADAS systems pass through trust verification before entering the Ontology
-layer. Nodes that fail are rejected and logged; they never reach the semantic
-pipeline.
+Validates all incoming nodes against the schema and trust requirements declared
+in the Ontology Language. Trust Policy is a gate: a node that fails
+verification is rejected and logged; it never reaches the Translation Layer.
+The Ontology Language supplies the authoritative schema; the emitter supplies
+the attestation; Trust Policy compares them.
 
 \paragraph{Context Policy.}
 Supplies a continuously updated context vector that modulates both the
-Translation Layer (modality selection) and the Interaction Coordination
-Runtime (conflict resolution, acknowledgement timeouts).
+Translation Layer (modality selection and attention budget) and the Interaction
+Coordination Runtime (conflict resolution, acknowledgement timeouts).
 
 %% ---------------------------------------------------------------
 \section{Node Taxonomy and Metadata Contracts}
