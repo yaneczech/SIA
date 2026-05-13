@@ -6,7 +6,7 @@
 
 %% Suppress ACM copyright / rights block for review copy
 \setcopyright{none}
-\acmConference[AutomotiveUI '26]{ACM International Conference on Automotive User Interfaces and Interactive Vehicular Applications}{September 2026}{TBD}
+\acmConference[AutomotiveUI '26]{ACM International Conference on Automotive User Interfaces and Interactive Vehicular Applications}{September 20--23, 2026}{Gothenburg, Sweden}
 
 %% ---------------------------------------------------------------
 %% Packages
@@ -113,7 +113,8 @@ communicate.
 Android Automotive's Car App Library is the closest production-grade analogue
 to a semantic interaction model: applications declare templates and a host
 renders them with built-in distraction optimisation~\cite{google-aaos}. Its
-scope is bounded to supported app categories within a single-OEM ecosystem.
+scope is bounded to supported app categories within the host-controlled
+Android Automotive OS ecosystem.
 Qt Automotive and Kanzi offer renderer-side abstractions without cross-renderer
 interaction semantics.
 
@@ -248,8 +249,8 @@ Table~\ref{tab:contracts} summarises mandatory, optional, and not-applicable
 fields for each type.
 
 \begin{table}[h]
-  \caption{Partial metadata contract by node type. Full contract in accompanying
-    technical report.}
+  \caption{Partial metadata contract by node type. Full contract in the
+    companion position paper.}
   \label{tab:contracts}
   \begin{tabular}{lccccc}
     \toprule
@@ -298,7 +299,7 @@ merely whether it may speak.
 
 \subsection{Attention}
 
-Contemporary HMI guidelines (NHTSA, ISO 15005~\cite{iso15005}, JAMA) prescribe
+Contemporary HMI guidelines (NHTSA~\cite{nhtsa2013}, ISO 15005~\cite{iso15005}, JAMA~\cite{jama2004}) prescribe
 measurable thresholds --- total eyes-off-road time (TEORT), single glance
 duration, task step count. Most software-side frameworks operate on qualitative
 tags (\texttt{distraction-optimised: true/false}) not directly auditable

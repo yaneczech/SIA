@@ -27,7 +27,7 @@ The first version of such a layer should be deliberately narrow. We scope the pr
 
 **SDV data and service layers.** COVESA VSS defines a vendor-neutral catalogue of vehicle signals [COVESA]. Eclipse Kuksa, uProtocol, and Chariott abstract data brokering, messaging, and service discovery [Eclipse SDV]. None of these projects model what an interaction *means to the occupant*; they model how services and signals communicate.
 
-**HMI frameworks.** Android Automotive's Car App Library is the closest production-grade analogue to a semantic interaction model: applications declare templates and a host renders them with built-in distraction optimisation [Google]. Its scope is bounded to supported app categories within a single-OEM ecosystem. Qt Automotive and Kanzi offer renderer-side abstractions without cross-renderer interaction semantics.
+**HMI frameworks.** Android Automotive's Car App Library is the closest production-grade analogue to a semantic interaction model: applications declare templates and a host renders them with built-in distraction optimisation [Google]. Its scope is bounded to supported app categories within the host-controlled Android Automotive OS ecosystem. Qt Automotive and Kanzi offer renderer-side abstractions without cross-renderer interaction semantics.
 
 **Multimodal interaction.** The W3C MMI Recommendation and EMMA annotation format define a generic semantic model for multimodal input [W3C MMI, W3C EMMA]. Automotive uptake has been limited; the vocabulary remains a candidate substrate for the input side of SIA.
 
@@ -126,7 +126,7 @@ Every node carries two categories of metadata fields: **declarative** fields def
 | `fallback_chain` | ● | ● | ● | — | ● |
 | `degradation_policy` | ● | ● | ● | — | ● |
 
-*Table 1. Partial metadata contract by node type (abbreviated). Full contract in accompanying technical report.*
+*Table 1. Partial metadata contract by node type (abbreviated). Full contract in the companion position paper.*
 
 ---
 

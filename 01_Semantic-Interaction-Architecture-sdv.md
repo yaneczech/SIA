@@ -237,7 +237,7 @@ As in-vehicle AI agents, third-party applications, and cloud services proliferat
 
 The proposed trust model separates two artefacts:
 
-**Trust requirements** are declared on the node in the semantic schema. They specify what the consumer (Translation Layer, Renderer) must verify before propagating or rendering. Example fields:
+**Trust requirements** are declared on the node in the semantic schema. They specify what Trust Policy must verify before the node enters the semantic pipeline. Example fields:
 
 ```yaml
 Alert.Collision.Warning:
@@ -257,10 +257,10 @@ attestation:
   actor_id: ADAS_v2.3.1
   signature: <JWS over canonical node form>
   timestamp_ms: 1731504920123
-  provenance_chain: [adas → trust_verifier → runtime]
+  provenance_chain: [adas, trust_verifier, runtime]
 ```
 
-The Trust and Provenance Policy verifies that attestation satisfies requirements before the node propagates. Mismatches are not silently rendered; they degrade through a declared `degradation_policy`.
+Trust Policy verifies that attestation satisfies requirements declared in the ontology before the node enters the pipeline. Trust failure is fail-closed: the node is rejected and a `SecurityEvent` is logged; it never reaches the Translation Layer or a renderer. This is distinct from `degradation_policy`, which governs renderer capability fallbacks within SIA — for example, routing to voice when a HUD is unavailable. A safety-critical node may define both: a strict trust requirement that fails closed, and a renderer degradation chain for when trust passes but the preferred output surface is unavailable.
 
 An explicit `actor_class` taxonomy is one practical way to drive policy:
 

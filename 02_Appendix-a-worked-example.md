@@ -50,7 +50,8 @@ accessibility_alt:
   hearing_impaired: [hud, cluster, haptic]
   motor_limited:
     ack_kind: gaze
-regulatory_basis: [UNECE_R79, ISO_15623, NHTSA_FCW_NCAP]
+regulatory_basis: [UNECE_R131, ISO_15623]
+assessment_basis: [NHTSA_FCW_NCAP]
 pii_class: none
 ```
 
@@ -78,10 +79,11 @@ attestation:
   actor_id: ADAS_v2.3.1
   signature: <JWS over canonical form>
   timestamp_ms: 1731504920123
+  nonce: <random-per-emission>
   provenance_chain: [adas]
 ```
 
-The trust and provenance policy checks: signature validity, `actor_class ∈ permitted_actor_classes`, age ≤ `max_age_ms`, replay nonce not seen before, and signed `ontology_version` resolvable. All checks pass; the instance enters the Runtime.
+The trust and provenance policy checks: signature validity, `actor_class ∈ permitted_actor_classes`, age ≤ `max_age_ms`, `nonce` not seen before (replay protection), and signed `ontology_version` resolvable. All checks pass; the instance enters the Runtime.
 
 ---
 
@@ -152,7 +154,9 @@ context:
   market_jurisdiction: UNECE
 ```
 
-The alert is suppressed by an upstream rule: ADAS does not emit `Collision.Warning` while stationary. If emitted anyway (e.g., during diagnostics), Translation Layer renders to IVI only with an inline label "Diagnostic mode — not a real warning". The label is not free-form text generated at runtime; it is a static string bound to a policy rule of the form `context.road_type = stationary ∧ actor_class = adas → inject_override_label: "Diagnostic mode — not a real warning"`. This is policy-encoded behaviour, not designer judgement.
+The alert is suppressed by an upstream rule: ADAS does not emit `Collision.Warning` while stationary. If emitted anyway (e.g., during sensor diagnostics), the Translation Layer renders to IVI only with a static override label "Diagnostic mode — not a real warning", bound to a policy rule of the form `context.road_type = stationary ∧ actor_class = adas → inject_override_label: "Diagnostic mode — not a real warning"`. This is policy-encoded behaviour, not designer judgement.
+
+Note: the preferred design for diagnostic and test emission is a distinct node type — e.g., `Notification.Diagnostic.CollisionSensorTest` — rather than a live `Alert.Collision.Warning` with an injected label. Reusing the safety-critical node in a degraded context conflates two semantically different events and risks training occupants to dismiss genuine alerts. The parked scenario is included here to illustrate Translation Layer override capability; it does not represent recommended practice.
 
 ### A.4.3 Autonomous L4, highway
 
@@ -172,7 +176,7 @@ Translation Layer decision:
 - **Concurrent:** Haptic on seat
 - **Not selected:** HUD (driver not assumed to be looking forward)
 
-The `ack_timeout_ms: 3000` is extended by a context-derived modifier to 6000 ms, reflecting the longer take-over time from non-driving-related task engagement. The modifier is a property of context policy, not the semantic node.
+At L4 autonomy, the ADS handles the collision response autonomously; the occupant alert serves as an awareness notification rather than an emergency response trigger. Accordingly, `ack_kind` shifts from `explicit_input` toward a logged awareness signal, and the `ack_timeout_ms` modifier extends from 3000 ms to 6000 ms to reflect the occupant's disengaged state — after which the interaction is closed as `timeout_logged` rather than `unacknowledged`. The occupant is not expected to prevent the collision; the ADS is. The extended timeout reflects a different semantic for `ack` at this autonomy level, not a relaxed safety response window.
 
 ---
 
@@ -210,7 +214,7 @@ A local LLM agent (`actor_class: agent_local`), having parsed a misleading input
 instance_of: Interaction.Event.Alert.Collision.Warning
 attestation:
   actor_class: agent_local
-  ...
+  # (remaining attestation fields omitted for brevity)
 ```
 
 Trust and provenance policy rejects: `agent_local ∉ permitted_actor_classes`. The agent may emit lower-trust nodes (`Notification.Suggestion.*`), but the integrity of safety-critical alerts is structurally protected from agentic emission, regardless of how the agent was prompted. This complements service-level authentication by constraining what an authenticated actor is authorised to say.
