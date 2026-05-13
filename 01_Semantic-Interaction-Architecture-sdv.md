@@ -79,8 +79,6 @@ The proposed Semantic Interaction Architecture (SIA) sits **above** existing ser
 
 We propose four functional components and two cross-cutting policy functions, illustrated in Figure 2. This is a mediation architecture rather than an interaction operating system: it defines what crosses the boundary and how policy is applied, while leaving renderer implementation and most HMI runtime behavior to existing stacks.
 
-![Figure 2: Mediation architecture](./figures/fig2-six-layer-architecture.svg)
-
 **Ontology Language and Schema Profile.** A stable ontology language defines the long-term vocabulary of interaction meaning, inheritance, metadata contracts, and compatibility rules. The initial standardisation target should be a small typed event/command schema profile for high-value interactions. This keeps the first implementation tractable without sacrificing a scalable naming and evolution model.
 
 **Translation Layer.** A bidirectional adaptor that maps semantic nodes to concrete input and output modalities given a capability set and a context. Its inputs are: the node, available renderers and input devices declaring measurable capabilities, the active context vector, and user accessibility profile. Its output is a candidate modality set and a rendering or input mapping decision.
@@ -93,14 +91,14 @@ graph TB
 
     subgraph STACK [" "]
         R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
-        RT["Interaction Runtime\nFocus · task-flow state · acknowledgement · cross-renderer consistency"]
+        RT["Interaction Coordination Runtime\nFocus · task-flow state · acknowledgement · cross-renderer consistency"]
         T["Translation Layer\nnode × capabilities × context → modality decision"]
-        O["Ontology Layer\nTyped node taxonomy · metadata contracts · versioning\n— single source of meaning —"]
+        O["Ontology Language + Schema Profile\nTyped primitives · metadata contracts · compatibility\n— long-term language of meaning —"]
     end
 
-    CE["Context Engine\nSAE level · Road type\nDriver state · Regulatory regime"]
-    TL["Trust Layer\nReq. vs attestation\nactor_class · freshness\nreplay · provenance"]
-    EXT2(["SDV transport — Kuksa · uProtocol"])
+    CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
+    TL["Trust Policy\nReq. vs attestation\nactor_class · freshness\nreplay · provenance"]
+    EXT2(["SDV transport — Kuksa · uProtocol · service registry"])
 
     EXT1 --> R
     R --> RT
@@ -116,7 +114,7 @@ graph TB
     style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 2. Six-layer architecture. Trust validates all layers; Context Engine modulates Translation; Ontology is the canonical source of meaning.*
+*Figure 2. Mediation architecture. Trust and context are policy functions; ontology language and schema profile define meaning.*
 
 ## 3.1 Human-Ergonomic Language Design
 
