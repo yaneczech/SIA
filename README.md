@@ -40,14 +40,14 @@ A six-layer architecture (Ontology → Translation → Runtime → Renderer, wit
 - [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — six-layer architecture, node taxonomy, metadata contracts, trust model, attention model, context as a multi-axis vector, versioning, relations to existing standards, and a path toward Eclipse SDV standardisation.
 - [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a single `Alert.Collision.Warning` traced end-to-end: ontology declaration, trust verification, translation under three contexts (highway/manual, parked, L4/autonomous), and four adversarial scenarios (spoofed actor class, expired freshness, AI agent attempting a critical alert, priority injection).
 
-## Key figures
+## Key diagrams
 
-| | |
-|---|---|
-| ![Stack position](./figures/fig1-stack-position.svg) | ![Six-layer architecture](./figures/fig2-six-layer-architecture.svg) |
-| *Fig 1 — Where SIA sits in the SDV stack* | *Fig 2 — The six layers and how they interact* |
-| ![Node taxonomy](./figures/fig3-node-taxonomy.svg) | ![Alert flow](./figures/figA1-alert-flow.svg) |
-| *Fig 3 — Four node types and their metadata contracts* | *Fig A.1 — Sequence flow for a collision warning* |
+The diagrams are embedded directly in the paper as Mermaid and render automatically on GitHub:
+
+- **Fig 1** — [Where SIA sits in the SDV stack](./01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-position-in-the-ecosystem)
+- **Fig 2** — [Six-layer architecture](./01_Semantic-Interaction-Architecture-sdv.md#3-architecture-overview)
+- **Fig 3** — [Node taxonomy](./01_Semantic-Interaction-Architecture-sdv.md#4-node-taxonomy)
+- **Fig A.1** — [Alert flow sequence diagram](./02_Appendix-a-worked-example.md#a3-trust-verification-flow)
 
 ## Status and how to engage
 

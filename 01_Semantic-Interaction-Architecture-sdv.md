@@ -47,7 +47,27 @@ Significant abstraction work exists below and around the interaction layer, but 
 
 Figure 1 positions the proposed layer in the SDV stack.
 
-![Figure 1: Position in the SDV stack](./figures/fig1-stack-position.svg)
+```mermaid
+graph TB
+    OCC["Occupant — Driver · Front passenger · Rear passenger"]
+    HMI["Renderers and Input Devices\nHUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel · Gesture · Eye tracking"]
+    SIA["★ Semantic Interaction Architecture\nOntology · Translation · Runtime · Context · Trust"]
+    SVC["Services and Orchestration\nKuksa Databroker · uProtocol · Zenoh · Chariott · Ankaios · Symphony"]
+    DAT["Data Model — COVESA VSS"]
+    MW["Middleware — AUTOSAR Classic · Adaptive · S-CORE"]
+    HW["Hardware — HPC · ECUs · Sensors · Actuators · CAN · Ethernet · SOME/IP"]
+
+    OCC --- HMI
+    HMI --- SIA
+    SIA --- SVC
+    SVC --- DAT
+    DAT --- MW
+    MW --- HW
+
+    style SIA fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
+```
+
+*Figure 1. Position of the proposed Semantic Interaction Architecture relative to existing SDV layers.*
 
 The proposed Semantic Interaction Architecture (SIA) sits **above** existing service and data abstractions and **below** concrete renderers. It is not a replacement for any current SDV project; it is the missing connective tissue between them and the occupant.
 
@@ -57,7 +77,36 @@ The proposed Semantic Interaction Architecture (SIA) sits **above** existing ser
 
 We propose six functional layers, illustrated in Figure 2. Layers are listed below from foundational to occupant-facing; Trust and Context Engine span the stack laterally rather than occupying a single position in the vertical order.
 
-![Figure 2: Six-layer architecture](./figures/fig2-six-layer-architecture.svg)
+```mermaid
+graph TB
+    EXT1(["Occupant input · output"])
+
+    subgraph STACK [" "]
+        R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
+        RT["Interaction Runtime\nFocus · task-flow state · acknowledgement · cross-renderer consistency"]
+        T["Translation Layer\nnode × capabilities × context → modality decision"]
+        O["Ontology Layer\nTyped node taxonomy · metadata contracts · versioning\n— single source of meaning —"]
+    end
+
+    CE["Context Engine\nSAE level · Road type\nDriver state · Regulatory regime"]
+    TL["Trust Layer\nReq. vs attestation\nactor_class · freshness\nreplay · provenance"]
+    EXT2(["SDV transport — Kuksa · uProtocol"])
+
+    EXT1 --> R
+    R --> RT
+    RT --> T
+    T --> O
+    O --> EXT2
+    CE -->|"modulates"| T
+    TL -->|"validates"| R
+    TL -->|"validates"| RT
+    TL -->|"validates"| T
+    TL -->|"validates"| O
+
+    style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
+```
+
+*Figure 2. Six-layer architecture. Trust validates all layers; Context Engine modulates Translation; Ontology is the canonical source of meaning.*
 
 **Ontology Layer.** A typed taxonomy of interaction nodes with formal metadata contracts. The vocabulary is open, hierarchical, and versioned. This is the single source of meaning.
 
@@ -77,7 +126,42 @@ We propose six functional layers, illustrated in Figure 2. Layers are listed bel
 
 A common failure mode in interaction ontologies is conflating semantically different node types into a single schema. We separate four primary node types, each with its own metadata contract.
 
-![Figure 3: Node taxonomy](./figures/fig3-node-taxonomy.svg)
+```mermaid
+graph TB
+    I(["Interaction"])
+
+    A["Action\nuser → system\nattention_metrics · temporal_type · recommended_modality"]
+    E["Event\nsystem → user"]
+    S["State\nruntime-internal\nscope · target_role · consistency_class"]
+    T["Task\ncomposed flow\nstep_count · interruptible_at · resumable_across_contexts"]
+
+    AL["Alert\ntrust_requirements · priority · requires_ack"]
+    N["Notification\nsuppression_class · priority · merges_with"]
+
+    AL1["Alert.Collision.Warning"]
+    AL2["Alert.Lane.Departure"]
+    N1["Notification.Message.Incoming"]
+    N2["Notification.Media.TrackChange"]
+    A1["Navigate.Back"]
+    A2["Media.Volume.Increase"]
+    A3["Map.Zoom"]
+    S1["State.Focus.Domain"]
+    S2["State.Mode.AutonomyEngaged"]
+    T1["Task.Media.Browse"]
+    T2["Task.Route.PlanWithStops"]
+
+    I --> A & E & S & T
+    E --> AL & N
+    AL --> AL1 & AL2
+    N --> N1 & N2
+    A --> A1 & A2 & A3
+    S --> S1 & S2
+    T --> T1 & T2
+
+    style I fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
+```
+
+*Figure 3. Node taxonomy. Four primary types with distinct metadata contracts; Event splits into Alert and Notification. Naming follows reverse-DNS hierarchy; subclasses may strengthen but not weaken contracts.*
 
 **Action.** Occupant-initiated. May be discrete (`Navigate.Back`), sustained (`Media.Volume.Increase`), or continuous (`Map.Zoom`). Carries `recommended_modality`, `attention_metrics`, `temporal_type`.
 
