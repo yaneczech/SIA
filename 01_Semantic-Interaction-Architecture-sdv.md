@@ -55,7 +55,7 @@ The proposed Semantic Interaction Architecture (SIA) sits **above** existing ser
 
 ## 3. Architecture Overview
 
-We propose six functional layers, illustrated in Figure 2.
+We propose six functional layers, illustrated in Figure 2. Layers are listed below from foundational to occupant-facing; Trust and Context Engine span the stack laterally rather than occupying a single position in the vertical order.
 
 ![Figure 2: Six-layer architecture](./figures/fig2-six-layer-architecture.svg)
 
@@ -200,7 +200,7 @@ effective_cost(node, context) =
         f(autonomy_level, road_type, traffic_density, driver_state)
 ```
 
-Renderers and Runtime can then apply explicit budgets (*"maximum 2000 ms TEORT during manual highway driving"*) and reject, defer, or transform interactions that exceed them. This makes regulatory compliance an observable property of the system rather than a designer's responsibility.
+Renderers and Runtime can then apply explicit budgets (*"maximum 2000 ms total eyes-off-road time (TEORT) during manual highway driving"*) and reject, defer, or transform interactions that exceed them. This makes regulatory compliance an observable property of the system rather than a designer's responsibility.
 
 ---
 
@@ -330,4 +330,4 @@ A worked example tracing one `Alert.Collision.Warning` end-to-end is provided as
 
 ---
 
-*Comments, corrections, and counter-positions are explicitly invited via repository issues, pull requests, or <dizencz@gmail.com>.*
+*Comments, corrections, and counter-positions are explicitly invited. Contact: dizencz@gmail.com*
