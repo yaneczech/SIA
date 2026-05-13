@@ -6,7 +6,7 @@
 
 This repository contains a position paper proposing exactly that: a semantic interaction layer for Software-Defined Vehicles that separates *what an interaction means* from *how it is rendered*.
 
----
+This repository contains a draft position paper proposing a semantic mediation layer for high-value interactions in software-defined vehicles. SIA decouples the meaning, trust requirements, attention demand, and context fitness of in-vehicle interactions from concrete screens, widgets, input devices, and renderers.
 
 ## The problem
 

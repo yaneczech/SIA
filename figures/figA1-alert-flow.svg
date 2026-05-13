@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 540" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 540" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Alert.Collision.Warning trust and translation flow</title>
+  <desc id="desc">Sequence diagram showing ADAS emission, trust and provenance verification, Translation, Runtime acknowledgement handling, and renderer dispatch for a collision warning alert.</desc>
   <style>
     .lane-label { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
     .lane-sub { font-size: 9.5px; fill: #525252; font-style: italic; }
@@ -35,7 +37,7 @@
   <text x="75" y="50" text-anchor="middle" class="lane-sub">emitter</text>
 
   <rect x="150" y="20" width="110" height="34" fill="#f0fdfa" stroke="#0f766e" stroke-width="1.3" rx="3"/>
-  <text x="205" y="38" text-anchor="middle" class="lane-label">Trust Layer</text>
+  <text x="205" y="38" text-anchor="middle" class="lane-label">Trust Policy</text>
   <text x="205" y="50" text-anchor="middle" class="lane-sub">verifier</text>
 
   <rect x="280" y="20" width="110" height="34" fill="#fafafa" stroke="#1a1a1a" stroke-width="1.2" rx="3"/>

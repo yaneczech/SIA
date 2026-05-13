@@ -48,7 +48,8 @@ target_role: driver
 accessibility_alt:
   low_vision: [voice, haptic]
   hearing_impaired: [hud, cluster, haptic]
-  motor_limited: ack_kind: gaze
+  motor_limited:
+    ack_kind: gaze
 regulatory_basis: [UNECE_R79, ISO_15623, NHTSA_FCW_NCAP]
 pii_class: none
 ```
@@ -59,7 +60,7 @@ Several properties are worth noting. `priority: 95` places this alert above almo
 
 ## A.2 Runtime instance — legitimate emission
 
-At runtime, the ADAS subsystem emits an instance carrying its attestation. The Trust Layer verifies the attestation against the ontology declaration before propagation.
+At runtime, the ADAS subsystem emits an instance carrying its attestation. Trust and provenance policy verifies the attestation against the semantic declaration before propagation.
 
 ```yaml
 instance_of: Interaction.Event.Alert.Collision.Warning
@@ -80,7 +81,7 @@ attestation:
   provenance_chain: [adas]
 ```
 
-The Trust Layer checks: signature validity, `actor_class ∈ permitted_actor_classes`, age ≤ `max_age_ms`, replay nonce not seen before, and signed `ontology_version` resolvable. All checks pass; the instance enters the Runtime.
+The trust and provenance policy checks: signature validity, `actor_class ∈ permitted_actor_classes`, age ≤ `max_age_ms`, replay nonce not seen before, and signed `ontology_version` resolvable. All checks pass; the instance enters the Runtime.
 
 ---
 
@@ -88,7 +89,7 @@ The Trust Layer checks: signature validity, `actor_class ∈ permitted_actor_cla
 
 ![Figure A.1: Alert flow end-to-end](./figures/figA1-alert-flow.svg)
 
-The Trust Layer is the single chokepoint at which interaction integrity is enforced. Importantly, it operates *before* Translation — a node that fails verification never reaches a renderer, regardless of its declared priority.
+Trust and provenance policy is the chokepoint at which interaction integrity is enforced. Importantly, verification operates *before* Translation — a node that fails verification never reaches a renderer, regardless of its declared priority.
 
 ---
 
@@ -106,10 +107,11 @@ context:
   weather: clear
   autonomy_engaged: false
   driver_state: attentive
-  regulatory_regime: UNECE
+  market_jurisdiction: UNECE
 ```
 
 Translation Layer decision:
+
 - **Primary:** HUD (glance-optimised, in driver's forward field of view, ≤ `glance_time_estimated_ms`)
 - **Concurrent:** Cluster (redundant visual), Haptic on driver seat (sub-second TTI)
 - **Concurrent:** Voice short prompt (250 ms)
@@ -126,7 +128,7 @@ context:
   traffic_density: none
   autonomy_engaged: false
   driver_state: unknown
-  regulatory_regime: UNECE
+  market_jurisdiction: UNECE
 ```
 
 The alert is suppressed by an upstream rule: ADAS does not emit `Collision.Warning` while stationary. If emitted anyway (e.g., during diagnostics), Translation Layer renders to IVI only with an inline label "Diagnostic mode — not a real warning". The label is not free-form text generated at runtime; it is a static string bound to a policy rule of the form `context.road_type = stationary ∧ actor_class = adas → inject_override_label: "Diagnostic mode — not a real warning"`. This is policy-encoded behaviour, not designer judgement.
@@ -139,16 +141,17 @@ context:
   road_type: highway
   autonomy_engaged: true
   driver_state: not_monitoring
-  regulatory_regime: UNECE
+  market_jurisdiction: UNECE
 ```
 
 Translation Layer decision:
+
 - **Primary:** Cluster (driver may be looking away; sustained display)
 - **Concurrent:** Voice prompt full sentence (driver context recovery)
 - **Concurrent:** Haptic on seat
 - **Not selected:** HUD (driver not assumed to be looking forward)
 
-The `ack_timeout_ms: 3000` is extended by a context-derived modifier to 6000 ms, reflecting the longer take-over time from non-driving-related task engagement. The modifier is a property of the Context Engine policy, not the ontology node.
+The `ack_timeout_ms: 3000` is extended by a context-derived modifier to 6000 ms, reflecting the longer take-over time from non-driving-related task engagement. The modifier is a property of context policy, not the semantic node.
 
 ---
 
@@ -165,18 +168,18 @@ attestation:
   signature: <valid app-store signature>
 ```
 
-The Trust Layer rejects the instance: `third_party_app ∉ permitted_actor_classes`. The message does not propagate. A `State.SecurityEvent.UnauthorisedEmission` is generated for logging.
+Trust and provenance policy rejects the instance: `third_party_app ∉ permitted_actor_classes`. The message does not propagate. A `State.SecurityEvent.UnauthorisedEmission` is generated for logging.
 
 ### A.5.2 Expired freshness
 
-A replay of a 1-second-old legitimate instance arrives at the Trust Layer.
+A replay of a 1-second-old legitimate instance arrives for verification.
 
 ```yaml
 attestation.timestamp_ms: 1731504919023
 current_time_ms:           1731504920123  # 1100 ms later
 ```
 
-Trust Layer rejects: age `1100 ms > max_age_ms (200)`. The instance does not propagate. This protects against captured-and-replayed warnings designed to desensitise the driver.
+Trust and provenance policy rejects: age `1100 ms > max_age_ms (200)`. The instance does not propagate. This protects against captured-and-replayed warnings designed to desensitise the driver.
 
 ### A.5.3 AI agent attempting to issue critical alert
 
@@ -189,19 +192,19 @@ attestation:
   ...
 ```
 
-Trust Layer rejects: `agent_local ∉ permitted_actor_classes`. The agent may emit lower-trust nodes (`Notification.Suggestion.*`), but the integrity of safety-critical alerts is structurally protected from agentic emission, regardless of how the agent was prompted. This is the property that current SDV trust models — concerned with service-level authentication — do not provide.
+Trust and provenance policy rejects: `agent_local ∉ permitted_actor_classes`. The agent may emit lower-trust nodes (`Notification.Suggestion.*`), but the integrity of safety-critical alerts is structurally protected from agentic emission, regardless of how the agent was prompted. This complements service-level authentication by constraining what an authenticated actor is authorised to say.
 
 ### A.5.4 Priority injection
 
-An adversary attempts to emit a benign notification with elevated `priority: 99` to displace a real alert. Because `priority` is a property of the ontology node, not the instance, the runtime `priority` is recomputed from the ontology declaration and the spoofed value is discarded.
+An adversary attempts to emit a benign notification with elevated `priority: 99` to displace a real alert. Because `priority` is a property of the semantic node declaration, not the instance, the runtime `priority` is recomputed from the declaration and the spoofed value is discarded.
 
 ---
 
 ## A.6 What this example demonstrates
 
 1. **A single declarative node** governs behaviour across heterogeneous renderers, contexts, and accessibility profiles, without per-vehicle, per-screen redesign.
-2. **Attention is auditable.** A regulator can verify, mechanically, that the alert's effective cost in any declared context is below the applicable threshold.
-3. **Trust is enforced at a chokepoint** before rendering, and the policy is expressed in the ontology rather than embedded in renderer code.
+2. **Attention checks are more auditable.** A regulator or safety team can inspect the declared attention-demand proxies and verify that policy decisions are traceable to explicit thresholds.
+3. **Trust is enforced at a chokepoint** before rendering, and the policy is expressed in the semantic schema rather than embedded in renderer code.
 4. **AI agents are not categorically blocked from interaction**, but they cannot impersonate safety-critical subsystems. This is a different and stronger property than service-level authentication: it constrains *what kinds of things an authenticated agent may say*, not merely *whether it may speak*.
 5. **Adversarial cases reduce to schema checks.** Spoofing, replay, and priority injection are caught by mechanical validation of declared contracts rather than ad-hoc detection.
 
@@ -210,7 +213,7 @@ An adversary attempts to emit a benign notification with elevated `priority: 99`
 ## A.7 Open issues raised by this example
 
 - The numerical priority scale (0–100) is convenient but arbitrary. Comparative semantics across OEMs require either a shared scale or per-vehicle calibration policy.
-- `context.attention_modifier` is presented as a scalar in the formula `effective_cost = base × modifier`. In practice it is likely a function of multiple context axes; the composition law deserves empirical validation.
+- `context.attention_modifier` is presented as a scalar in the formula `effective_cost = base × modifier`. In practice it is likely a function of multiple context axes; any composition rule deserves empirical validation.
 - `ack_kind: explicit_input | gaze` mixes a deterministic input with a probabilistic inference (gaze detection has error rates). The ontology may need to distinguish certified from inferred acknowledgement.
 - `provenance_chain` in this example contains a single hop. In realistic agentic deployments the chain may be multi-hop (`sensor → adas → trust_verifier → runtime`), and the semantics of chain-level trust composition are not yet specified.
 
