@@ -87,7 +87,28 @@ The trust and provenance policy checks: signature validity, `actor_class ∈ per
 
 ## A.3 Trust verification flow
 
-![Figure A.1: Alert flow end-to-end](./figures/figA1-alert-flow.svg)
+```mermaid
+sequenceDiagram
+    participant ADAS as ADAS (emitter)
+    participant Trust as Trust Layer (verifier)
+    participant Trans as Translation + Context
+    participant Runtime as Runtime (state · focus · ack)
+    participant Renderers as Renderers (HUD · Cluster · Voice · Haptic)
+
+    ADAS->>Trust: emit instance + attestation
+
+    alt trust verification fails
+        Trust-->>ADAS: reject + log State.SecurityEvent.UnauthorisedEmission
+    else trust verification passes
+        Trust->>Trans: verified node propagates
+        Trans->>Runtime: allocate focus slot · arm ack timer
+        Runtime->>Renderers: dispatch (multicast)
+        Renderers->>Runtime: ack (explicit input | gaze | timeout)
+        Runtime->>Trust: close interaction · log outcome
+    end
+```
+
+*Figure A.1. Sequence flow for Alert.Collision.Warning. Trust verification is a chokepoint before Translation. Renderer dispatch is multicast; acknowledgement is tracked by Runtime.*
 
 Trust and provenance policy is the chokepoint at which interaction integrity is enforced. Importantly, verification operates *before* Translation — a node that fails verification never reaches a renderer, regardless of its declared priority.
 
