@@ -5,7 +5,7 @@
 ---
 
 **Author:** Jan Janeček
-**Affiliation:** Independent researcher
+**Affiliation:** Cars Making Sense
 **Version:** 0.1 — Draft for circulation
 **Date:** May 2026
 
@@ -103,7 +103,7 @@ A common failure mode in interaction schemas is conflating semantically differen
 
 ![Figure 3: Node taxonomy](./figures/fig3-node-taxonomy.svg)
 
-**Action.** An intended command or operation. Many actions are occupant-initiated (`Navigate.Back`), but some are gesture-neutral commands or system-mediated intents. Actions may be discrete (`Navigate.Back`), sustained (`Media.Volume.Increase`), or continuous (`Map.Zoom`). Carries `recommended_modality`, `attention_cost`, `temporal_type`.
+**Action.** Occupant-initiated. May be discrete (`Navigate.Back`), sustained (`Media.Volume.Increase`), or continuous (`Map.Zoom`). Carries `recommended_modality`, `attention_metrics`, `temporal_type`.
 
 **Event.** System-initiated. Splits into **Alert** (safety-relevant, may require acknowledgement) and **Notification** (informational, suppressible). Carries `priority`, `interruptibility`, `requires_ack`, `trust_requirements`.
 
