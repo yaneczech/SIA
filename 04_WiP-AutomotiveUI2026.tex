@@ -1,0 +1,454 @@
+%% AutomotiveUI 2026 — Work-in-Progress submission
+%% ACM Primary Article Template, single-column (manuscript mode)
+%% Anonymised for double-blind review
+
+\documentclass[manuscript,screen,review,anonymous]{acmart}
+
+%% Suppress ACM copyright / rights block for review copy
+\setcopyright{none}
+\acmConference[AutomotiveUI '26]{ACM International Conference on Automotive User Interfaces and Interactive Vehicular Applications}{September 2026}{TBD}
+
+%% ---------------------------------------------------------------
+%% Packages
+%% ---------------------------------------------------------------
+\usepackage{booktabs}   % professional table rules
+\usepackage{listings}   % code/YAML listings
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!40},
+  backgroundcolor=\color{gray!5},
+  xleftmargin=6pt,
+  xrightmargin=6pt,
+}
+
+%% ---------------------------------------------------------------
+%% Metadata
+%% ---------------------------------------------------------------
+\title{Toward a Semantic Mediation Layer for In-Vehicle Interaction}
+\subtitle{Work-in-Progress — AutomotiveUI 2026}
+
+%% Authors suppressed for anonymous review
+\author{Anonymous Author(s)}
+\affiliation{\institution{Anonymous Institution}}
+\email{anonymous@example.com}
+
+\begin{abstract}
+Software-defined vehicles are accumulating interaction surfaces faster than
+the abstractions needed to manage them. Head-up displays, instrument clusters,
+infotainment touchscreens, voice assistants, and on-device AI agents each
+demand separate, screen-first implementations of the same occupant-facing
+intent. This paper argues for a \emph{semantic mediation layer} --- positioned
+above existing SDV service and data abstractions and below concrete renderers
+--- that would reduce rework cost, enable cross-renderer consistency, and
+introduce machine-checkable attention and trust guarantees into the in-vehicle
+interaction stack. We describe a typed node taxonomy (Actions, Events, States,
+Tasks), a declarative metadata contract encoding predicted attention demand and
+trust provenance on every interaction node, and a policy architecture for
+context-driven renderer selection. A worked example traces a safety-critical
+alert through trust verification, context-aware translation, and adversarial
+rejection. We identify implications for the AutomotiveUI research agenda and
+open questions for standardisation.
+\end{abstract}
+
+\keywords{software-defined vehicle, semantic interaction, HMI architecture,
+  trust policy, attention model, multimodal rendering, in-vehicle agents}
+
+\begin{document}
+\maketitle
+
+%% ---------------------------------------------------------------
+\section{Introduction}
+%% ---------------------------------------------------------------
+
+The software-defined vehicle is conventionally defined at the infrastructure
+level: compute topology, OTA updates, service-oriented architecture. From the
+occupant's perspective, however, the SDV manifests almost entirely through
+interaction --- head-up displays, voice assistants, haptic feedback, and
+increasingly AI agents acting on the occupant's behalf. The interaction layer
+is where the value of the SDV becomes perceptible, where regulatory exposure
+concentrates, and where the marginal cost of change is highest.
+
+Current HMI stacks are screen-first. A graphical layout binds a fixed widget
+to a fixed input device; voice and haptic modalities are added as alternatives
+after the fact. When a new surface arrives --- or an AI agent needs to emit an
+interaction --- the logic must be rewritten. Engineering cost rises with each
+new screen size or modality. User experience cost rises as the same intent
+(\emph{acknowledge an alert}, \emph{increase volume}, \emph{navigate back})
+acquires inconsistent behaviour across vehicles, generations, and contexts.
+Security cost rises as AI agents and third-party applications gain the ability
+to emit interactions that are indistinguishable, from the occupant's
+standpoint, from safety-critical subsystems.
+
+We argue these costs are symptoms of a missing mediation boundary --- not a
+tooling deficit or a renderer deficit, but a missing layer of abstraction. We
+propose a \emph{Semantic Interaction Architecture} (SIA): a vendor-neutral
+layer in which selected in-vehicle interactions are described by their meaning,
+attention demand, contextual fitness, and authority of origin, rather than by
+buttons, screens, or widgets.
+
+The first version of such a layer should be deliberately narrow. We scope the
+proposal to three cores: \emph{intent/action abstraction} for high-value
+commands and events, \emph{attention policy} for priority, interruptibility,
+and driving context, and \emph{trust provenance} for determining which actors
+may emit which interaction types with which authority.
+
+%% ---------------------------------------------------------------
+\section{Related Work}
+%% ---------------------------------------------------------------
+
+\paragraph{SDV data and service layers.}
+COVESA VSS defines a vendor-neutral catalogue of vehicle signals~\cite{covesa}.
+Eclipse Kuksa, uProtocol, and Chariott abstract data brokering, messaging, and
+service discovery~\cite{eclipsesdv}. None of these projects model what an
+interaction \emph{means to the occupant}; they model how services and signals
+communicate.
+
+\paragraph{HMI frameworks.}
+Android Automotive's Car App Library is the closest production-grade analogue
+to a semantic interaction model: applications declare templates and a host
+renders them with built-in distraction optimisation~\cite{google-aaos}. Its
+scope is bounded to supported app categories within a single-OEM ecosystem.
+Qt Automotive and Kanzi offer renderer-side abstractions without cross-renderer
+interaction semantics.
+
+\paragraph{Multimodal interaction.}
+The W3C MMI Recommendation and EMMA annotation format define a generic semantic
+model for multimodal input~\cite{w3c-mmi,w3c-emma}. Automotive uptake has been
+limited; the vocabulary remains a candidate substrate for the input side of
+SIA.
+
+\paragraph{Adjacent domains.}
+Unreal's Enhanced Input and Unity's Input System abstract actions from devices
+in game engines. ARIA performs an analogous role for web accessibility. These
+precedents demonstrate tractability; they have not been adapted to automotive
+constraints (ASIL, regulated distraction limits, multi-renderer safety
+requirements, 15-year vehicle lifecycles).
+
+SIA occupies the gap above SDV service abstractions and below concrete
+renderers --- the missing connective tissue that none of the above projects
+addresses.
+
+%% ---------------------------------------------------------------
+\section{Mediation Architecture}
+%% ---------------------------------------------------------------
+
+We propose a mediation architecture of four functional components and two
+cross-cutting policy functions. This is not a complete HMI platform; it defines
+what crosses the semantic boundary and how policy is applied, leaving renderer
+implementation and GUI framework behaviour to existing stacks.
+
+\begin{figure}[h]
+  \centering
+  % Placeholder: export figures/fig2-mediation-architecture.pdf from the
+  % Mermaid source in 01_Semantic-Interaction-Architecture-sdv.md (Fig 2)
+  % and uncomment: \includegraphics[width=\columnwidth]{figures/fig2-mediation-architecture}
+  \fbox{\parbox{0.92\columnwidth}{\centering\vspace{2em}
+    \textit{[Figure 1: Mediation architecture — Ontology Language + Schema Profile
+    / Translation Layer / Interaction Coordination Runtime / Renderer Layer,
+    with Trust Policy and Context Policy as cross-cutting functions.
+    Insert PDF export of Mermaid diagram here.]}
+  \vspace{2em}}}
+  \caption{Mediation architecture. Trust and Context are cross-cutting policy
+    functions; the Ontology Language is the canonical source of meaning.}
+  \label{fig:architecture}
+\end{figure}
+
+\paragraph{Ontology Language and Schema Profile.}
+A stable language defines the long-term vocabulary of interaction meaning,
+inheritance, metadata contracts, and compatibility rules. The first
+standardisation target is a small typed event/command schema profile for
+high-value interactions --- tractable to implement without locking in a deep
+class hierarchy.
+
+\paragraph{Translation Layer.}
+A bidirectional adaptor that maps semantic nodes to concrete modalities given a
+capability set and context. Inputs: the node, declared renderer capabilities,
+the active context vector, and user accessibility profile. Output: a candidate
+modality set and rendering or input mapping decision.
+
+\paragraph{Interaction Coordination Runtime.}
+A coordination function for focus, in-flight task flows, acknowledgement
+timers, and consistency across distributed renderers. It does not replace a GUI
+framework; it coordinates semantic state that multiple renderers must share.
+
+\paragraph{Renderer Layer.}
+The set of concrete output and input surfaces --- HUD, cluster, IVI
+touchscreen, voice, haptic, AR, steering wheel controls --- that consume the
+semantic stream. Each renderer declares measurable capabilities; the
+Translation Layer selects among them. Renderers are interchangeable; the
+ontology is not.
+
+\paragraph{Trust and Context Policy.}
+Trust Policy verifies message origin, freshness, and authority before semantic
+propagation. Context Policy supplies a continuously updated vector of driving
+context that modulates priority, modality preference, and suppression rules.
+
+%% ---------------------------------------------------------------
+\section{Node Taxonomy and Metadata Contracts}
+%% ---------------------------------------------------------------
+
+A common failure mode in interaction schemas is conflating semantically
+different node types into a single generic message model. SIA separates four
+primary semantic primitives, each with its own metadata contract.
+
+\begin{figure}[h]
+  \centering
+  \fbox{\parbox{0.92\columnwidth}{\centering\vspace{2em}
+    \textit{[Figure 2: Node taxonomy — Interaction splits into Action, Event,
+    State, Task; Event splits into Alert and Notification.
+    Insert PDF export of Mermaid diagram here.]}
+  \vspace{2em}}}
+  \caption{Four primary node types; Event splits into Alert and Notification.}
+  \label{fig:taxonomy}
+\end{figure}
+
+\paragraph{Action} --- occupant-initiated; discrete, sustained, or continuous.
+Carries \texttt{attention\_metrics}, \texttt{temporal\_type},
+\texttt{recommended\_modality}.
+
+\paragraph{Event} --- system-initiated; splits into \textbf{Alert}
+(safety-relevant, may require acknowledgement) and \textbf{Notification}
+(informational, suppressible). Alerts carry \texttt{priority},
+\texttt{requires\_ack}, \texttt{trust\_requirements}.
+
+\paragraph{State} --- focus, mode, and context transitions consumed by the
+coordination runtime. Carries \texttt{scope}, \texttt{target\_role},
+\texttt{consistency\_class}.
+
+\paragraph{Task} --- a composed multi-step flow over Actions and States with
+resumption semantics. Carries \texttt{step\_count},
+\texttt{interruptible\_at}, \texttt{resumable\_across\_contexts}.
+
+Every node carries two categories of metadata fields: \emph{declarative}
+fields defined in the ontology and stable across deployments (e.g.,
+\texttt{attention\_metrics}, \texttt{trust\_requirements},
+\texttt{fallback\_chain}), and \emph{runtime} fields filled by the emitter at
+the moment of emission (e.g., attestation, instance payload).
+Table~\ref{tab:contracts} summarises mandatory, optional, and not-applicable
+fields for each type.
+
+\begin{table}[h]
+  \caption{Partial metadata contract by node type. Full contract in accompanying
+    technical report.}
+  \label{tab:contracts}
+  \begin{tabular}{lccccc}
+    \toprule
+    Field & Action & Alert & Notif. & State & Task \\
+    \midrule
+    \texttt{since\_version}      & \textbullet & \textbullet & \textbullet & \textbullet & \textbullet \\
+    \texttt{attention\_metrics}  & \textbullet & \textbullet & \textbullet & ---         & \textbullet \\
+    \texttt{priority}            & ---         & \textbullet & \textbullet & ---         & ---         \\
+    \texttt{requires\_ack}       & ---         & \textbullet & $\circ$     & ---         & ---         \\
+    \texttt{trust\_requirements} & $\circ$     & \textbullet & $\circ$     & $\circ$     & $\circ$     \\
+    \texttt{suppression\_class}  & ---         & \textbullet & \textbullet & ---         & ---         \\
+    \texttt{fallback\_chain}     & \textbullet & \textbullet & \textbullet & ---         & \textbullet \\
+    \texttt{degradation\_policy} & \textbullet & \textbullet & \textbullet & ---         & \textbullet \\
+    \bottomrule
+    \multicolumn{6}{l}{\small \textbullet\ mandatory \quad $\circ$\ optional \quad ---\ not applicable}
+  \end{tabular}
+\end{table}
+
+%% ---------------------------------------------------------------
+\section{Trust and Attention Policy}
+%% ---------------------------------------------------------------
+
+\subsection{Trust}
+
+Current SDV cybersecurity practice --- ISO/SAE 21434, UNECE R155 --- addresses
+firmware integrity, ECU authentication, and transport security. These are
+necessary but insufficient: they do not constrain what an authenticated actor
+is \emph{authorised to say} at the interaction level. An attacker who cannot
+compromise the brakes can still suppress a collision warning, inject a fake
+alert, or elevate the priority of a benign notification to displace a critical
+one.
+
+SIA separates trust into two artefacts. \emph{Trust requirements} are declared
+on the node in the ontology --- what consumers must verify before propagating
+or rendering. \emph{Trust attestation} is attached to the instance by the
+emitter --- cryptographic and provenance evidence that requirements are met.
+The Trust Policy verifies attestation satisfies requirements before the node
+propagates; mismatches degrade through a declared \texttt{degradation\_policy}.
+
+An \texttt{actor\_class} taxonomy drives policy mechanically: \texttt{adas} and
+\texttt{vsc} may emit safety-critical alerts; \texttt{agent\_local} and
+\texttt{agent\_cloud} may not --- regardless of how the agent was prompted.
+This is a structurally stronger property than service-level authentication: it
+constrains what \emph{kinds of things} an authenticated actor may say, not
+merely whether it may speak.
+
+\subsection{Attention}
+
+Contemporary HMI guidelines (NHTSA, ISO 15005~\cite{iso15005}, JAMA) prescribe
+measurable thresholds --- total eyes-off-road time (TEORT), single glance
+duration, task step count. Most software-side frameworks operate on qualitative
+tags (\texttt{distraction-optimised: true/false}) not directly auditable
+against those thresholds.
+
+SIA attaches predicted attention-demand proxies to every interaction-bearing
+node:
+
+\begin{lstlisting}[language={}]
+attention_metrics:
+  glance_time_estimated_ms: 1500
+  mean_single_glance_ms: 400
+  task_steps: 3
+  voice_alt_available: true
+  cognitive_load: moderate
+\end{lstlisting}
+
+The Translation Layer composes node metrics with a context modifier from
+Context Policy:
+\[
+  \text{effective\_cost} = \text{base\_metric} \times \text{context\_modifier}
+\]
+This enables explicit budget checks (\emph{``maximum 2000~ms TEORT during
+manual highway driving''}) and mechanical policy decisions to reject, defer, or
+transform interactions that exceed them.
+
+%% ---------------------------------------------------------------
+\section{Worked Example: Alert.Collision.Warning}
+%% ---------------------------------------------------------------
+
+We trace a single safety-critical alert end-to-end to make the contracts
+concrete.
+
+\paragraph{Ontology declaration (abbreviated):}
+
+\begin{lstlisting}[language={}]
+node: Interaction.Event.Alert.Collision.Warning
+priority: 95
+requires_ack: true
+ack_authority: driver_only
+trust_requirements:
+  permitted_actor_classes: [adas, vsc]
+  max_age_ms: 200
+  replay_protection: required
+attention_metrics:
+  glance_time_estimated_ms: 600
+suppression_class: safety_critical
+fallback_chain: [hud, cluster, voice, haptic]
+\end{lstlisting}
+
+\paragraph{Trust verification:}
+
+\begin{figure}[h]
+  \centering
+  \fbox{\parbox{0.92\columnwidth}{\centering\vspace{2em}
+    \textit{[Figure 3: Sequence diagram — ADAS emits instance + attestation to
+    Trust Policy; on failure: reject + log SecurityEvent; on success: verified
+    node propagates to Translation, Runtime, Renderers; ack closes loop.
+    Insert PDF export of Mermaid sequenceDiagram here.]}
+  \vspace{2em}}}
+  \caption{Sequence flow. Trust Policy is a chokepoint before Translation.}
+  \label{fig:sequence}
+\end{figure}
+
+\paragraph{Context-dependent translation.}
+Under manual highway driving (\texttt{sae\_level: 1}, \texttt{traffic\_density:
+dense}), the Translation Layer selects HUD as primary with concurrent cluster
+and haptic, and rejects the IVI touchscreen (off-axis; exceeds attention budget
+under dense-traffic context modifier). Under L4 autonomous driving
+(\texttt{driver\_state: not\_monitoring}), HUD is de-prioritised in favour of
+cluster and full-sentence voice prompt; \texttt{ack\_timeout\_ms} extends from
+3000~ms to 6000~ms via context modifier.
+
+\paragraph{Adversarial rejection.}
+A third-party application claiming \texttt{Alert.Collision.Warning} is rejected
+because \texttt{third\_party\_app} $\notin$ \texttt{permitted\_actor\_classes}.
+A replay of a 1100~ms-old instance is rejected because age exceeds
+\texttt{max\_age\_ms: 200}. A local LLM agent is rejected for the same class
+reason. Priority injection --- an adversary emitting a notification with
+\texttt{priority: 99} --- is defeated because priority is a property of the
+ontology declaration, not the instance.
+
+%% ---------------------------------------------------------------
+\section{Implications for AutomotiveUI Research}
+%% ---------------------------------------------------------------
+
+SIA introduces a semantic vocabulary and a set of machine-readable contracts
+that open several research directions directly relevant to the AutomotiveUI
+community.
+
+\paragraph{Attention as a first-class research variable.}
+The \texttt{attention\_metrics} contract makes declared attention cost
+comparable across HMI designs, OEMs, and evaluation studies --- without
+requiring every comparison to be grounded in a new user study. Researchers
+could evaluate whether declared proxies predict empirical TEORT~\cite{ebel2021},
+and how context modifiers should be calibrated. This creates a feedback loop
+between user studies and the ontology itself.
+
+\paragraph{Cross-renderer semantic equivalence.}
+By expressing the same interaction node across modalities (visual, voice,
+haptic), SIA enables controlled studies of cross-modal equivalence --- does
+\texttt{Alert.Collision.Warning} delivered via voice versus HUD produce
+equivalent driver response? Currently such comparisons are confounded by
+differing implementations; a shared semantic node removes that confound.
+
+\paragraph{Trust and agency in AI-augmented vehicles.}
+The \texttt{actor\_class} taxonomy provides a vocabulary for the growing
+AutomotiveUI literature on in-vehicle agents~\cite{demir2024,gomaa2022}.
+Empirical work on driver trust calibration, appropriate reliance, and agent
+transparency can be grounded in the structural distinction between
+\texttt{agent\_local}, \texttt{agent\_cloud}, \texttt{adas}, and
+\texttt{human\_direct} --- classes that carry different implied authority and
+verifiability.
+
+\paragraph{Context-adaptive interaction design.}
+The multi-axis context vector (\texttt{sae\_level}, \texttt{driver\_state},
+\texttt{road\_type}, \texttt{market\_jurisdiction}) formalises the context
+space that AutomotiveUI researchers use informally. Experiments can be designed
+against explicit context predicates rather than bespoke scenario definitions,
+improving replicability.
+
+\paragraph{Standardisation input.}
+AutomotiveUI researchers regularly engage with industry and standards bodies.
+Empirical validation of the attention metric composition formula, the priority
+scale, and the \texttt{ack\_kind} distinction (certified versus inferred
+acknowledgement) are directly actionable contributions to a future
+standardisation process.
+
+%% ---------------------------------------------------------------
+\section{Open Questions}
+%% ---------------------------------------------------------------
+
+This work is scoped to a position paper; we identify the following near-term
+research and specification questions.
+
+\begin{enumerate}
+  \item \emph{Schema formalism.} JSON Schema, OWL/SHACL, or a VSS-style custom
+    format generating to JSON Schema. The choice has long-term tooling and
+    adoption consequences.
+
+  \item \emph{Empirical validation of attention metric composition.} The
+    $\text{effective\_cost} = \text{base} \times \text{context\_modifier}$
+    formula requires user study evidence. The composition law is likely not
+    scalar.
+
+  \item \emph{Certified versus inferred acknowledgement.}
+    \texttt{ack\_kind: gaze} mixes deterministic input with probabilistic
+    inference; the ontology may need to distinguish certified from inferred
+    acknowledgement, with different safety implications.
+
+  \item \emph{Multi-hop trust provenance.} In agentic deployments, the
+    provenance chain may have multiple hops (\texttt{sensor} $\to$
+    \texttt{adas} $\to$ \texttt{trust\_verifier} $\to$ \texttt{runtime});
+    chain-level trust composition is not yet specified.
+
+  \item \emph{Reference implementation.} A prototype integrated with Eclipse
+    Kuksa or uProtocol~\cite{eclipsesdv} would provide concrete grounding for
+    further specification work and community evaluation.
+\end{enumerate}
+
+%% ---------------------------------------------------------------
+%% References
+%% ---------------------------------------------------------------
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{04_WiP-references}
+
+\end{document}
