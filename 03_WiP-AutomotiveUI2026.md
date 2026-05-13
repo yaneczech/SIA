@@ -234,7 +234,13 @@ This work is scoped to a position paper; we identify the following near-term res
 2. *Empirical validation of attention metric composition.* The `effective_cost = base × context_modifier` formula requires user study evidence. The composition law is likely not scalar.
 3. *Certified versus inferred acknowledgement.* `ack_kind: gaze` mixes deterministic input with probabilistic inference; the ontology may need to distinguish certified from inferred acknowledgement, with different safety implications.
 4. *Multi-hop trust provenance.* In agentic deployments, the provenance chain may have multiple hops (`sensor → adas → trust_verifier → runtime`); chain-level trust composition is not yet specified.
-5. *Reference implementation.* A prototype integrated with Eclipse Kuksa or uProtocol would provide concrete grounding for further specification work and community evaluation.
+5. *Reference implementation and tooling roadmap.* Architecture adoption is gated not only on specification quality but on the availability of a supporting toolchain. Prior art from W3C MMI and related efforts suggests that well-specified interfaces without reference tooling consistently fail to achieve adoption. We identify three tooling layers, each a prerequisite for the next.
+
+   **Core layer.** A machine-readable schema (JSON Schema or Protobuf) for Action, Event, State, and Task nodes with their full metadata contracts; a validation engine that answers "may this node be rendered in this context?" given the active context vector; and a declarative policy engine (OPA/Rego-style) encoding rules such as "`agent_local` actors may not emit `safety_critical` nodes" and "a `fallback_chain` with no `voice` entry is invalid during L4 autonomy."
+
+   **Integration layer.** Thin adaptors to COVESA VSS, Eclipse Kuksa, and uProtocol so that SIA is a plug-in layer over existing SDV transports rather than a replacement. A renderer capability interface — analogous to Android's capability detection or React Native's platform abstraction — through which concrete surfaces declare what they can render and at what attention cost. An agent interface that accepts semantic node payloads from LLM-based agents and routes them through trust verification before any UI surface is reached.
+
+   **Developer tooling.** A context simulator that exercises the Translation Layer against scripted driving contexts and failure modes; a structured debugger that makes suppression decisions transparent (*"collision warning suppressed — reason: `actor_class agent_local` ∉ `permitted_actor_classes`"*); and a declarative test harness expressing automotive certification scenarios as given/when/then predicates against the schema and policy engine. The test harness is likely the most direct contribution to ASIL-relevant certification workflows and the tool most likely to determine whether practitioners adopt SIA or not.
 
 ---
 

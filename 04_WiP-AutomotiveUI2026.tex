@@ -440,9 +440,48 @@ research and specification questions.
     \texttt{adas} $\to$ \texttt{trust\_verifier} $\to$ \texttt{runtime});
     chain-level trust composition is not yet specified.
 
-  \item \emph{Reference implementation.} A prototype integrated with Eclipse
-    Kuksa or uProtocol~\cite{eclipsesdv} would provide concrete grounding for
-    further specification work and community evaluation.
+  \item \emph{Reference implementation and tooling roadmap.} Architecture
+    adoption is gated not only on specification quality but on the availability
+    of a supporting toolchain. Prior art from W3C MMI and related efforts
+    suggests that well-specified interfaces without reference tooling
+    consistently fail to achieve adoption. We identify three tooling layers,
+    each a prerequisite for the next.
+
+    \begin{description}
+      \item[Core layer.]
+        A machine-readable schema (JSON Schema or Protobuf) for Action, Event,
+        State, and Task nodes with their full metadata contracts; a validation
+        engine that answers \emph{``may this node be rendered in this
+        context?''} given the active context vector; and a declarative policy
+        engine (OPA/Rego-style) encoding rules such as
+        \emph{``\texttt{agent\_local} actors may not emit
+        \texttt{safety\_critical} nodes''} and \emph{``a
+        \texttt{fallback\_chain} with no \texttt{voice} entry is invalid during
+        L4 autonomy.''}
+
+      \item[Integration layer.]
+        Thin adaptors to COVESA VSS, Eclipse Kuksa, and
+        uProtocol~\cite{eclipsesdv} so that SIA is a plug-in layer over
+        existing SDV transports rather than a replacement. A renderer capability
+        interface --- analogous to Android's capability detection or React
+        Native's platform abstraction --- through which concrete surfaces
+        declare what they can render and at what attention cost. An agent
+        interface that accepts semantic node payloads from LLM-based agents and
+        routes them through trust verification before any UI surface is reached.
+
+      \item[Developer tooling.]
+        A context simulator that exercises the Translation Layer against
+        scripted driving contexts and failure modes; a structured debugger that
+        makes suppression decisions transparent (\emph{``collision warning
+        suppressed --- reason: \texttt{actor\_class agent\_local}
+        $\notin$ \texttt{permitted\_actor\_classes}''});
+        and a declarative test harness expressing automotive certification
+        scenarios as \texttt{given}/\texttt{when}/\texttt{then} predicates
+        against the schema and policy engine. The test harness is likely the
+        most direct contribution to ASIL-relevant certification workflows and
+        the tool most likely to determine whether practitioners adopt SIA or
+        not.
+    \end{description}
 \end{enumerate}
 
 %% ---------------------------------------------------------------
