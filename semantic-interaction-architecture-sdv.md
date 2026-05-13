@@ -5,7 +5,7 @@
 ---
 
 **Author:** Jan Janeček
-**Affiliation:** *[to be completed]*
+**Affiliation:** Independent researcher
 **Version:** 0.1 — Draft for circulation
 **Date:** May 2026
 
