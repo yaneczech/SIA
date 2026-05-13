@@ -48,7 +48,8 @@ target_role: driver
 accessibility_alt:
   low_vision: [voice, haptic]
   hearing_impaired: [hud, cluster, haptic]
-  motor_limited: ack_kind: gaze
+  motor_limited:
+    ack_kind: gaze
 regulatory_basis: [UNECE_R79, ISO_15623, NHTSA_FCW_NCAP]
 pii_class: none
 ```
@@ -110,6 +111,7 @@ context:
 ```
 
 Translation Layer decision:
+
 - **Primary:** HUD (glance-optimised, in driver's forward field of view, ≤ `glance_time_estimated_ms`)
 - **Concurrent:** Cluster (redundant visual), Haptic on driver seat (sub-second TTI)
 - **Concurrent:** Voice short prompt (250 ms)
@@ -143,6 +145,7 @@ context:
 ```
 
 Translation Layer decision:
+
 - **Primary:** Cluster (driver may be looking away; sustained display)
 - **Concurrent:** Voice prompt full sentence (driver context recovery)
 - **Concurrent:** Haptic on seat

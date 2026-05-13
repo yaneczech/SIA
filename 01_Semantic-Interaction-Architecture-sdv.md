@@ -81,7 +81,7 @@ A common failure mode in interaction ontologies is conflating semantically diffe
 
 **Action.** Occupant-initiated. May be discrete (`Navigate.Back`), sustained (`Media.Volume.Increase`), or continuous (`Map.Zoom`). Carries `recommended_modality`, `attention_cost`, `temporal_type`.
 
-**Event.** System-initiated. Splits into **Alert** (safety-relevant, may require acknowledgement) and **Notification** (informational, suppressible). Carries `priority`, `interruptibility`, `requires_acknowledgement`, `trust_requirements`.
+**Event.** System-initiated. Splits into **Alert** (safety-relevant, may require acknowledgement) and **Notification** (informational, suppressible). Carries `priority`, `interruptibility`, `requires_ack`, `trust_requirements`.
 
 **State.** Focus, mode, and context transitions. Not user-facing on its own; consumed by Runtime to coordinate renderers. Carries `scope`, `target_role`, `consistency_class`.
 
@@ -96,7 +96,7 @@ Naming follows reverse-DNS hierarchy (`Interaction.Action.Navigate.Back`). Inher
 Every node carries a typed metadata block. Fields are partitioned into **declarative** (defined in the ontology and stable across deployments) and **runtime** (filled by emitter at the moment of emission). We summarise the contract for each node type.
 
 | Field | Action | Alert | Notification | State | Task |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `since_version` | ● | ● | ● | ● | ● |
 | `direction` | ● | ● | ● | ● | ● |
 | `temporal_type` | ● | ● | ● | — | — |
@@ -136,7 +136,7 @@ The proposed trust model separates two artefacts:
 
 **Trust requirements** are declared on the node in the ontology. They specify what the consumer (Translation Layer, Renderer) must verify before propagating or rendering. Example fields:
 
-```
+```yaml
 Alert.Collision.Warning:
   trust_requirements:
     min_trust_level: critical
@@ -148,7 +148,7 @@ Alert.Collision.Warning:
 
 **Trust attestation** is attached to the instance by the emitter. It carries the cryptographic and provenance evidence:
 
-```
+```yaml
 attestation:
   actor_class: adas
   actor_id: ADAS_v2.3.1
@@ -162,7 +162,7 @@ The Trust Layer is responsible for verifying that attestation satisfies requirem
 We propose an explicit `actor_class` taxonomy, since it drives policy:
 
 | Class | Description | Example |
-|---|---|---|
+| --- | --- | --- |
 | `human_direct` | Physical input by occupant | Button press |
 | `human_voice` | Voice command (occupant) | "Increase volume" |
 | `agent_local` | On-device assistant | Local LLM |
@@ -182,7 +182,7 @@ The Attention Model is the second area in which the proposed ontology departs fr
 
 The proposed model attaches measurable predicted metrics to every interaction-bearing node:
 
-```
+```yaml
 attention_metrics:
   glance_time_estimated_ms: 1500
   mean_single_glance_ms: 400
@@ -193,7 +193,7 @@ attention_metrics:
 
 The Translation Layer composes the static node metric with a context modifier produced by the Context Engine, producing a context-effective attention cost. Example composition:
 
-```
+```text
 effective_cost(node, context) =
     node.attention_metrics × context.attention_modifier
     where context.attention_modifier =
@@ -211,7 +211,7 @@ Current automotive HMI architectures often model context as a flat enumeration (
 We model context as a vector of orthogonal axes:
 
 | Axis | Example values |
-|---|---|
+| --- | --- |
 | `sae_level` | 0 .. 5 |
 | `road_type` | urban, rural, highway, off-road |
 | `traffic_density` | free, dense, congested |
@@ -229,7 +229,7 @@ Translation and suppression policies become composable predicates over the vecto
 
 Renderers and input devices declare *measurable* capabilities, not labels. Example:
 
-```
+```yaml
 Renderer.HUD:
   max_simultaneous_elements: 4
   text_max_chars: 32
@@ -240,7 +240,7 @@ Renderer.HUD:
   glance_optimized: true
 ```
 
-```
+```yaml
 InputDevice.SteeringWheel.Right:
   axes: [rotate_continuous]
   buttons: [press, tilt_4way]
@@ -257,7 +257,7 @@ The Translation Layer can then mechanically compute, for a given node and contex
 
 A vehicle in service for 15 years must remain interoperable with newer ontology versions delivered over the air. The ontology therefore mandates explicit versioning on every node, capability, and policy:
 
-```
+```yaml
 since_version: 1.4.0
 deprecated_since: 2.0.0
 replaced_by: Interaction.Action.Navigate.Hierarchical.Back
@@ -271,7 +271,7 @@ Translation Layer is required to honour the lowest version present in the vehicl
 ## 11. Relation to Existing Standards
 
 | Standard | Layer | Relationship |
-|---|---|---|
+| --- | --- | --- |
 | COVESA VSS | Data | Populates Context axes; Action nodes may reference VSS signals |
 | W3C MMI / EMMA | Multimodal input | Candidate substrate for Translation Layer input mapping |
 | ISO 15005 / ISO 17287 | Ergonomics | Source for `attention_metrics` field semantics |
@@ -300,7 +300,7 @@ The proposal is deliberately scoped to a position paper; concrete specification 
 
 We propose three coordinated paths:
 
-**Standardisation path.** Engagement with the Eclipse SDV Working Group, specifically the newly forming AI Special Interest Group (2026 kick-off), to introduce the interaction layer as a complement to ongoing service-trust integration work across Ankaios, Kuksa, OpenSOVD, Symphony, and uProtocol. The 2025 Eclipse SDV review explicitly identified *advanced HMI solutions* as an area for 2026 onboarding.
+**Standardisation path.** Engagement with the Eclipse SDV Working Group, including the proposed AI Special Interest Group discussed on the SDV mailing list in late 2025, to introduce the interaction layer as a complement to ongoing service-trust integration work across Ankaios, Kuksa, OpenSOVD, Symphony, and uProtocol. Advanced HMI, AI agents, and trustable interaction should be treated as candidate topics for coordinated SDV work rather than as isolated renderer concerns.
 
 **Academic path.** A workshop or work-in-progress submission to AutomotiveUI 2026, targeting the in-vehicle agent and trust subcommunities. Adjacent venues: ACM CHI, HCII Mobility track, escar for the security dimension.
 
@@ -312,8 +312,10 @@ A worked example tracing one `Alert.Collision.Warning` end-to-end is provided as
 
 ## References (selected)
 
-- COVESA. *Vehicle Signal Specification.* https://covesa.global/project/vehicle-signal-specification/
-- Eclipse Foundation. *Eclipse SDV Working Group.* https://sdv.eclipse.org/
+- COVESA. *Vehicle Signal Specification.* <https://covesa.global/project/vehicle-signal-specification/>
+- Eclipse Foundation. *Eclipse SDV Working Group.* <https://sdv.eclipse.org/>
+- Eclipse Foundation. *Special Interest Groups — Software Defined Vehicle.* <https://sdv.eclipse.org/special-interest-groups/>
+- Eclipse SDV Working Group mailing list. *Proposal for an AI Special Interest Group.* <https://www.eclipse.org/lists/sdv-wg/msg00737.html>
 - W3C. *Multimodal Architecture and Interfaces 1.0.* W3C Recommendation.
 - W3C. *EMMA: Extensible MultiModal Annotation Markup Language.*
 - ISO 15005:2017. *Road vehicles — Ergonomic aspects of transport information and control systems.*
@@ -324,8 +326,8 @@ A worked example tracing one `Alert.Collision.Warning` end-to-end is provided as
 - Demir, C., Meschtscherjakov, A., Gärtner, M. *Unlocking Trust and Acceptance in Tomorrow's Ride: How In-Vehicle Intelligent Agents Redefine SAE Level 5 Autonomy.* MTI 8(12):111, 2024.
 - *Agent2Agent Threats in Safety-Critical LLM Assistants: A Human-Centric Taxonomy* (arXiv:2602.05877, 2026).
 - Gomaa, A. *Adaptive user-centered multimodal interaction towards reliable and trusted automotive interfaces.* ICMI 2022.
-- Google. *Android for Cars App Library.* https://developer.android.com/training/cars/apps
+- Google. *Android for Cars App Library.* <https://developer.android.com/training/cars/apps>
 
 ---
 
-*Comments, corrections, and counter-positions are explicitly invited. Contact: [author email].*
+*Comments, corrections, and counter-positions are explicitly invited via repository issues, pull requests, or <dizencz@gmail.com>.*

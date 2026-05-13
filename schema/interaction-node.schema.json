@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/janjanecek/SIA/schema/interaction-node.schema.json",
+  "title": "Semantic Interaction Node",
+  "description": "Minimal draft schema for the declarative metadata contract described by SIA v0.1.",
+  "type": "object",
+  "required": [
+    "node",
+    "since_version",
+    "direction",
+    "target_role",
+    "pii_class"
+  ],
+  "properties": {
+    "node": {
+      "type": "string",
+      "pattern": "^Interaction\\.(Action|Event|State|Task)\\.[A-Za-z0-9_.]+$"
+    },
+    "since_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "deprecated_since": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "replaced_by": {
+      "type": "string"
+    },
+    "direction": {
+      "enum": ["input", "output", "internal"]
+    },
+    "temporal_type": {
+      "enum": ["discrete", "sustained", "continuous"]
+    },
+    "attention_metrics": {
+      "type": "object",
+      "properties": {
+        "glance_time_estimated_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mean_single_glance_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "task_steps": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "voice_alt_available": {
+          "type": "boolean"
+        },
+        "cognitive_load": {
+          "enum": ["minimal", "moderate", "high", "locked_while_driving"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "interruptibility": {
+      "type": "boolean"
+    },
+    "requires_ack": {
+      "type": "boolean"
+    },
+    "ack_kind": {
+      "type": "string"
+    },
+    "ack_timeout_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ack_authority": {
+      "type": "string"
+    },
+    "trust_requirements": {
+      "type": "object",
+      "properties": {
+        "min_trust_level": {
+          "enum": ["none", "low", "standard", "elevated", "critical"]
+        },
+        "signed_origin_required": {
+          "type": "boolean"
+        },
+        "permitted_actor_classes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "human_direct",
+              "human_voice",
+              "agent_local",
+              "agent_cloud",
+              "adas",
+              "vsc",
+              "service",
+              "third_party_app"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "max_age_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "replay_protection": {
+          "enum": ["none", "recommended", "required"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "target_role": {
+      "type": "string"
+    },
+    "accessibility_alt": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "regulatory_basis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "pii_class": {
+      "enum": ["none", "low", "sensitive", "special_category"]
+    },
+    "temporal_freshness_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "suppression_class": {
+      "type": "string"
+    },
+    "merges_with": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "fallback_chain": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "degradation_policy": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

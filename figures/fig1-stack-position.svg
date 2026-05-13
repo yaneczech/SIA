@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 540" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 540" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Position of Semantic Interaction Architecture in the SDV stack</title>
+  <desc id="desc">Layered diagram placing the proposed Semantic Interaction Architecture between HMI renderers and existing SDV services, data, middleware, and hardware.</desc>
   <style>
     .layer { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.2; }
     .layer-sub { fill: #fafafa; stroke: #1a1a1a; stroke-width: 1.2; }

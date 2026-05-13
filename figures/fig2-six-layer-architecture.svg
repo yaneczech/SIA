@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 480" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 480" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Six-layer Semantic Interaction Architecture</title>
+  <desc id="desc">Architecture diagram showing Renderer, Runtime, Translation, Ontology, Context Engine, and Trust Layer responsibilities.</desc>
   <style>
     .box { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.2; }
     .box-light { fill: #fafafa; stroke: #1a1a1a; stroke-width: 1.2; }

@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this draft, please cite it using this metadata."
+title: "Toward a Semantic Interaction Architecture for Software-Defined Vehicles"
+authors:
+  - family-names: "Janecek"
+    given-names: "Jan"
+version: "0.1"
+date-released: "2026-05-01"
+license: "CC0-1.0"
+repository-code: "https://github.com/janjanecek/SIA"
+abstract: "A position paper proposing a vendor-neutral semantic interaction layer for software-defined vehicles."
