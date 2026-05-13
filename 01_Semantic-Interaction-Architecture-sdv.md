@@ -85,37 +85,37 @@ We propose four functional components and two cross-cutting policy functions, il
 
 **Interaction Coordination Runtime.** A coordination function for focus, in-flight task flows, acknowledgement timers, and consistency across distributed renderers. It does not replace a GUI framework; it coordinates semantic state that multiple renderers need to handle consistently.
 
-**Renderer Layer.** The set of concrete output and input surfaces — HUD, cluster, IVI touchscreen, voice, haptic, AR overlay, steering wheel controls — that consume the semantic stream and produce occupant-perceptible results. Each renderer declares its measurable capabilities; the Translation Layer selects among them. Renderers are interchangeable within the constraints of declared capabilities and context policy; the ontology language is not.
+**Renderer Layer.** The set of concrete output and input surfaces — HUD, cluster, IVI touchscreen, voice, haptic, AR overlay, steering wheel controls — that consume the semantic stream and produce occupant-perceptible results. Each renderer declares its measurable capabilities; the Translation Layer selects among them. The Renderer Layer is the only SIA component that faces the occupant directly; all nodes reaching it have already been verified and coordinated.
+
+**Trust Policy** is a gate at the entry point of SIA: all nodes emitted by agents, services, or ADAS systems pass through trust verification before entering the Ontology layer. Nodes that fail verification are rejected and logged; they never reach the semantic pipeline. **Context Policy** supplies a continuously updated context vector that modulates both the Translation Layer (modality selection) and the Interaction Coordination Runtime (conflict resolution, acknowledgement timeouts).
 
 ```mermaid
 graph TB
+    EXT2(["Agents · Services · ADAS\nSDV transport — Kuksa · uProtocol · service registry"])
     EXT1(["Occupant input · output"])
-    EXT2(["SDV transport — Kuksa · uProtocol · service registry"])
 
     subgraph SIA ["Semantic Interaction Architecture"]
         TL["Trust Policy\nReq. vs attestation\nactor_class · freshness · replay · provenance"]
-        CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
-        R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
-        RT["Interaction Coordination Runtime\nFocus · task-flow state · acknowledgement · cross-renderer consistency"]
-        T["Translation Layer\nnode × capabilities × context → modality decision"]
         O["Ontology Language + Schema Profile\nTyped primitives · metadata contracts · compatibility\n— long-term language of meaning —"]
+        CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
+        T["Translation Layer\nnode × capabilities × context → modality decision"]
+        RT["Interaction Coordination Runtime\nFocus · task-flow · acknowledgement · cross-renderer consistency"]
+        R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
     end
 
-    EXT1 --> R
-    R --> RT
-    RT --> T
-    T --> O
-    O --> EXT2
+    EXT2 -->|"emit node + attestation"| TL
+    TL -->|"verified"| O
+    O --> T
     CE -->|"modulates"| T
-    TL -->|"validates"| R
-    TL -->|"validates"| RT
-    TL -->|"validates"| T
-    TL -->|"validates"| O
+    CE -->|"modulates"| RT
+    T --> RT
+    RT --> R
+    R <-->|"render · input · ack"| EXT1
 
     style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 2. Mediation architecture. Trust Policy and Context Policy are cross-cutting functions within SIA; the Ontology Language + Schema Profile is the canonical source of meaning.*
+*Figure 2. Mediation architecture. Trust Policy gates all incoming nodes; the Ontology Language + Schema Profile is the canonical source of meaning; Context Policy modulates Translation and Runtime throughout.*
 
 ## 3.1 Human-Ergonomic Language Design
 

@@ -43,33 +43,31 @@ We propose a mediation architecture of four functional components and two cross-
 
 ```mermaid
 graph TB
+    EXT2(["Agents · Services · ADAS\nSDV transport — Kuksa · uProtocol · service registry"])
     EXT1(["Occupant input · output"])
-    EXT2(["SDV transport — Kuksa · uProtocol · service registry"])
 
     subgraph SIA ["Semantic Interaction Architecture"]
         TL["Trust Policy\nReq. vs attestation\nactor_class · freshness · replay · provenance"]
-        CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
-        R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
-        RT["Interaction Coordination Runtime\nFocus · task-flow · acknowledgement · cross-renderer consistency"]
-        T["Translation Layer\nnode × capabilities × context → modality decision"]
         O["Ontology Language + Schema Profile\nTyped primitives · metadata contracts · compatibility\n— long-term language of meaning —"]
+        CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
+        T["Translation Layer\nnode × capabilities × context → modality decision"]
+        RT["Interaction Coordination Runtime\nFocus · task-flow · acknowledgement · cross-renderer consistency"]
+        R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
     end
 
-    EXT1 --> R
-    R --> RT
-    RT --> T
-    T --> O
-    O --> EXT2
+    EXT2 -->|"emit node + attestation"| TL
+    TL -->|"verified"| O
+    O --> T
     CE -->|"modulates"| T
-    TL -->|"validates"| R
-    TL -->|"validates"| RT
-    TL -->|"validates"| T
-    TL -->|"validates"| O
+    CE -->|"modulates"| RT
+    T --> RT
+    RT --> R
+    R <-->|"render · input · ack"| EXT1
 
     style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 1. Mediation architecture. Trust Policy and Context Policy are cross-cutting functions within SIA; the Ontology Language + Schema Profile is the canonical source of meaning.*
+*Figure 1. Mediation architecture. Trust Policy gates all incoming nodes; the Ontology Language + Schema Profile is the canonical source of meaning; Context Policy modulates Translation and Runtime throughout.*
 
 **Ontology Language and Schema Profile.** A stable language defines the long-term vocabulary of interaction meaning, inheritance, metadata contracts, and compatibility rules. The first standardisation target is a small typed event/command schema profile for high-value interactions — tractable to implement without locking in a deep class hierarchy.
 
