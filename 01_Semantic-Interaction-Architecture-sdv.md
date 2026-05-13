@@ -53,7 +53,7 @@ Figure 1 positions the proposed layer in the SDV stack.
 graph TB
     OCC["Occupant — Driver · Front passenger · Rear passenger"]
     HMI["Renderers and Input Devices\nHUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel · Gesture · Eye tracking"]
-    SIA["★ Semantic Interaction Architecture\nOntology · Translation · Runtime · Context · Trust"]
+    SIA["★ Semantic Interaction Architecture\nOntology Language · Translation · Interaction Coordination Runtime\nContext Policy · Trust Policy"]
     SVC["Services and Orchestration\nKuksa Databroker · uProtocol · Zenoh · Chariott · Ankaios · Symphony"]
     DAT["Data Model — COVESA VSS"]
     MW["Middleware — AUTOSAR Classic · Adaptive · S-CORE"]
@@ -84,6 +84,8 @@ We propose four functional components and two cross-cutting policy functions, il
 **Translation Layer.** A bidirectional adaptor that maps semantic nodes to concrete input and output modalities given a capability set and a context. Its inputs are: the node, available renderers and input devices declaring measurable capabilities, the active context vector, and user accessibility profile. Its output is a candidate modality set and a rendering or input mapping decision.
 
 **Interaction Coordination Runtime.** A coordination function for focus, in-flight task flows, acknowledgement timers, and consistency across distributed renderers. It does not replace a GUI framework; it coordinates semantic state that multiple renderers need to handle consistently.
+
+**Renderer Layer.** The set of concrete output and input surfaces — HUD, cluster, IVI touchscreen, voice, haptic, AR overlay, steering wheel controls — that consume the semantic stream and produce occupant-perceptible results. Each renderer declares its measurable capabilities; the Translation Layer selects among them. Renderers are interchangeable within the constraints of declared capabilities and context policy; the ontology language is not.
 
 ```mermaid
 graph TB

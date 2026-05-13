@@ -90,7 +90,7 @@ The trust and provenance policy checks: signature validity, `actor_class ∈ per
 ```mermaid
 sequenceDiagram
     participant ADAS as ADAS (emitter)
-    participant Trust as Trust Layer (verifier)
+    participant Trust as Trust Policy (verifier)
     participant Trans as Translation + Context
     participant Runtime as Runtime (state · focus · ack)
     participant Renderers as Renderers (HUD · Cluster · Voice · Haptic)

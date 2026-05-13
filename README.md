@@ -4,8 +4,6 @@
 
 > **What if a collision warning could declare, in machine-readable terms, that it cannot be suppressed, must reach the driver within 200 ms, requires a signed origin, and degrades to voice if the HUD is unavailable — without any of that logic living inside a renderer?**
 
-This repository contains a position paper proposing exactly that: a semantic interaction layer for Software-Defined Vehicles that separates *what an interaction means* from *how it is rendered*.
-
 This repository contains a draft position paper proposing a semantic mediation layer for high-value interactions in software-defined vehicles. SIA decouples the meaning, trust requirements, attention demand, and context fitness of in-vehicle interactions from concrete screens, widgets, input devices, and renderers.
 
 ## The problem
@@ -23,7 +21,7 @@ SIA defines a **typed node ontology** — Actions, Events, States, Tasks — whe
 - **Context** — a multi-axis vector (SAE level, road type, driver state, regulatory regime) that modulates rendering policy
 - **Capability negotiation** — renderers declare measurable capabilities; the Translation Layer picks the right surface mechanically
 
-A six-layer architecture (Ontology → Translation → Runtime → Renderer, with Trust and Context Engine spanning the stack) sits above existing SDV data and service abstractions (COVESA VSS, Eclipse Kuksa, uProtocol) and below concrete renderers. Nothing in the current SDV stack needs to be replaced — SIA is the missing connective tissue.
+A mediation architecture — four functional components (Ontology Language + Schema Profile, Translation Layer, Interaction Coordination Runtime, Renderer Layer) and two cross-cutting policy functions (Trust Policy, Context Policy) — sits above existing SDV data and service abstractions (COVESA VSS, Eclipse Kuksa, uProtocol) and below concrete renderers. Nothing in the current SDV stack needs to be replaced — SIA is the missing connective tissue.
 
 ## Who this is for
 
@@ -37,7 +35,7 @@ A six-layer architecture (Ontology → Translation → Runtime → Renderer, wit
 
 ## Read the paper
 
-- [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — six-layer architecture, node taxonomy, metadata contracts, trust model, attention model, context as a multi-axis vector, versioning, relations to existing standards, and a path toward Eclipse SDV standardisation.
+- [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — mediation architecture, node taxonomy, metadata contracts, trust and attention policy, context as a multi-axis vector, versioning, relations to existing standards, and a path toward Eclipse SDV standardisation.
 - [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a single `Alert.Collision.Warning` traced end-to-end: ontology declaration, trust verification, translation under three contexts (highway/manual, parked, L4/autonomous), and four adversarial scenarios (spoofed actor class, expired freshness, AI agent attempting a critical alert, priority injection).
 
 ## Key diagrams
@@ -45,7 +43,7 @@ A six-layer architecture (Ontology → Translation → Runtime → Renderer, wit
 The diagrams are embedded directly in the paper as Mermaid and render automatically on GitHub:
 
 - **Fig 1** — [Where SIA sits in the SDV stack](./01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-position-in-the-ecosystem)
-- **Fig 2** — [Six-layer architecture](./01_Semantic-Interaction-Architecture-sdv.md#3-architecture-overview)
+- **Fig 2** — [Mediation architecture](./01_Semantic-Interaction-Architecture-sdv.md#3-architecture-overview)
 - **Fig 3** — [Node taxonomy](./01_Semantic-Interaction-Architecture-sdv.md#4-node-taxonomy)
 - **Fig A.1** — [Alert flow sequence diagram](./02_Appendix-a-worked-example.md#a3-trust-verification-flow)
 
