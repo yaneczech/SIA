@@ -77,7 +77,7 @@ The proposed Semantic Interaction Architecture (SIA) sits **above** existing ser
 
 ## 3. Architecture Overview
 
-We propose four functional components and two cross-cutting policy functions, illustrated in Figure 2. This is a mediation architecture rather than an interaction operating system: it defines what crosses the boundary and how policy is applied, while leaving renderer implementation and most HMI runtime behavior to existing stacks.
+We propose three functional components and two cross-cutting policy functions, illustrated in Figure 2. This is a mediation architecture rather than an interaction operating system: it defines what crosses the boundary and how policy is applied, while leaving renderer implementation and most HMI runtime behavior to existing stacks.
 
 **Ontology Language and Schema Profile.** A stable ontology language defines the long-term vocabulary of interaction meaning, inheritance, metadata contracts, and compatibility rules. The initial standardisation target should be a small typed event/command schema profile for high-value interactions. This keeps the first implementation tractable without sacrificing a scalable naming and evolution model.
 
@@ -85,39 +85,39 @@ We propose four functional components and two cross-cutting policy functions, il
 
 **Interaction Coordination Runtime.** A coordination function for focus, in-flight task flows, acknowledgement timers, and consistency across distributed renderers. It does not replace a GUI framework; it coordinates semantic state that multiple renderers need to handle consistently.
 
-**Renderer Layer.** The set of concrete output and input surfaces — HUD, cluster, IVI touchscreen, voice, haptic, AR overlay, steering wheel controls — that consume the semantic stream and produce occupant-perceptible results. Each renderer declares its measurable capabilities; the Translation Layer selects among them. The Renderer Layer is the only SIA component that faces the occupant directly; all nodes reaching it have already been verified and coordinated.
+**Trust Policy** is a gate at the entry point of SIA: all nodes emitted by agents, services, or ADAS systems pass through trust verification before entering the semantic pipeline. Nodes that fail verification are rejected and logged; they never reach the Translation Layer. **Context Policy** supplies a continuously updated context vector that modulates both the Translation Layer (modality selection) and the Interaction Coordination Runtime (conflict resolution, acknowledgement timeouts).
 
-**Trust Policy** is a gate at the entry point of SIA: all nodes emitted by agents, services, or ADAS systems pass through trust verification before entering the Ontology layer. Nodes that fail verification are rejected and logged; they never reach the semantic pipeline. **Context Policy** supplies a continuously updated context vector that modulates both the Translation Layer (modality selection) and the Interaction Coordination Runtime (conflict resolution, acknowledgement timeouts).
+**Renderers and input devices are external to SIA.** Concrete output and input surfaces — HUD, cluster, IVI touchscreen, voice, haptic, AR overlay, steering wheel controls — are not components of SIA. They are vendor-specific implementations that interface with SIA in two directions: they *declare* measurable capabilities into the Translation Layer (Section 9), and they *consume* the modality decisions produced by the Coordination Runtime. This boundary is deliberate: it preserves SIA's vendor neutrality and keeps the standard small enough to be implementable across heterogeneous OEM stacks. Renderers are the only entities that face the occupant directly; all nodes reaching them have already been verified by Trust Policy and coordinated by the Runtime.
 
 ```mermaid
 graph TB
     EXT2(["Agents · Services · ADAS\nSDV transport — Kuksa · uProtocol · service registry"])
+    EXT_R(["Renderers and input devices — external\nHUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel"])
     EXT1(["Occupant input · output"])
 
     subgraph SIA ["Semantic Interaction Architecture"]
         O["Ontology Language + Schema Profile\nTyped primitives · metadata contracts · compatibility\n— long-term language of meaning —"]
         TL["Trust Policy\nReq. vs attestation\nactor_class · freshness · replay · provenance"]
-        CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
+        CE["Context Policy\nSAE level · Road type · Vehicle state\nDriver state · Market jurisdiction"]
         T["Translation Layer\nnode × capabilities × context → modality decision"]
         RT["Interaction Coordination Runtime\nFocus · task-flow · acknowledgement · cross-renderer consistency"]
-        R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
     end
 
     EXT2 -->|"emit node + attestation"| TL
     O -->|"schema"| TL
     TL -->|"verified"| T
     O -->|"contract"| T
-    R -->|"capabilities"| T
+    EXT_R -->|"capabilities"| T
     CE -->|"modulates"| T
     CE -->|"modulates"| RT
     T --> RT
-    RT --> R
-    R <-->|"render · input · ack"| EXT1
+    RT -->|"modality decision · dispatch"| EXT_R
+    EXT_R <-->|"render · input · ack"| EXT1
 
     style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 2. Mediation architecture. The Ontology Language + Schema Profile is the authoritative reference — Trust Policy validates against it, Translation Layer interprets by it. Context Policy modulates Translation and Runtime; renderer capabilities feed back into Translation.*
+*Figure 2. Mediation architecture. SIA contains three functional components (Ontology, Translation, Runtime) and two cross-cutting policies (Trust, Context). Emitters and renderers are external: emitters submit nodes through Trust Policy; renderers register capabilities into Translation and consume the resulting modality decisions from Runtime. The Ontology Language + Schema Profile is the authoritative reference for both Trust Policy and Translation Layer.*
 
 ## 3.1 Human-Ergonomic Language Design
 
@@ -276,7 +276,7 @@ attestation:
   provenance_chain: [adas]             # one-hop at emission; multi-hop appended by intermediaries
 ```
 
-Trust Policy verifies that attestation satisfies requirements declared in the ontology before the node enters the pipeline. Trust failure is fail-closed: the node is rejected and a `SecurityEvent` is logged; it never reaches the Translation Layer or a renderer. This is distinct from `degradation_policy`, which governs renderer capability fallbacks within SIA — for example, routing to voice when a HUD is unavailable. A safety-critical node may define both: a strict trust requirement that fails closed, and a renderer degradation chain for when trust passes but the preferred output surface is unavailable.
+Trust Policy verifies that attestation satisfies requirements declared in the ontology before the node enters the pipeline. Trust failure is fail-closed: the node is rejected and a `SecurityEvent` is logged; it never reaches the Translation Layer or any renderer. This is distinct from `degradation_policy`, which is declared on the node and applied by the Translation Layer to walk the `fallback_chain` when a preferred external renderer is unavailable — for example, routing to voice when a HUD is offline. A safety-critical node may define both: a strict trust requirement that fails closed, and a renderer fallback chain for when trust passes but the preferred output surface is unavailable.
 
 An explicit `actor_class` taxonomy is one practical way to drive policy:
 

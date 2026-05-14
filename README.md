@@ -21,7 +21,7 @@ SIA defines a **typed node ontology** — Actions, Events, States, Tasks — whe
 - **Context** — a multi-axis vector (SAE level, road type, driver state, regulatory regime) that modulates rendering policy
 - **Capability negotiation** — renderers declare measurable capabilities; the Translation Layer picks the right surface mechanically
 
-A mediation architecture — four functional components (Ontology Language + Schema Profile, Translation Layer, Interaction Coordination Runtime, Renderer Layer) and two cross-cutting policy functions (Trust Policy, Context Policy) — sits above existing SDV data and service abstractions (COVESA VSS, Eclipse Kuksa, uProtocol) and below concrete renderers. Nothing in the current SDV stack needs to be replaced — SIA is the missing connective tissue.
+A mediation architecture — three functional components (Ontology Language + Schema Profile, Translation Layer, Interaction Coordination Runtime) and two cross-cutting policy functions (Trust Policy, Context Policy) — sits above existing SDV data and service abstractions (COVESA VSS, Eclipse Kuksa, uProtocol) and below concrete renderers (HUD, cluster, IVI, voice, haptic, AR, steering wheel controls), which remain external to SIA and interface with it via capability declarations. Nothing in the current SDV stack needs to be replaced — SIA is the missing connective tissue.
 
 ## Who this is for
 

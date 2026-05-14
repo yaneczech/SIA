@@ -39,37 +39,37 @@ SIA occupies the gap above SDV service abstractions and below concrete renderers
 
 ## 3. Mediation Architecture
 
-We propose a mediation architecture of four functional components and two cross-cutting policy functions. This is not a complete HMI platform; it defines what crosses the semantic boundary and how policy is applied, leaving renderer implementation and GUI framework behaviour to existing stacks.
+We propose a mediation architecture of three functional components and two cross-cutting policy functions. Renderers and input devices are external to SIA and interface with it through capability declarations. This is not a complete HMI platform; it defines what crosses the semantic boundary and how policy is applied, leaving renderer implementation and GUI framework behaviour to existing stacks.
 
 ```mermaid
 graph TB
     EXT2(["Agents · Services · ADAS\nSDV transport — Kuksa · uProtocol · service registry"])
+    EXT_R(["Renderers and input devices — external\nHUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel"])
     EXT1(["Occupant input · output"])
 
     subgraph SIA ["Semantic Interaction Architecture"]
         O["Ontology Language + Schema Profile\nTyped primitives · metadata contracts · compatibility\n— long-term language of meaning —"]
         TL["Trust Policy\nReq. vs attestation\nactor_class · freshness · replay · provenance"]
-        CE["Context Policy\nSAE level · Road type\nDriver state · Market jurisdiction"]
+        CE["Context Policy\nSAE level · Road type · Vehicle state\nDriver state · Market jurisdiction"]
         T["Translation Layer\nnode × capabilities × context → modality decision"]
         RT["Interaction Coordination Runtime\nFocus · task-flow · acknowledgement · cross-renderer consistency"]
-        R["Renderer Layer\nHUD · Cluster · IVI · Voice · Haptic · AR"]
     end
 
     EXT2 -->|"emit node + attestation"| TL
     O -->|"schema"| TL
     TL -->|"verified"| T
     O -->|"contract"| T
-    R -->|"capabilities"| T
+    EXT_R -->|"capabilities"| T
     CE -->|"modulates"| T
     CE -->|"modulates"| RT
     T --> RT
-    RT --> R
-    R <-->|"render · input · ack"| EXT1
+    RT -->|"modality decision · dispatch"| EXT_R
+    EXT_R <-->|"render · input · ack"| EXT1
 
     style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 1. Mediation architecture. The Ontology Language + Schema Profile is the authoritative reference — Trust Policy validates against it, Translation Layer interprets by it. Context Policy modulates Translation and Runtime; renderer capabilities feed back into Translation.*
+*Figure 1. Mediation architecture. SIA contains three functional components (Ontology, Translation, Runtime) and two cross-cutting policies (Trust, Context). Emitters and renderers are external; they interface with SIA through Trust Policy (entry) and capability/dispatch flows (exit).*
 
 **Ontology Language and Schema Profile.** A stable language defines the long-term vocabulary of interaction meaning, inheritance, metadata contracts, and compatibility rules. The first standardisation target is a small typed event/command schema profile for high-value interactions — tractable to implement without locking in a deep class hierarchy.
 
@@ -77,9 +77,9 @@ graph TB
 
 **Interaction Coordination Runtime.** A coordination function for focus, in-flight task flows, acknowledgement timers, and consistency across distributed renderers. It does not replace a GUI framework; it coordinates semantic state that multiple renderers must share.
 
-**Renderer Layer.** The set of concrete output and input surfaces — HUD, cluster, IVI touchscreen, voice, haptic, AR, steering wheel controls — that consume the semantic stream. Each renderer declares measurable capabilities; the Translation Layer selects among them. Renderers are interchangeable; the ontology is not.
-
 **Trust Policy** verifies message origin, freshness, and authority before semantic propagation. **Context Policy** supplies a continuously updated vector of driving context that modulates priority, modality preference, and suppression rules.
+
+**Renderers and input devices are external to SIA.** Concrete output and input surfaces — HUD, cluster, IVI touchscreen, voice, haptic, AR, steering wheel controls — are vendor-specific implementations that consume modality decisions from the Runtime and declare measurable capabilities into the Translation Layer. They are not components of SIA; keeping them external is what allows SIA to remain vendor-neutral. Renderers are interchangeable; the ontology is not.
 
 ---
 

@@ -139,10 +139,12 @@ addresses.
 \section{Mediation Architecture}
 %% ---------------------------------------------------------------
 
-We propose a mediation architecture of four functional components and two
-cross-cutting policy functions. This is not a complete HMI platform; it defines
-what crosses the semantic boundary and how policy is applied, leaving renderer
-implementation and GUI framework behaviour to existing stacks.
+We propose a mediation architecture of three functional components and two
+cross-cutting policy functions. Renderers and input devices are external to SIA
+and interface with it through capability declarations. This is not a complete
+HMI platform; it defines what crosses the semantic boundary and how policy is
+applied, leaving renderer implementation and GUI framework behaviour to
+existing stacks.
 
 \begin{figure}[h]
   \centering
@@ -150,18 +152,18 @@ implementation and GUI framework behaviour to existing stacks.
   % Mermaid source in 01_Semantic-Interaction-Architecture-sdv.md (Fig 2)
   % and uncomment: \includegraphics[width=\columnwidth]{figures/fig2-mediation-architecture}
   \fbox{\parbox{0.92\columnwidth}{\centering\vspace{2em}
-    \textit{[Figure 1: Mediation architecture — Ontology Language + Schema
-    Profile is the authoritative reference (provides schema to Trust Policy,
-    contract to Translation Layer); runtime flow is
-    Agents/ADAS → Trust Policy → Translation → Runtime → Renderer ↔ Occupant;
-    renderer capabilities feed back into Translation; Context Policy modulates
-    Translation and Runtime.
+    \textit{[Figure 1: Mediation architecture — SIA contains three functional
+    components (Ontology, Translation, Runtime) and two cross-cutting policies
+    (Trust, Context). Emitters (Agents/ADAS) and renderers are external.
+    Runtime flow: Emitters → Trust Policy → Translation → Runtime →
+    external Renderers ↔ Occupant. Renderer capabilities feed back into
+    Translation; Context Policy modulates Translation and Runtime.
     Insert PDF export of Mermaid diagram here.]}
   \vspace{2em}}}
-  \caption{Mediation architecture. The Ontology Language + Schema Profile is
-    the authoritative reference --- Trust Policy validates against it,
-    Translation Layer interprets by it. Context Policy modulates Translation
-    and Runtime; renderer capabilities feed back into Translation.}
+  \caption{Mediation architecture. SIA contains three functional components
+    (Ontology, Translation, Runtime) and two cross-cutting policies (Trust,
+    Context). Emitters and renderers are external; they interface with SIA
+    through Trust Policy (entry) and capability/dispatch flows (exit).}
   \label{fig:architecture}
 \end{figure}
 
@@ -183,13 +185,6 @@ A coordination function for focus, in-flight task flows, acknowledgement
 timers, and consistency across distributed renderers. It does not replace a GUI
 framework; it coordinates semantic state that multiple renderers must share.
 
-\paragraph{Renderer Layer.}
-The set of concrete output and input surfaces --- HUD, cluster, IVI
-touchscreen, voice, haptic, AR, steering wheel controls --- that consume the
-semantic stream and face the occupant directly. Each renderer declares
-measurable capabilities; the Translation Layer selects among them. All nodes
-reaching the Renderer Layer have already been verified and coordinated.
-
 \paragraph{Trust Policy.}
 Validates all incoming nodes against the schema and trust requirements declared
 in the Ontology Language. Trust Policy is a gate: a node that fails
@@ -201,6 +196,15 @@ the attestation; Trust Policy compares them.
 Supplies a continuously updated context vector that modulates both the
 Translation Layer (modality selection and attention budget) and the Interaction
 Coordination Runtime (conflict resolution, acknowledgement timeouts).
+
+\paragraph{Renderers and input devices --- external to SIA.}
+Concrete output and input surfaces --- HUD, cluster, IVI touchscreen, voice,
+haptic, AR, steering wheel controls --- are vendor-specific implementations
+that consume modality decisions from the Runtime and declare measurable
+capabilities into the Translation Layer. They are not components of SIA;
+keeping them external preserves SIA's vendor neutrality. All nodes reaching
+a renderer have already been verified by Trust Policy and coordinated by the
+Runtime.
 
 %% ---------------------------------------------------------------
 \section{Node Taxonomy and Metadata Contracts}

@@ -1,19 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 480" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 560" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
   <title id="title">Semantic mediation architecture</title>
-  <desc id="desc">Architecture diagram showing Renderer, Interaction Coordination Runtime, Translation, Ontology Language and Schema Profile, Context Policy, and Trust and Provenance Policy responsibilities.</desc>
+  <desc id="desc">Architecture diagram showing the three functional components of SIA (Ontology Language and Schema Profile, Translation Layer, Interaction Coordination Runtime), the two cross-cutting policy functions (Trust Policy, Context Policy), and the external entities they interface with (emitters, renderers, occupant).</desc>
   <style>
     .box { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.2; }
     .box-light { fill: #fafafa; stroke: #1a1a1a; stroke-width: 1.2; }
+    .box-external { fill: #ffffff; stroke: #737373; stroke-width: 1.2; stroke-dasharray: 4 3; }
     .span-box { fill: #f0fdfa; stroke: #0f766e; stroke-width: 1.5; }
+    .sia-frame { fill: none; stroke: #0f766e; stroke-width: 1.5; stroke-dasharray: 6 4; }
     .label { font-size: 13px; font-weight: 600; fill: #1a1a1a; }
     .label-accent { font-size: 13px; font-weight: 700; fill: #0f766e; }
+    .label-ext { font-size: 12px; font-weight: 600; fill: #525252; }
     .desc { font-size: 11px; fill: #404040; }
     .desc-accent { font-size: 11px; fill: #0f766e; }
+    .desc-ext { font-size: 10.5px; fill: #525252; }
     .annot { font-size: 10px; fill: #525252; font-style: italic; }
-    .arrow { fill: none; stroke: #1a1a1a; stroke-width: 1.2; }
-    .arrow-accent { fill: none; stroke: #0f766e; stroke-width: 1.2; stroke-dasharray: 3 2; }
+    .arrow { fill: none; stroke: #1a1a1a; stroke-width: 1.3; }
+    .arrow-accent { fill: none; stroke: #0f766e; stroke-width: 1.3; }
     .figcap { font-size: 11px; fill: #525252; }
-    .external { font-size: 10px; fill: #737373; font-style: italic; }
+    .sia-tag { font-size: 11px; font-weight: 700; fill: #0f766e; letter-spacing: 0.6px; }
+    .ext-tag { font-size: 10px; font-weight: 600; fill: #737373; letter-spacing: 0.5px; font-style: italic; }
   </style>
 
   <defs>
@@ -25,77 +30,105 @@
     </marker>
   </defs>
 
-  <!-- External: Occupant top -->
-  <text x="380" y="32" text-anchor="middle" class="external">Occupant input · output</text>
+  <!-- External: Occupant at very top -->
+  <text x="380" y="28" text-anchor="middle" class="label-ext">Occupant</text>
+  <text x="380" y="44" text-anchor="middle" class="desc-ext">Driver · Front passenger · Rear passenger</text>
 
-  <!-- Renderer layer at top -->
-  <rect x="160" y="48" width="440" height="50" class="box" rx="3"/>
-  <text x="380" y="69" text-anchor="middle" class="label">Renderer Layer</text>
-  <text x="380" y="86" text-anchor="middle" class="desc">HUD · Cluster · IVI · Voice · Haptic · AR — consumers of the semantic stream</text>
+  <!-- External: Renderers (above SIA) -->
+  <text x="48" y="78" class="ext-tag">EXTERNAL</text>
+  <rect x="160" y="62" width="440" height="56" class="box-external" rx="3"/>
+  <text x="380" y="82" text-anchor="middle" class="label-ext">Renderers and input devices</text>
+  <text x="380" y="99" text-anchor="middle" class="desc-ext">HUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel</text>
+  <text x="380" y="112" text-anchor="middle" class="annot">consume modality decisions · declare capabilities</text>
+
+  <!-- SIA enclosing frame -->
+  <rect x="155" y="135" width="450" height="295" class="sia-frame" rx="6"/>
+  <text x="170" y="153" class="sia-tag">SIA</text>
 
   <!-- Runtime -->
-  <rect x="160" y="120" width="440" height="50" class="box-light" rx="3"/>
-  <text x="380" y="141" text-anchor="middle" class="label">Interaction Coordination Runtime</text>
-  <text x="380" y="158" text-anchor="middle" class="desc">Focus · task-flow state · acknowledgement · cross-renderer consistency</text>
+  <rect x="180" y="165" width="400" height="50" class="box-light" rx="3"/>
+  <text x="380" y="186" text-anchor="middle" class="label">Interaction Coordination Runtime</text>
+  <text x="380" y="203" text-anchor="middle" class="desc">Focus · task-flow state · acknowledgement · cross-renderer consistency</text>
 
   <!-- Translation -->
-  <rect x="160" y="192" width="440" height="50" class="box-light" rx="3"/>
-  <text x="380" y="213" text-anchor="middle" class="label">Translation Layer</text>
-  <text x="380" y="230" text-anchor="middle" class="desc">node × capabilities × context → concrete modality decision</text>
+  <rect x="180" y="230" width="400" height="50" class="box-light" rx="3"/>
+  <text x="380" y="251" text-anchor="middle" class="label">Translation Layer</text>
+  <text x="380" y="268" text-anchor="middle" class="desc">node × capabilities × context → modality decision</text>
 
   <!-- Ontology at the heart -->
-  <rect x="160" y="264" width="440" height="58" class="span-box" rx="3"/>
-  <text x="380" y="287" text-anchor="middle" class="label-accent">Ontology Language + Schema Profile</text>
-  <text x="380" y="304" text-anchor="middle" class="desc-accent">Typed primitives · metadata contracts · compatibility</text>
-  <text x="380" y="318" text-anchor="middle" class="annot">— long-term language of meaning —</text>
+  <rect x="180" y="295" width="400" height="62" class="span-box" rx="3"/>
+  <text x="380" y="318" text-anchor="middle" class="label-accent">Ontology Language + Schema Profile</text>
+  <text x="380" y="335" text-anchor="middle" class="desc-accent">Typed primitives · metadata contracts · compatibility</text>
+  <text x="380" y="349" text-anchor="middle" class="annot">— long-term language of meaning —</text>
 
-  <!-- Side: Context Policy (right) -->
-  <rect x="620" y="120" width="120" height="122" class="box-light" rx="3"/>
-  <text x="680" y="143" text-anchor="middle" class="label">Context</text>
-  <text x="680" y="158" text-anchor="middle" class="label">Policy</text>
-  <text x="680" y="178" text-anchor="middle" class="desc">SAE level</text>
-  <text x="680" y="193" text-anchor="middle" class="desc">Road type</text>
-  <text x="680" y="208" text-anchor="middle" class="desc">Driver state</text>
-  <text x="680" y="223" text-anchor="middle" class="desc">Market</text>
-  <text x="680" y="238" text-anchor="middle" class="desc">jurisdiction</text>
+  <!-- Trust Policy (left, cross-cutting) -->
+  <rect x="20" y="165" width="125" height="115" class="box-light" rx="3"/>
+  <text x="82" y="187" text-anchor="middle" class="label">Trust Policy</text>
+  <text x="82" y="203" text-anchor="middle" class="annot">cross-cutting</text>
+  <text x="82" y="222" text-anchor="middle" class="desc">req. vs attestation</text>
+  <text x="82" y="237" text-anchor="middle" class="desc">actor_class</text>
+  <text x="82" y="252" text-anchor="middle" class="desc">freshness · replay</text>
+  <text x="82" y="267" text-anchor="middle" class="desc">provenance</text>
 
-  <!-- Side: Trust and Provenance Policy (left) -->
-  <rect x="20" y="48" width="120" height="274" class="box-light" rx="3"/>
-  <text x="80" y="72" text-anchor="middle" class="label">Trust</text>
-  <text x="80" y="88" text-anchor="middle" class="label">Policy</text>
-  <text x="80" y="115" text-anchor="middle" class="desc">cross-cutting</text>
-  <text x="80" y="130" text-anchor="middle" class="desc">verification</text>
-  <text x="80" y="160" text-anchor="middle" class="desc">requirement</text>
-  <text x="80" y="175" text-anchor="middle" class="desc">vs.</text>
-  <text x="80" y="190" text-anchor="middle" class="desc">attestation</text>
-  <text x="80" y="220" text-anchor="middle" class="desc">actor_class</text>
-  <text x="80" y="235" text-anchor="middle" class="desc">policy</text>
-  <text x="80" y="265" text-anchor="middle" class="desc">freshness</text>
-  <text x="80" y="280" text-anchor="middle" class="desc">replay</text>
-  <text x="80" y="295" text-anchor="middle" class="desc">provenance</text>
+  <!-- Context Policy (right, cross-cutting) -->
+  <rect x="615" y="165" width="125" height="115" class="box-light" rx="3"/>
+  <text x="677" y="187" text-anchor="middle" class="label">Context Policy</text>
+  <text x="677" y="203" text-anchor="middle" class="annot">cross-cutting</text>
+  <text x="677" y="222" text-anchor="middle" class="desc">SAE level</text>
+  <text x="677" y="237" text-anchor="middle" class="desc">Road · Vehicle state</text>
+  <text x="677" y="252" text-anchor="middle" class="desc">Driver state</text>
+  <text x="677" y="267" text-anchor="middle" class="desc">Market jurisdiction</text>
 
-  <!-- External: SDV transport at bottom -->
-  <rect x="160" y="358" width="440" height="42" class="box" rx="3"/>
-  <text x="380" y="378" text-anchor="middle" class="label">SDV transport — Kuksa · uProtocol · service registry</text>
-  <text x="380" y="392" text-anchor="middle" class="external">— consumed, not part of this layer —</text>
+  <!-- External: Emitters at bottom -->
+  <text x="48" y="468" class="ext-tag">EXTERNAL</text>
+  <rect x="160" y="450" width="440" height="56" class="box-external" rx="3"/>
+  <text x="380" y="470" text-anchor="middle" class="label-ext">Emitters — Agents · Services · ADAS</text>
+  <text x="380" y="487" text-anchor="middle" class="desc-ext">SDV transport — Kuksa · uProtocol · Zenoh · service registry</text>
+  <text x="380" y="500" text-anchor="middle" class="annot">emit nodes + attestation</text>
 
-  <!-- Vertical connectors: layering relationship, not flow direction.
-       Node flow at runtime is upward (Trust → Translation → Runtime → Renderer → Occupant);
-       Ontology provides the contract used by every layer above. -->
-  <line x1="380" y1="170" x2="380" y2="190" class="arrow" stroke-dasharray="2 3"/>
-  <line x1="380" y1="242" x2="380" y2="262" class="arrow" stroke-dasharray="2 3"/>
-  <line x1="380" y1="98" x2="380" y2="118" class="arrow" stroke-dasharray="2 3"/>
-  <line x1="380" y1="322" x2="380" y2="356" class="arrow" stroke-dasharray="2 3"/>
+  <!-- Flow arrows: runtime is upward (emitters → trust → translation → runtime → renderers) -->
+
+  <!-- Emitters → Trust Policy (entry into SIA) -->
+  <path d="M 380 448 C 380 410, 200 360, 145 280" class="arrow-accent" fill="none" marker-end="url(#arrowhead-accent)"/>
+  <text x="225" y="395" text-anchor="middle" class="annot">emit + attestation</text>
+
+  <!-- Trust Policy → Translation (verified node) -->
+  <line x1="145" y1="255" x2="178" y2="255" class="arrow-accent" marker-end="url(#arrowhead-accent)"/>
+  <text x="162" y="248" text-anchor="middle" class="annot">verified</text>
+
+  <!-- Translation → Runtime -->
+  <line x1="380" y1="228" x2="380" y2="218" class="arrow-accent" marker-end="url(#arrowhead-accent)"/>
+
+  <!-- Runtime → Renderers (modality decision dispatch) -->
+  <line x1="380" y1="163" x2="380" y2="121" class="arrow-accent" marker-end="url(#arrowhead-accent)"/>
+  <text x="445" y="142" text-anchor="middle" class="annot">modality decision · dispatch</text>
+
+  <!-- Renderers → Translation (capabilities — back-channel) -->
+  <path d="M 200 116 C 150 130, 140 200, 178 235" class="arrow" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="3 3"/>
+  <text x="135" y="170" text-anchor="middle" class="annot">capabilities</text>
+
+  <!-- Renderers ↔ Occupant -->
+  <line x1="380" y1="60" x2="380" y2="50" class="arrow" marker-end="url(#arrowhead)"/>
+  <line x1="395" y1="50" x2="395" y2="60" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="455" y="58" text-anchor="middle" class="annot">render · input · ack</text>
+
+  <!-- Ontology → Translation (contract) -->
+  <line x1="380" y1="293" x2="380" y2="282" class="arrow-accent" marker-end="url(#arrowhead-accent)" stroke-dasharray="2 2"/>
+  <text x="430" y="290" text-anchor="middle" class="annot">contract</text>
+
+  <!-- Ontology → Trust Policy (schema) -->
+  <path d="M 180 320 C 130 320, 100 295, 90 280" class="arrow-accent" fill="none" marker-end="url(#arrowhead-accent)" stroke-dasharray="2 2"/>
+  <text x="120" y="316" text-anchor="middle" class="annot">schema</text>
 
   <!-- Context modulates Translation -->
-  <line x1="618" y1="217" x2="602" y2="217" class="arrow-accent" marker-end="url(#arrowhead-accent)"/>
-  <text x="610" y="207" text-anchor="end" class="annot">modulates</text>
+  <line x1="613" y1="255" x2="583" y2="255" class="arrow-accent" marker-end="url(#arrowhead-accent)"/>
+  <text x="598" y="248" text-anchor="middle" class="annot">modulates</text>
 
-  <!-- Trust validates -->
-  <line x1="142" y1="217" x2="158" y2="217" class="arrow-accent" marker-end="url(#arrowhead-accent)"/>
-  <text x="150" y="207" text-anchor="start" class="annot">validates</text>
+  <!-- Context modulates Runtime -->
+  <line x1="613" y1="190" x2="583" y2="190" class="arrow-accent" marker-end="url(#arrowhead-accent)"/>
+  <text x="598" y="183" text-anchor="middle" class="annot">modulates</text>
 
   <!-- caption -->
-  <text x="380" y="450" text-anchor="middle" class="figcap">Figure 2. Mediation architecture (layered view). Dashed vertical connectors show layering only;</text>
-  <text x="380" y="465" text-anchor="middle" class="figcap">node flow at runtime is upward (Trust → Translation → Runtime → Renderer). Trust and Context are cross-cutting policy functions.</text>
+  <text x="380" y="535" text-anchor="middle" class="figcap">Figure 2. Mediation architecture. SIA (dashed teal frame) contains three functional components — Ontology, Translation, Runtime —</text>
+  <text x="380" y="550" text-anchor="middle" class="figcap">and two cross-cutting policies (Trust, Context). Emitters and renderers are external; they interface with SIA through Trust (entry) and capability/dispatch (exit).</text>
 </svg>
