@@ -129,6 +129,6 @@
   <text x="598" y="183" text-anchor="middle" class="annot">modulates</text>
 
   <!-- caption -->
-  <text x="380" y="535" text-anchor="middle" class="figcap">Figure 2. Mediation architecture. SIA (dashed teal frame) contains three functional components — Ontology, Translation, Runtime —</text>
+  <text x="380" y="535" text-anchor="middle" class="figcap">Figure 3. Mediation architecture. SIA (dashed teal frame) contains three functional components — Ontology, Translation, Runtime —</text>
   <text x="380" y="550" text-anchor="middle" class="figcap">and two cross-cutting policies (Trust, Context). Emitters and renderers are external; they interface with SIA through Trust (entry) and capability/dispatch (exit).</text>
 </svg>

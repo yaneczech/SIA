@@ -41,11 +41,12 @@ A mediation architecture — three functional components (Ontology Language + Sc
 
 ## Key diagrams
 
-The diagrams are embedded directly in the paper as Mermaid and render automatically on GitHub:
+The diagrams are embedded directly in the paper (as Mermaid sources rendered automatically on GitHub, plus SVG exports in `./figures/`):
 
-- **Fig 1** — [Where SIA sits in the SDV stack](./01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-position-in-the-ecosystem)
-- **Fig 2** — [Mediation architecture](./01_Semantic-Interaction-Architecture-sdv.md#3-architecture-overview)
-- **Fig 3** — [Node taxonomy](./01_Semantic-Interaction-Architecture-sdv.md#4-node-taxonomy)
+- **Fig 1** — [Complexity comparison: before vs. after SIA](./01_Semantic-Interaction-Architecture-sdv.md#1-motivation) — the value proposition in one image
+- **Fig 2** — [Where SIA sits in the SDV stack](./01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-position-in-the-ecosystem)
+- **Fig 3** — [Mediation architecture](./01_Semantic-Interaction-Architecture-sdv.md#3-architecture-overview)
+- **Fig 4** — [Node taxonomy](./01_Semantic-Interaction-Architecture-sdv.md#4-node-taxonomy)
 - **Fig A.1** — [Alert flow sequence diagram](./02_Appendix-a-worked-example.md#a3-trust-verification-flow)
 
 ## Status and how to engage

@@ -27,6 +27,12 @@ The cost of this tight coupling compounds along three axes. **Engineering cost**
 
 We argue that these costs are not solved by better tooling, more screens, or larger language models alone. They are symptoms of a missing mediation boundary between SDV services and concrete HMI implementations.
 
+A natural objection at this point is that any such mediation boundary is itself an additional layer, and that additional layers are themselves complexity. The objection is real but, we will argue, inverted. The complexity already exists; it lives today as duplicated logic distributed across every emitter–renderer pair in the current stack — every direct path implements its own trust verification, context evaluation, capability matching, accessibility handling, fallback chain, and audit logic, and divergences between these implementations are a primary source of inconsistency and security exposure. SIA does not introduce that complexity; it consolidates it into one auditable mediation boundary. Figure 1 contrasts the two regimes side by side.
+
+![Figure 1 — complexity comparison](./figures/fig1-complexity-comparison.svg)
+
+*Figure 1. Where the cross-cutting interaction logic lives, before vs. after SIA. Without SIA, every emitter–renderer pair carries its own implementation of trust, context, capability, accessibility, fallback, and audit logic — a matrix of N × M duplications that diverges over time. With SIA, this cross-cutting logic exists once at the mediation boundary; renderers become thin stateless consumers and adding new emitters or renderers is linear, not multiplicative.*
+
 The first version of such a boundary should be deliberately narrow. We scope it to three cores: **intent/action abstraction** for high-value commands and interaction events, **attention policy** for priority, interruptibility, and driving context, and **trust provenance** for determining which actors may emit which interaction types with which authority. The ontology language must nevertheless be designed for scale from the beginning: new domains, node families, metadata fields, and renderer capabilities should be additive where possible, and older vehicles must be able to ignore or degrade newer constructs safely. It must also be ergonomic for human authors: the language should mirror the structure of natural communication rather than expose only machine-oriented transport fields. Cross-domain portability and a vehicle-wide interaction runtime are treated as future specification work rather than as requirements for initial adoption.
 
 ---
@@ -47,7 +53,7 @@ Significant abstraction work exists below and around the interaction layer, but 
 
 **Adjacent domains.** Game engines such as Unreal's Enhanced Input and Unity's Input System routinely abstract input actions from devices. ARIA performs an analogous role for web accessibility. These prior arts are useful analogies, but the remainder of this paper keeps the scope automotive-specific: safety, multi-renderer behavior, ASIL-related constraints, regulated distraction limits, and long vehicle lifecycles.
 
-Figure 1 positions the proposed layer in the SDV stack.
+Figure 2 positions the proposed layer in the SDV stack.
 
 ```mermaid
 graph TB
@@ -69,7 +75,7 @@ graph TB
     style SIA fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 1. Position of the proposed Semantic Interaction Architecture relative to existing SDV layers.*
+*Figure 2. Position of the proposed Semantic Interaction Architecture relative to existing SDV layers.*
 
 The proposed Semantic Interaction Architecture (SIA) sits **above** existing service and data abstractions and **below** concrete renderers. It is not a replacement for any current SDV project or HMI stack; it is a mediation boundary between them and occupant-facing interaction.
 
@@ -77,7 +83,7 @@ The proposed Semantic Interaction Architecture (SIA) sits **above** existing ser
 
 ## 3. Architecture Overview
 
-We propose three functional components and two cross-cutting policy functions, illustrated in Figure 2. This is a mediation architecture rather than an interaction operating system: it defines what crosses the boundary and how policy is applied, while leaving renderer implementation and most HMI runtime behavior to existing stacks.
+We propose three functional components and two cross-cutting policy functions, illustrated in Figure 3. This is a mediation architecture rather than an interaction operating system: it defines what crosses the boundary and how policy is applied, while leaving renderer implementation and most HMI runtime behavior to existing stacks.
 
 **Ontology Language and Schema Profile.** A stable ontology language defines the long-term vocabulary of interaction meaning, inheritance, metadata contracts, and compatibility rules. The initial standardisation target should be a small typed event/command schema profile for high-value interactions. This keeps the first implementation tractable without sacrificing a scalable naming and evolution model.
 
@@ -117,7 +123,7 @@ graph TB
     style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 2. Mediation architecture. SIA contains three functional components (Ontology, Translation, Runtime) and two cross-cutting policies (Trust, Context). Emitters and renderers are external: emitters submit nodes through Trust Policy; renderers register capabilities into Translation and consume the resulting modality decisions from Runtime. The Ontology Language + Schema Profile is the authoritative reference for both Trust Policy and Translation Layer.*
+*Figure 3. Mediation architecture. SIA contains three functional components (Ontology, Translation, Runtime) and two cross-cutting policies (Trust, Context). Emitters and renderers are external: emitters submit nodes through Trust Policy; renderers register capabilities into Translation and consume the resulting modality decisions from Runtime. The Ontology Language + Schema Profile is the authoritative reference for both Trust Policy and Translation Layer.*
 
 ## 3.1 Human-Ergonomic Language Design
 
@@ -180,7 +186,7 @@ graph TB
     style I fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
 ```
 
-*Figure 3. Node taxonomy. Four primary types with distinct metadata contracts; Event splits into Alert and Notification. Naming follows reverse-DNS hierarchy; subclasses may strengthen but not weaken contracts.*
+*Figure 4. Node taxonomy. Four primary types with distinct metadata contracts; Event splits into Alert and Notification. Naming follows reverse-DNS hierarchy; subclasses may strengthen but not weaken contracts.*
 
 **Action.** Occupant-initiated. May be discrete (`Navigate.Back`), sustained (`Media.Volume.Increase`), or continuous (`Map.Zoom`). Carries `recommended_modality`, `attention_metrics`, `temporal_type`.
 

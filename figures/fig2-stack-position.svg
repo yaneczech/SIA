@@ -79,5 +79,5 @@
   <text x="465" y="480" class="component">CAN · Ethernet · SOME/IP</text>
 
   <!-- caption -->
-  <text x="380" y="520" text-anchor="middle" class="figcap">Figure 1. Position of the proposed Semantic Interaction Architecture relative to existing SDV layers.</text>
+  <text x="380" y="520" text-anchor="middle" class="figcap">Figure 2. Position of the proposed Semantic Interaction Architecture relative to existing SDV layers.</text>
 </svg>

@@ -142,5 +142,5 @@
   <text x="380" y="403" text-anchor="middle" class="note">Every node carries since_version; deprecated nodes carry replaced_by.</text>
 
   <!-- caption -->
-  <text x="380" y="440" text-anchor="middle" class="figcap">Figure 3. Node taxonomy. Four primary types with distinct metadata contracts; Event splits into Alert and Notification.</text>
+  <text x="380" y="440" text-anchor="middle" class="figcap">Figure 4. Node taxonomy. Four primary types with distinct metadata contracts; Event splits into Alert and Notification.</text>
 </svg>
