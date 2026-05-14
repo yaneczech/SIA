@@ -17,7 +17,7 @@
 
   <!-- left-side scope brackets -->
   <text x="40" y="60" class="scope">OCCUPANT</text>
-  <text x="40" y="155" class="scope">HMI SURFACES</text>
+  <text x="40" y="155" class="scope">PHYSICAL HMI</text>
   <text x="40" y="240" class="scope">PROPOSED LAYER</text>
   <text x="40" y="335" class="scope">SDV STACK</text>
   <text x="40" y="475" class="scope">HARDWARE</text>
@@ -29,7 +29,7 @@
 
   <!-- HMI Surfaces -->
   <rect x="180" y="100" width="540" height="80" class="layer-sub" rx="3"/>
-  <text x="450" y="120" text-anchor="middle" class="layer-label">Renderers and Input Devices</text>
+  <text x="450" y="120" text-anchor="middle" class="layer-label">Physical HMI surfaces and Input Devices</text>
   <text x="220" y="145" class="component">HUD</text>
   <text x="280" y="145" class="component">Cluster</text>
   <text x="345" y="145" class="component">IVI touchscreen</text>
@@ -46,12 +46,13 @@
   <!-- Proposed: Semantic Interaction Architecture -->
   <rect x="180" y="200" width="540" height="80" class="proposed" rx="3"/>
   <text x="450" y="222" text-anchor="middle" class="layer-label-accent">Semantic Interaction Architecture</text>
-  <text x="225" y="248" class="component-accent">Ontology</text>
-  <text x="295" y="248" class="component-accent">Translation</text>
-  <text x="380" y="248" class="component-accent">Runtime</text>
-  <text x="447" y="248" class="component-accent">Context</text>
-  <text x="515" y="248" class="component-accent">Trust</text>
-  <text x="450" y="268" text-anchor="middle" class="side-note">— proposed —</text>
+  <text x="210" y="248" class="component-accent">Ontology</text>
+  <text x="278" y="248" class="component-accent">Translation</text>
+  <text x="355" y="248" class="component-accent">Runtime</text>
+  <text x="420" y="248" class="component-accent">Renderer</text>
+  <text x="490" y="248" class="component-accent">Context</text>
+  <text x="555" y="248" class="component-accent">Trust</text>
+  <text x="450" y="268" text-anchor="middle" class="side-note">— four functional layers + two cross-cutting policies (Trust, Context) —</text>
 
   <!-- SDV Stack: services -->
   <rect x="180" y="300" width="540" height="48" class="layer-sub" rx="3"/>

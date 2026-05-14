@@ -111,7 +111,7 @@
   <text x="240" y="295" text-anchor="middle" class="pill-text">trust_requirements</text>
   <text x="240" y="308" text-anchor="middle" class="pill-text">priority</text>
   <text x="240" y="321" text-anchor="middle" class="pill-text">requires_ack</text>
-  <text x="240" y="334" text-anchor="middle" class="pill-text">freshness_max_age</text>
+  <text x="240" y="334" text-anchor="middle" class="pill-text">temporal_freshness_ms</text>
 
   <text x="350" y="295" text-anchor="middle" class="pill-text">suppression_class</text>
   <text x="350" y="308" text-anchor="middle" class="pill-text">priority</text>
@@ -137,7 +137,7 @@
   <line x1="640" y1="202" x2="640" y2="278" class="branch"/>
 
   <!-- Note about inheritance -->
-  <text x="380" y="375" text-anchor="middle" class="note">Naming follows reverse-DNS hierarchy. Inheritance is supported:</text>
+  <text x="380" y="375" text-anchor="middle" class="note">Naming follows reverse-DNS hierarchy. Each declaration carries inherits_from:</text>
   <text x="380" y="389" text-anchor="middle" class="note">subclasses may strengthen but not weaken metadata contracts.</text>
   <text x="380" y="403" text-anchor="middle" class="note">Every node carries since_version; deprecated nodes carry replaced_by.</text>
 

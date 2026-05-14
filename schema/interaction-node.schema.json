@@ -2,18 +2,24 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/janjanecek/SIA/schema/interaction-node.schema.json",
   "title": "Semantic Interaction Node",
-  "description": "Minimal draft schema profile for the declarative metadata contract described by SIA v0.1. This is intended as an implementable subset of a broader ontology language.",
+  "description": "Minimal draft schema profile for the declarative metadata contract described by SIA v0.1. This is intended as an implementable subset of a broader ontology language. The choice of formalism (JSON Schema vs OWL/SHACL vs custom) is held open in Section 12 of the position paper — this file is one candidate, not a binding commitment.",
   "type": "object",
   "required": [
     "node",
     "since_version",
     "direction",
-    "target_role"
+    "target_role",
+    "inherits_from"
   ],
   "properties": {
     "node": {
       "type": "string",
-      "pattern": "^Interaction\\.(Action|Event|State|Task)\\.[A-Za-z0-9_.]+$"
+      "pattern": "^Interaction\\.(Action|Event|State|Task)(\\.[A-Za-z0-9_]+)+$"
+    },
+    "inherits_from": {
+      "type": "string",
+      "pattern": "^Interaction(\\.[A-Za-z0-9_]+)+$",
+      "description": "Reference to the parent node in the ontology hierarchy. Declaration-time only; not present on runtime instances."
     },
     "since_version": {
       "type": "string",
@@ -26,11 +32,19 @@
     "replaced_by": {
       "type": "string"
     },
+    "compatible_with_min_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
     "direction": {
-      "enum": ["input", "output", "internal"]
+      "enum": ["input", "output", "internal", "composite"],
+      "description": "input = Action (user → system); output = Event (system → user); internal = State; composite = Task (multi-step over Actions and States)."
     },
     "temporal_type": {
       "enum": ["discrete", "sustained", "continuous"]
+    },
+    "recommended_modality": {
+      "type": "string"
     },
     "attention_metrics": {
       "type": "object",
@@ -72,17 +86,15 @@
     },
     "ack_timeout_ms": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "description": "Base declarative timeout. Context Policy may scale the effective value at runtime per the modifier whitelist in Section 8."
     },
     "ack_authority": {
-      "type": "string"
+      "enum": ["driver_only", "any_occupant", "system"]
     },
     "trust_requirements": {
       "type": "object",
       "properties": {
-        "min_trust_level": {
-          "enum": ["none", "low", "standard", "elevated", "critical"]
-        },
         "signed_origin_required": {
           "type": "boolean"
         },
@@ -113,7 +125,13 @@
       "additionalProperties": false
     },
     "target_role": {
+      "enum": ["driver", "front_passenger", "rear_passenger", "any_occupant", "system_internal"]
+    },
+    "scope": {
       "type": "string"
+    },
+    "consistency_class": {
+      "enum": ["strong", "eventual", "best_effort"]
     },
     "accessibility_alt": {
       "type": "object",
@@ -126,15 +144,23 @@
       },
       "uniqueItems": true
     },
+    "assessment_basis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
     "pii_class": {
-      "enum": ["none", "low", "sensitive", "special_category"]
+      "enum": ["none", "personal", "sensitive", "special_category"],
+      "description": "Aligned with GDPR vocabulary: personal = Art. 4(1); sensitive = de-facto industry tier between personal and special_category; special_category = Art. 9."
     },
     "temporal_freshness_ms": {
       "type": "integer",
       "minimum": 0
     },
     "suppression_class": {
-      "type": "string"
+      "enum": ["safety_critical", "regulated", "system", "user", "third_party"]
     },
     "merges_with": {
       "type": "array",
@@ -146,12 +172,25 @@
     "fallback_chain": {
       "type": "array",
       "items": {
-        "type": "string"
+        "enum": ["hud", "cluster", "ivi", "voice", "haptic", "ar", "steering_wheel"]
       }
     },
     "degradation_policy": {
-      "type": "string"
+      "enum": ["escalate", "downgrade", "suppress", "no_degradation"]
+    },
+    "step_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "interruptible_at": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "resumable_across_contexts": {
+      "type": "boolean"
     }
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }

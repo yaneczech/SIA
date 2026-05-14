@@ -36,8 +36,8 @@ A mediation architecture — four functional components (Ontology Language + Sch
 ## Read the paper
 
 - [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — mediation architecture, node taxonomy, metadata contracts, trust and attention policy, context as a multi-axis vector, versioning, relations to existing standards, and a path toward Eclipse SDV standardisation.
-- [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a single `Alert.Collision.Warning` traced end-to-end: ontology declaration, trust verification, translation under three contexts (highway/manual, parked, L4/autonomous), and four adversarial scenarios (spoofed actor class, expired freshness, AI agent attempting a critical alert, priority injection).
-- [**Draft JSON Schema**](./schema/interaction-node.schema.json) — early machine-readable schema for interaction nodes; work in progress ahead of formal schema formalism selection.
+- [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a single `Alert.Collision.Warning` traced end-to-end: ontology declaration, trust verification, translation under three contexts (highway/manual, parked, L4/autonomous), and four adversarial scenarios (unauthorised actor class, expired freshness, AI agent attempting a critical alert, priority injection).
+- [**Draft JSON Schema**](./schema/interaction-node.schema.json) — illustrative machine-readable encoding of the v0.1 metadata contract. The choice of formalism (JSON Schema vs. OWL/SHACL vs. a custom vocabulary) is held open as an explicit question in §12 of the paper; this file is one candidate, not a binding commitment.
 
 ## Key diagrams
 

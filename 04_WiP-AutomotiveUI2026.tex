@@ -288,7 +288,11 @@ on the node in the ontology --- what consumers must verify before propagating
 or rendering. \emph{Trust attestation} is attached to the instance by the
 emitter --- cryptographic and provenance evidence that requirements are met.
 The Trust Policy verifies attestation satisfies requirements before the node
-propagates; mismatches degrade through a declared \texttt{degradation\_policy}.
+propagates. Trust failures are \textbf{fail-closed}: the node is rejected and a
+\texttt{SecurityEvent} is logged; it never reaches Translation or a renderer.
+This is distinct from \texttt{degradation\_policy}, which governs only renderer
+capability fallback (e.g., routing to voice when the HUD is unavailable)
+\emph{after} a trust check has already passed.
 
 An \texttt{actor\_class} taxonomy drives policy mechanically: \texttt{adas} and
 \texttt{vsc} may emit safety-critical alerts; \texttt{agent\_local} and
@@ -322,9 +326,12 @@ Context Policy:
 \[
   \text{effective\_cost} = \text{base\_metric} \times \text{context\_modifier}
 \]
-This enables explicit budget checks (\emph{``maximum 2000~ms TEORT during
-manual highway driving''}) and mechanical policy decisions to reject, defer, or
-transform interactions that exceed them.
+Budgets are configured \emph{per node class and per context}, not globally.
+For illustration: $\le$1500~ms TEORT for \texttt{Alert.*} (safety-critical,
+must surface immediately) and $\le$2000~ms TEORT for general \texttt{Action.*}
+under manual highway driving. Concrete budgets are a deployment-level
+configuration; SIA defines only the contract that makes them mechanically
+enforceable.
 
 %% ---------------------------------------------------------------
 \section{Worked Example: Alert.Collision.Warning}
@@ -367,20 +374,27 @@ fallback_chain: [hud, cluster, voice, haptic]
 \end{figure}
 
 \paragraph{Context-dependent translation.}
-Under manual highway driving (\texttt{sae\_level: 1}, \texttt{traffic\_density:
-dense}), the Translation Layer selects HUD as primary with concurrent cluster
-and haptic, and rejects the IVI touchscreen (off-axis; exceeds attention budget
-under dense-traffic context modifier). Under L4 autonomous driving
-(\texttt{driver\_state: not\_monitoring}), HUD is de-prioritised in favour of
-cluster and full-sentence voice prompt; \texttt{ack\_timeout\_ms} extends from
-3000~ms to 6000~ms via context modifier.
+Under manual highway driving (\texttt{sae\_level: 1},
+\texttt{vehicle\_state: moving}, \texttt{traffic\_density: dense}), the
+Translation Layer selects HUD as primary with concurrent cluster and haptic,
+and rejects the IVI touchscreen (off-axis; exceeds attention budget under
+dense-traffic context modifier). Under L4 autonomous driving
+(\texttt{sae\_level: 4}, \texttt{driver\_state: not\_monitoring}), HUD is
+de-prioritised in favour of cluster and full-sentence voice prompt; Context
+Policy scales the effective \texttt{ack\_timeout\_ms} from a base of 3000~ms
+to 6000~ms via its published modifier rule (the node's declarative value is
+unchanged).
 
 \paragraph{Adversarial rejection.}
-A third-party application claiming \texttt{Alert.Collision.Warning} is rejected
-because \texttt{third\_party\_app} $\notin$ \texttt{permitted\_actor\_classes}.
-A replay of a 1100~ms-old instance is rejected because age exceeds
-\texttt{max\_age\_ms: 200}. A local LLM agent is rejected for the same class
-reason. Priority injection --- an adversary emitting a notification with
+A third-party application addressing \texttt{Alert.Collision.Warning} is
+rejected as an unauthorised emission
+(\texttt{third\_party\_app} $\notin$ \texttt{permitted\_actor\_classes}), even
+when its own app-store signature is valid. A class-spoofing attempt --- the
+same app falsely attesting \texttt{actor\_class: adas} --- fails at signature
+verification because the app lacks the ADAS signing key. A replay of a
+1100~ms-old instance is rejected because age exceeds
+\texttt{max\_age\_ms: 200}. A local LLM agent is rejected on the same class
+basis. Priority injection --- an adversary emitting a notification with
 \texttt{priority: 99} --- is defeated because priority is a property of the
 ontology declaration, not the instance.
 
@@ -418,8 +432,8 @@ verifiability.
 
 \paragraph{Context-adaptive interaction design.}
 The multi-axis context vector (\texttt{sae\_level}, \texttt{driver\_state},
-\texttt{road\_type}, \texttt{market\_jurisdiction}) formalises the context
-space that AutomotiveUI researchers use informally. Experiments can be designed
+\texttt{road\_type}, \texttt{vehicle\_state}, \texttt{market\_jurisdiction})
+formalises the context space that AutomotiveUI researchers use informally. Experiments can be designed
 against explicit context predicates rather than bespoke scenario definitions,
 improving replicability.
 

@@ -31,7 +31,6 @@ attention_metrics:
   cognitive_load: high
 
 trust_requirements:
-  min_trust_level: critical
   signed_origin_required: true
   permitted_actor_classes: [adas, vsc]
   max_age_ms: 200
@@ -50,7 +49,7 @@ accessibility_alt:
   hearing_impaired: [hud, cluster, haptic]
   motor_limited:
     ack_kind: gaze
-regulatory_basis: [UNECE_R131, ISO_15623]
+regulatory_basis: [UNECE_R152, ISO_15623]
 assessment_basis: [NHTSA_FCW_NCAP]
 pii_class: none
 ```
@@ -61,13 +60,13 @@ Several properties are worth noting. `priority: 95` places this alert above almo
 
 ## A.2 Runtime instance — legitimate emission
 
-At runtime, the ADAS subsystem emits an instance carrying its attestation. Trust and provenance policy verifies the attestation against the semantic declaration before propagation.
+At runtime, the ADAS subsystem emits an instance carrying its attestation. Trust Policy verifies the attestation against the semantic declaration before propagation.
 
 ```yaml
 instance_of: Interaction.Event.Alert.Collision.Warning
 ontology_version: 1.0.0
 instance_id: c8e1f4b2-...                # for ack correlation
-timestamp_ms: 1731504920123
+timestamp_ms: 1778803920123              # ≈ 2026-05-14 12:12 UTC
 
 payload:
   ttc_seconds: 1.4                       # time to collision
@@ -78,7 +77,7 @@ attestation:
   actor_class: adas
   actor_id: ADAS_v2.3.1
   signature: <JWS over canonical form>
-  timestamp_ms: 1731504920123
+  timestamp_ms: 1778803920123
   nonce: <random-per-emission>
   provenance_chain: [adas]
 ```
@@ -112,7 +111,7 @@ sequenceDiagram
 
 *Figure A.1. Sequence flow for Alert.Collision.Warning. Trust verification is a chokepoint before Translation. Renderer dispatch is multicast; acknowledgement is tracked by Runtime.*
 
-Trust and provenance policy is the chokepoint at which interaction integrity is enforced. Importantly, verification operates *before* Translation — a node that fails verification never reaches a renderer, regardless of its declared priority.
+Trust Policy is the chokepoint at which interaction integrity is enforced. Importantly, verification operates *before* Translation — a node that fails verification never reaches a renderer, regardless of its declared priority.
 
 ---
 
@@ -126,11 +125,12 @@ The same instance is translated differently depending on the active Context vect
 context:
   sae_level: 1
   road_type: highway
+  vehicle_state: moving
   traffic_density: dense
   weather: clear
   autonomy_engaged: false
   driver_state: attentive
-  market_jurisdiction: UNECE
+  market_jurisdiction: DE
 ```
 
 Translation Layer decision:
@@ -140,21 +140,22 @@ Translation Layer decision:
 - **Concurrent:** Voice short prompt (250 ms)
 - **Not selected:** IVI touchscreen (off-axis, exceeds glance budget under dense traffic context modifier)
 
-Effective attention cost: `600 ms × 1.2 (dense traffic modifier) = 720 ms` — within budget for highway manual driving (configured at 1500 ms TEORT for safety-critical alerts).
+Effective attention cost: `600 ms × 1.2 (dense traffic modifier) = 720 ms` — within the 1500 ms TEORT budget configured for `Alert.*` in manual highway driving (Section 7).
 
 ### A.4.2 Parked, charging
 
 ```yaml
 context:
   sae_level: 0
-  road_type: stationary
-  traffic_density: none
+  road_type: urban
+  vehicle_state: charging
+  traffic_density: free
   autonomy_engaged: false
   driver_state: unknown
-  market_jurisdiction: UNECE
+  market_jurisdiction: EU
 ```
 
-The alert is suppressed by an upstream rule: ADAS does not emit `Collision.Warning` while stationary. If emitted anyway (e.g., during sensor diagnostics), the Translation Layer renders to IVI only with a static override label "Diagnostic mode — not a real warning", bound to a policy rule of the form `context.road_type = stationary ∧ actor_class = adas → inject_override_label: "Diagnostic mode — not a real warning"`. This is policy-encoded behaviour, not designer judgement.
+The alert is suppressed by an upstream rule: ADAS does not emit `Collision.Warning` while `vehicle_state ≠ moving`. If emitted anyway (e.g., during sensor diagnostics), the Translation Layer renders to IVI only with a static override label "Diagnostic mode — not a real warning", bound to a policy rule of the form `context.vehicle_state ∈ {parked, charging, service} ∧ actor_class = adas → inject_override_label: "Diagnostic mode — not a real warning"`. This is policy-encoded behaviour, not designer judgement.
 
 Note: the preferred design for diagnostic and test emission is a distinct node type — e.g., `Notification.Diagnostic.CollisionSensorTest` — rather than a live `Alert.Collision.Warning` with an injected label. Reusing the safety-critical node in a degraded context conflates two semantically different events and risks training occupants to dismiss genuine alerts. The parked scenario is included here to illustrate Translation Layer override capability; it does not represent recommended practice.
 
@@ -164,9 +165,10 @@ Note: the preferred design for diagnostic and test emission is a distinct node t
 context:
   sae_level: 4
   road_type: highway
+  vehicle_state: moving
   autonomy_engaged: true
   driver_state: not_monitoring
-  market_jurisdiction: UNECE
+  market_jurisdiction: DE
 ```
 
 Translation Layer decision:
@@ -176,15 +178,15 @@ Translation Layer decision:
 - **Concurrent:** Haptic on seat
 - **Not selected:** HUD (driver not assumed to be looking forward)
 
-At L4 autonomy, the ADS handles the collision response autonomously; the occupant alert serves as an awareness notification rather than an emergency response trigger. Accordingly, `ack_kind` shifts from `explicit_input` toward a logged awareness signal, and the `ack_timeout_ms` modifier extends from 3000 ms to 6000 ms to reflect the occupant's disengaged state — after which the interaction is closed as `timeout_logged` rather than `unacknowledged`. The occupant is not expected to prevent the collision; the ADS is. The extended timeout reflects a different semantic for `ack` at this autonomy level, not a relaxed safety response window.
+At L4 autonomy, the ADS handles the collision response autonomously; the occupant alert serves as an awareness notification rather than an emergency response trigger. Accordingly, `ack_kind` shifts from `explicit_input` toward a logged awareness signal, and Context Policy applies its published modifier rule to scale the effective `ack_timeout_ms` from a base of 3000 ms to 6000 ms — within the whitelist of context-modulable numeric fields defined in Section 8. The base declarative value on the node itself is unchanged; only the effective runtime value is adjusted. After this extended window the interaction is closed as `timeout_logged` rather than `unacknowledged`. The occupant is not expected to prevent the collision; the ADS is. The extended timeout reflects a different semantic for `ack` at this autonomy level, not a relaxed safety response window.
 
 ---
 
 ## A.5 Adversarial scenarios
 
-### A.5.1 Spoofed actor class
+### A.5.1 Unauthorised actor class
 
-A third-party application emits a message claiming to be `Alert.Collision.Warning`:
+A third-party application emits a message addressed as `Alert.Collision.Warning`. It attests its actual class truthfully, signed with its valid app-store certificate:
 
 ```yaml
 attestation:
@@ -193,18 +195,18 @@ attestation:
   signature: <valid app-store signature>
 ```
 
-Trust and provenance policy rejects the instance: `third_party_app ∉ permitted_actor_classes`. The message does not propagate. A `State.SecurityEvent.UnauthorisedEmission` is generated for logging.
+Even with a cryptographically valid signature, Trust Policy rejects the instance: `third_party_app ∉ permitted_actor_classes`. A `State.SecurityEvent.UnauthorisedEmission` is generated for logging. The complementary case — a third-party app falsely claiming `actor_class: adas` to bypass this check — is defeated at signature verification: the app cannot produce a JWS signed by an ADAS key it does not possess. The two together (unauthorised class with valid signature, and class spoofing with invalid signature) cover both ways an unsanctioned actor might try to emit a safety-critical alert.
 
 ### A.5.2 Expired freshness
 
 A replay of a 1-second-old legitimate instance arrives for verification.
 
 ```yaml
-attestation.timestamp_ms: 1731504919023
-current_time_ms:           1731504920123  # 1100 ms later
+attestation.timestamp_ms: 1778803919023
+current_time_ms:           1778803920123  # 1100 ms later
 ```
 
-Trust and provenance policy rejects: age `1100 ms > max_age_ms (200)`. The instance does not propagate. This protects against captured-and-replayed warnings designed to desensitise the driver.
+Trust Policy rejects: age `1100 ms > max_age_ms (200)`. The instance does not propagate. This protects against captured-and-replayed warnings designed to desensitise the driver.
 
 ### A.5.3 AI agent attempting to issue critical alert
 
@@ -217,7 +219,7 @@ attestation:
   # (remaining attestation fields omitted for brevity)
 ```
 
-Trust and provenance policy rejects: `agent_local ∉ permitted_actor_classes`. The agent may emit lower-trust nodes (`Notification.Suggestion.*`), but the integrity of safety-critical alerts is structurally protected from agentic emission, regardless of how the agent was prompted. This complements service-level authentication by constraining what an authenticated actor is authorised to say.
+Trust Policy rejects: `agent_local ∉ permitted_actor_classes`. The agent may emit lower-authority nodes (`Notification.Suggestion.*`), but the integrity of safety-critical alerts is structurally protected from agentic emission, regardless of how the agent was prompted. This complements service-level authentication by constraining what an authenticated actor is authorised to say.
 
 ### A.5.4 Priority injection
 
@@ -231,7 +233,7 @@ An adversary attempts to emit a benign notification with elevated `priority: 99`
 2. **Attention checks are more auditable.** A regulator or safety team can inspect the declared attention-demand proxies and verify that policy decisions are traceable to explicit thresholds.
 3. **Trust is enforced at a chokepoint** before rendering, and the policy is expressed in the semantic schema rather than embedded in renderer code.
 4. **AI agents are not categorically blocked from interaction**, but they cannot impersonate safety-critical subsystems. This is a different and stronger property than service-level authentication: it constrains *what kinds of things an authenticated agent may say*, not merely *whether it may speak*.
-5. **Adversarial cases reduce to schema checks.** Spoofing, replay, and priority injection are caught by mechanical validation of declared contracts rather than ad-hoc detection.
+5. **Adversarial cases reduce to schema checks.** Unauthorised emission, class spoofing, replay, and priority injection are caught by mechanical validation of declared contracts rather than ad-hoc detection.
 
 ---
 

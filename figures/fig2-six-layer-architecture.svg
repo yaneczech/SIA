@@ -79,11 +79,13 @@
   <text x="380" y="378" text-anchor="middle" class="label">SDV transport — Kuksa · uProtocol · service registry</text>
   <text x="380" y="392" text-anchor="middle" class="external">— consumed, not part of this layer —</text>
 
-  <!-- Arrows vertical (renderer ↑↓ runtime ↑↓ translation ↑↓ ontology) -->
-  <line x1="380" y1="170" x2="380" y2="190" class="arrow" marker-end="url(#arrowhead)"/>
-  <line x1="380" y1="242" x2="380" y2="262" class="arrow" marker-end="url(#arrowhead)"/>
-  <line x1="380" y1="98" x2="380" y2="118" class="arrow" marker-end="url(#arrowhead)"/>
-  <line x1="380" y1="322" x2="380" y2="356" class="arrow" marker-end="url(#arrowhead)"/>
+  <!-- Vertical connectors: layering relationship, not flow direction.
+       Node flow at runtime is upward (Trust → Translation → Runtime → Renderer → Occupant);
+       Ontology provides the contract used by every layer above. -->
+  <line x1="380" y1="170" x2="380" y2="190" class="arrow" stroke-dasharray="2 3"/>
+  <line x1="380" y1="242" x2="380" y2="262" class="arrow" stroke-dasharray="2 3"/>
+  <line x1="380" y1="98" x2="380" y2="118" class="arrow" stroke-dasharray="2 3"/>
+  <line x1="380" y1="322" x2="380" y2="356" class="arrow" stroke-dasharray="2 3"/>
 
   <!-- Context modulates Translation -->
   <line x1="618" y1="217" x2="602" y2="217" class="arrow-accent" marker-end="url(#arrowhead-accent)"/>
@@ -94,5 +96,6 @@
   <text x="150" y="207" text-anchor="start" class="annot">validates</text>
 
   <!-- caption -->
-  <text x="380" y="460" text-anchor="middle" class="figcap">Figure 2. Mediation architecture. Trust and context are policy functions; ontology language and schema profile define meaning.</text>
+  <text x="380" y="450" text-anchor="middle" class="figcap">Figure 2. Mediation architecture (layered view). Dashed vertical connectors show layering only;</text>
+  <text x="380" y="465" text-anchor="middle" class="figcap">node flow at runtime is upward (Trust → Translation → Runtime → Renderer). Trust and Context are cross-cutting policy functions.</text>
 </svg>

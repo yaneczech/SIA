@@ -190,7 +190,7 @@ graph TB
 
 **Task.** A composed multi-step flow over Actions and States, with start/end conditions and resumption semantics. In an initial standard this can be limited to a small set of high-value flows. Carries `step_count`, `interruptible_at`, `resumable_across_contexts`.
 
-Naming follows a stable hierarchy (`Interaction.Action.Navigate.Back`). Inheritance is part of the ontology language, but first-version work should prefer explicit typed schemas over a deep class tree: subclasses may strengthen but not weaken metadata contracts. Versioning is mandatory on every node, and compatibility behavior must be defined for unknown subclasses and unknown optional fields.
+Each node declaration carries an `inherits_from` reference to its parent in the hierarchy (e.g., `Alert.Collision.Warning` declares `inherits_from: Interaction.Event.Alert`). `inherits_from` is a declaration-time field on the node, not a runtime field on the instance; it defines the contract resolution path. Naming follows a stable reverse-DNS hierarchy (`Interaction.Action.Navigate.Back`). First-version work should prefer explicit typed schemas over a deep class tree: subclasses may strengthen but not weaken metadata contracts. Versioning is mandatory on every node, and compatibility behavior must be defined for unknown subclasses and unknown optional fields.
 
 ---
 
@@ -201,25 +201,39 @@ Every node carries a typed metadata block. Fields are partitioned into **declara
 | Field | Action | Alert | Notification | State | Task |
 | --- | --- | --- | --- | --- | --- |
 | `since_version` | ● | ● | ● | ● | ● |
+| `deprecated_since` | ○ | ○ | ○ | ○ | ○ |
+| `replaced_by` | ○ | ○ | ○ | ○ | ○ |
+| `compatible_with_min_version` | ○ | ○ | ○ | ○ | ○ |
 | `direction` | ● | ● | ● | ● | ● |
 | `temporal_type` | ● | ● | ● | — | — |
+| `recommended_modality` | ● | — | — | — | — |
 | `attention_metrics` | ● | ● | ● | — | ● |
 | `priority` | — | ● | ● | — | — |
 | `interruptibility` | — | ● | ● | — | ● |
 | `requires_ack` | — | ● | ○ | — | — |
 | `ack_kind` | — | ● | ○ | — | — |
+| `ack_timeout_ms` | — | ● | ○ | — | — |
+| `ack_authority` | — | ● | ○ | — | — |
 | `trust_requirements` | ○ | ● | ○ | ○ | ○ |
 | `target_role` | ● | ● | ● | ● | ● |
+| `scope` | — | — | — | ● | ○ |
+| `consistency_class` | — | — | — | ● | — |
 | `accessibility_alt` | ● | ● | ● | — | ● |
 | `regulatory_basis` | — | ● | ○ | — | ○ |
+| `assessment_basis` | — | ○ | ○ | — | ○ |
 | `pii_class` | ○ | ● | ● | — | ○ |
 | `temporal_freshness_ms` | — | ● | ● | ● | — |
 | `suppression_class` | — | ● | ● | — | — |
 | `merges_with` | — | ● | ● | — | — |
 | `fallback_chain` | ● | ● | ● | — | ● |
 | `degradation_policy` | ● | ● | ● | — | ● |
+| `step_count` | — | — | — | — | ● |
+| `interruptible_at` | — | — | — | — | ● |
+| `resumable_across_contexts` | — | — | — | — | ● |
 
 ● mandatory · ○ optional · — not applicable
+
+Two further notes on table scope. `inherits_from` is a node-declaration field (it defines a parent in the ontology) and applies to every node; it is therefore omitted from the per-type contract table. The runtime `attestation` block (signature, timestamp, nonce, provenance chain) is required whenever `trust_requirements` are declared on the consuming side; its shape is specified in Section 6 rather than per node type.
 
 Two design decisions warrant emphasis.
 
@@ -242,12 +256,13 @@ The proposed trust model separates two artefacts:
 ```yaml
 Alert.Collision.Warning:
   trust_requirements:
-    min_trust_level: critical
     signed_origin_required: true
     permitted_actor_classes: [adas, vsc]
     max_age_ms: 200
     replay_protection: required
 ```
+
+Declarative authority is expressed exclusively through `permitted_actor_classes`: the actor taxonomy is the single source of who may emit what. Earlier drafts of this proposal carried an additional `min_trust_level` scalar; it was removed because it duplicated information already encoded in the actor taxonomy and created ambiguity when the two disagreed. Implementations that need a coarser policy summary can derive it locally from the class set rather than carry it on the node.
 
 **Trust attestation** is attached to the instance by the emitter. It carries the cryptographic and provenance evidence:
 
@@ -256,8 +271,9 @@ attestation:
   actor_class: adas
   actor_id: ADAS_v2.3.1
   signature: <JWS over canonical node form>
-  timestamp_ms: 1731504920123
-  provenance_chain: [adas, trust_verifier, runtime]
+  timestamp_ms: 1778803920123          # ≈ 2026-05-14 12:12 UTC
+  nonce: <random-per-emission>
+  provenance_chain: [adas]             # one-hop at emission; multi-hop appended by intermediaries
 ```
 
 Trust Policy verifies that attestation satisfies requirements declared in the ontology before the node enters the pipeline. Trust failure is fail-closed: the node is rejected and a `SecurityEvent` is logged; it never reaches the Translation Layer or a renderer. This is distinct from `degradation_policy`, which governs renderer capability fallbacks within SIA — for example, routing to voice when a HUD is unavailable. A safety-critical node may define both: a strict trust requirement that fails closed, and a renderer degradation chain for when trust passes but the preferred output surface is unavailable.
@@ -275,7 +291,7 @@ An explicit `actor_class` taxonomy is one practical way to drive policy:
 | `service` | Internal vehicle service | Climate |
 | `third_party_app` | App-store application | Music app |
 
-Policy can then be expressed mechanically: *"`agent_cloud` may not emit nodes with `min_trust_level: critical`"*; *"`third_party_app` notifications are subject to `suppression_class: third_party`"*. This complements current SDV trust work — token-based authentication between services, workload integrity, and platform security — by constraining not only whether an actor may speak, but what semantic authority it has when it speaks.
+Policy can then be expressed mechanically: *"only `adas` and `vsc` may emit `Alert.Collision.Warning`"*; *"`third_party_app` notifications are subject to `suppression_class: third_party`"*. This complements current SDV trust work — token-based authentication between services, workload integrity, and platform security — by constraining not only whether an actor may speak, but what semantic authority it has when it speaks.
 
 ---
 
@@ -303,7 +319,7 @@ effective_cost(node, context) =
         f(autonomy_level, road_type, traffic_density, driver_state)
 ```
 
-Renderers and Runtime can then apply explicit budgets (*"maximum 2000 ms total eyes-off-road time (TEORT) during manual highway driving"*) and reject, defer, or transform interactions that exceed them. This does not make compliance automatic, but it makes compliance checks more explicit, auditable, and testable than renderer-local qualitative tags.
+Renderers and Runtime can then apply explicit budgets and reject, defer, or transform interactions that exceed them. Budgets are configured **per node class and per context**, not globally. For illustration in this paper we use two reference budgets for manual highway driving: ≤ 1500 ms TEORT for `Alert.*` (safety-critical, must surface immediately) and ≤ 2000 ms TEORT for general `Action.*` (e.g., media or navigation interactions the driver initiated). Concrete budgets are a deployment-level configuration aligned with NHTSA, JAMA, and ISO 15005 thresholds; SIA defines only the contract that makes such budgets mechanically enforceable. This does not make compliance automatic, but it makes compliance checks more explicit, auditable, and testable than renderer-local qualitative tags.
 
 ---
 
@@ -311,20 +327,25 @@ Renderers and Runtime can then apply explicit budgets (*"maximum 2000 ms total e
 
 Current automotive HMI architectures often model context as a flat enumeration (`city / highway / parking / autonomous`). Real context is multi-dimensional; collapsing it into a single label discards information that the Translation Layer needs.
 
-We model context as a vector of orthogonal axes. First-version work should distinguish core axes, needed for most policies, from extended axes that may be supplied by richer deployments.
+We model context as a vector of orthogonal axes. First-version work should distinguish core axes, needed for most policies, from extended axes that may be supplied by richer deployments. Axes are deliberately separated by concern: road infrastructure (`road_type`) is independent of vehicle motion state (`vehicle_state`), which is independent of jurisdiction (`market_jurisdiction`).
 
 | Axis | Class | Example values |
 | --- | --- | --- |
-| `sae_level` | Core | 0 .. 5 |
+| `sae_level` | Core | `0`, `1`, `2`, `3`, `4`, `5` |
 | `autonomy_engaged` | Core | boolean |
-| `road_type` | Core | urban, rural, highway, off-road |
-| `driver_state` | Core | attentive, drowsy, distracted, unknown |
-| `market_jurisdiction` | Core | UNECE, NHTSA, GB, … |
-| `traffic_density` | Extended | free, dense, congested |
-| `weather` | Extended | clear, rain, snow, fog |
-| `time_of_day` | Extended | day, dusk, night |
+| `road_type` | Core | `urban`, `rural`, `highway`, `off_road` |
+| `vehicle_state` | Core | `moving`, `parked`, `charging`, `service` |
+| `driver_state` | Core | `attentive`, `drowsy`, `distracted`, `not_monitoring`, `unknown` |
+| `market_jurisdiction` | Core | ISO 3166-1 alpha-2 (`US`, `JP`, `CN`, `GB`, …) plus supranational `EU` |
+| `traffic_density` | Extended | `free`, `dense`, `congested` |
+| `weather` | Extended | `clear`, `rain`, `snow`, `fog` |
+| `time_of_day` | Extended | `day`, `dusk`, `night` |
 
-Translation and suppression policies become composable predicates over the vector (`autonomy_engaged ∧ sae_level ≥ 3 ⇒ permit Task.Media.Browse`). VSS data populates several of these axes directly; others (driver state, market jurisdiction, or homologation context) require dedicated input.
+`market_jurisdiction` identifies the region under whose homologation regime the vehicle is currently operating, not a specific regulatory body — UNECE, NHTSA, KBA, MLIT, etc. are mapped from the jurisdiction by deployment-level configuration. This keeps the axis stable as regulatory bodies rename, merge, or harmonise.
+
+Translation and suppression policies become composable predicates over the vector (`autonomy_engaged ∧ sae_level ≥ 3 ⇒ permit Task.Media.Browse`). VSS data populates several of these axes directly; others (driver state, market jurisdiction) require dedicated input.
+
+**Context modifiers.** Context Policy may scale a defined whitelist of numeric node fields by published modifier rules — currently `attention_metrics.*` (per Section 7) and `ack_timeout_ms` (extended in low-attention contexts such as L4 autonomy). All other declarative fields are immutable across contexts: a node's `priority`, `permitted_actor_classes`, `suppression_class`, and `fallback_chain` cannot be context-modulated. This separates *what the node is* from *how its numeric thresholds adapt to context*, which is the only mutation Context Policy is permitted to perform.
 
 ---
 
@@ -353,6 +374,8 @@ InputDevice.SteeringWheel.Right:
 ```
 
 The Translation Layer can then compute candidate renderers for a given node and context, filter them by capability and policy, and select among remaining candidates using user accessibility profile and deployment-specific preferences. This should not be framed initially as a global optimisation problem; deterministic candidate filtering is sufficient for a first version. Capability declarations are versioned with the same scheme as semantic nodes.
+
+The `safety_profile` field on each renderer and input device is an open-vocabulary tag describing the device's role in safety-critical interaction (e.g., `safety_relevant_visual`, `driver_reachable_control`, `non_safety_informational`). Its values are not formally enumerated in v0.1; they are deployment-level labels that map to ASIL/SEooC partitioning and are matched against `trust_requirements` and `target_role` during candidate filtering. Formal enumeration is deferred to specification work (Section 12) once two or more reference deployments inform a converging vocabulary.
 
 ---
 
@@ -388,7 +411,9 @@ Backward compatibility is not an implementation detail; it is a core design cons
 | ISO 15005 / ISO 17287 | Ergonomics | Informs `attention_metrics` field semantics |
 | NHTSA Driver Distraction Guidelines | Regulation | Informs checks on `effective_cost` |
 | JAMA Guidelines | Regulation | Informs checks on `effective_cost` |
-| UNECE R79 | Lane-keep / steering | Informs `regulatory_basis` of relevant Alerts |
+| UNECE R79 | Lane-keep / steering | Informs `regulatory_basis` of `Alert.Lane.*` family |
+| UNECE R152 | AEBS for M1/N1 (passenger) | Informs `regulatory_basis` of `Alert.Collision.*` family |
+| ISO 15623 | Forward collision warning systems | Informs `regulatory_basis` of `Alert.Collision.Warning` |
 | UNECE R155 / ISO 21434 | Cybersecurity | Provides platform and process context for interaction integrity |
 | Eclipse Kuksa / uProtocol | Transport | Can carry trust-validated semantic messages |
 | Eclipse S-CORE | Middleware | Possible host environment for coordination and translation |

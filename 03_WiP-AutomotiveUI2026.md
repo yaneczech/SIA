@@ -136,7 +136,7 @@ Every node carries two categories of metadata fields: **declarative** fields def
 
 Current SDV cybersecurity practice — ISO/SAE 21434, UNECE R155 — addresses firmware integrity, ECU authentication, and transport security. These are necessary but insufficient: they do not constrain what an authenticated actor is *authorised to say* at the interaction level. An attacker who cannot compromise the brakes can still suppress a collision warning, inject a fake alert, or elevate the priority of a benign notification to displace a critical one.
 
-SIA separates trust into two artefacts. **Trust requirements** are declared on the node in the ontology — what consumers must verify before propagating or rendering. **Trust attestation** is attached to the instance by the emitter — cryptographic and provenance evidence that requirements are met. The Trust Policy verifies attestation satisfies requirements before the node propagates; mismatches degrade through a declared `degradation_policy`.
+SIA separates trust into two artefacts. **Trust requirements** are declared on the node in the ontology — what consumers must verify before propagating or rendering. **Trust attestation** is attached to the instance by the emitter — cryptographic and provenance evidence that requirements are met. The Trust Policy verifies attestation satisfies requirements before the node propagates. Trust failures are **fail-closed**: the node is rejected and a `SecurityEvent` is logged; it never reaches Translation or a renderer. This is distinct from `degradation_policy`, which governs only renderer capability fallback (e.g., routing to voice when the HUD is unavailable) *after* a trust check has already passed.
 
 An `actor_class` taxonomy drives policy mechanically: `adas` and `vsc` may emit safety-critical alerts; `agent_local` and `agent_cloud` may not — regardless of how the agent was prompted. This is a structurally stronger property than service-level authentication: it constrains what kinds of things an authenticated actor may say, not merely whether it may speak.
 
@@ -155,7 +155,7 @@ attention_metrics:
   cognitive_load: moderate
 ```
 
-The Translation Layer composes node metrics with a context modifier from Context Policy (`effective_cost = base_metric × context_modifier`), enabling explicit budget checks (*"maximum 2000 ms TEORT during manual highway driving"*) and mechanical policy decisions to reject, defer, or transform interactions that exceed them.
+The Translation Layer composes node metrics with a context modifier from Context Policy (`effective_cost = base_metric × context_modifier`). Budgets are configured **per node class and per context** — e.g., ≤ 1500 ms TEORT for `Alert.*` (safety-critical) and ≤ 2000 ms TEORT for general `Action.*` under manual highway driving — enabling explicit, mechanical policy decisions to reject, defer, or transform interactions that exceed them.
 
 ---
 
@@ -204,9 +204,9 @@ sequenceDiagram
 
 *Figure 3. Sequence flow for Alert.Collision.Warning. Trust Policy is a chokepoint before Translation. Renderer dispatch is multicast; acknowledgement is tracked by Runtime.*
 
-**Context-dependent translation.** Under manual highway driving (`sae_level: 1`, `traffic_density: dense`), the Translation Layer selects HUD as primary with concurrent cluster and haptic, and rejects IVI touchscreen (off-axis, exceeds attention budget under dense-traffic modifier). Under L4 autonomous driving (`driver_state: not_monitoring`), HUD is de-prioritised in favour of cluster and full-sentence voice prompt; `ack_timeout_ms` extends from 3000 ms to 6000 ms via context modifier.
+**Context-dependent translation.** Under manual highway driving (`sae_level: 1`, `vehicle_state: moving`, `traffic_density: dense`), the Translation Layer selects HUD as primary with concurrent cluster and haptic, and rejects IVI touchscreen (off-axis, exceeds attention budget under dense-traffic modifier). Under L4 autonomous driving (`sae_level: 4`, `driver_state: not_monitoring`), HUD is de-prioritised in favour of cluster and full-sentence voice prompt; Context Policy scales the effective `ack_timeout_ms` from a base of 3000 ms to 6000 ms via its published modifier rule (the node's declarative value is unchanged).
 
-**Adversarial rejection.** A third-party application claiming `Alert.Collision.Warning` is rejected because `third_party_app ∉ permitted_actor_classes`. A replay of a 1100 ms-old instance is rejected because age exceeds `max_age_ms: 200`. A local LLM agent is rejected for the same class reason. Priority injection — an adversary emitting a notification with `priority: 99` — is defeated because priority is a property of the ontology declaration, not the instance.
+**Adversarial rejection.** A third-party application addressing `Alert.Collision.Warning` is rejected as an unauthorised emission (`third_party_app ∉ permitted_actor_classes`), even when its own app-store signature is valid. A class-spoofing attempt — the same app falsely attesting `actor_class: adas` — fails at signature verification because the app lacks the ADAS signing key. A replay of a 1100 ms-old instance is rejected because age exceeds `max_age_ms: 200`. A local LLM agent is rejected on the same class basis. Priority injection — an adversary emitting a notification with `priority: 99` — is defeated because priority is a property of the ontology declaration, not the instance.
 
 ---
 
@@ -220,7 +220,7 @@ SIA introduces a semantic vocabulary and a set of machine-readable contracts tha
 
 **Trust and agency in AI-augmented vehicles.** The `actor_class` taxonomy provides a vocabulary for the growing AutomotiveUI literature on in-vehicle agents. Empirical work on driver trust calibration, appropriate reliance, and agent transparency can be grounded in the structural distinction between `agent_local`, `agent_cloud`, `adas`, and `human_direct` — classes that carry different implied authority and verifiability.
 
-**Context-adaptive interaction design.** The multi-axis context vector (`sae_level`, `driver_state`, `road_type`, `market_jurisdiction`) formalises the context space that AutomotiveUI researchers use informally. Experiments can be designed against explicit context predicates rather than bespoke scenario definitions, improving replicability.
+**Context-adaptive interaction design.** The multi-axis context vector (`sae_level`, `driver_state`, `road_type`, `vehicle_state`, `market_jurisdiction`) formalises the context space that AutomotiveUI researchers use informally. Experiments can be designed against explicit context predicates rather than bespoke scenario definitions, improving replicability.
 
 **Standardisation input.** AutomotiveUI researchers regularly engage with industry and standards bodies. Empirical validation of the attention metric composition formula, the priority scale, and the ack_kind distinction (certified versus inferred acknowledgement) are directly actionable contributions to a future standardisation process.
 
