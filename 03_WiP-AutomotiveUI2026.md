@@ -9,7 +9,7 @@
 
 ## Abstract
 
-The software-defined vehicle is reshaping every layer of the in-cabin stack — except the one that matters most to the occupant. Industry effort concentrates on pixels, frameworks, and ever-larger displays, while no shared abstraction defines what an in-vehicle interaction *means*, independent of which screen renders it or which AI agent emits it. We argue that the SDV stack is missing a *mediation boundary*: a vendor-neutral layer in which interactions are described by their meaning, attention demand, contextual fitness, and authority of origin, rather than by buttons, screens, or widgets. This paper sketches such a layer — a Semantic Interaction Architecture (SIA) — with a typed node taxonomy (Actions, Events, States, Tasks), declarative metadata contracts encoding predicted attention demand and trust provenance, and a policy architecture for context-driven renderer selection. We trace a safety-critical alert through verification, context-aware translation, and adversarial rejection. The argument is provocative but structurally simple: existing standards cover what lives *below* the interaction (signals, transports, services) and what lives *above* it (renderers, widgets, frameworks). The thing in the middle — *what an interaction is, in itself* — has no name, no contract, and no audit trail. SIA proposes one.
+The software-defined vehicle is reshaping every layer of the in-cabin stack — except the one that matters most to the occupant. Industry effort concentrates on pixels, frameworks, and ever-larger displays, while no shared abstraction defines what an in-vehicle interaction *means*, independent of which screen renders it or which AI agent emits it. We argue that the SDV stack is missing a *mediation boundary*: a vendor-neutral layer in which interactions are described by their meaning, attention demand, contextual fitness, and authority of origin, rather than by buttons, screens, or widgets. This paper sketches such a layer — a Semantic Interaction Architecture (SIA) — with a typed node taxonomy (Actions, Events, States, Tasks), declarative metadata contracts encoding predicted attention demand and trust provenance, and a policy architecture for context-driven renderer selection. We trace a safety-critical alert through verification, context-aware translation, and adversarial rejection. The architecture opens concrete handles for AutomotiveUI research: empirical calibration of attention metrics, cross-modal equivalence studies, and trust calibration in AI-augmented vehicles. It also identifies a near-term specification agenda — ontology formalism, multi-hop trust provenance, and certified-vs-inferred acknowledgement — that this community is positioned to drive. The argument is provocative but structurally simple: existing standards cover what lives *below* the interaction (signals, transports, services) and what lives *above* it (renderers, widgets, frameworks). The thing in the middle — *what an interaction is, in itself* — has no name, no contract, and no audit trail. SIA proposes one.
 
 ---
 
@@ -138,7 +138,7 @@ Every node carries two categories of metadata fields: **declarative** fields def
 
 ### 5.1 Trust
 
-Current SDV cybersecurity practice — ISO/SAE 21434, UNECE R155 — addresses firmware integrity, ECU authentication, and transport security. These are necessary but insufficient: they do not constrain what an authenticated actor is *authorised to say* at the interaction level. An attacker who cannot compromise the brakes can still suppress a collision warning, inject a fake alert, or elevate the priority of a benign notification to displace a critical one.
+Current SDV cybersecurity practice — ISO/SAE 21434 [ISO 21434], UNECE R155 [UNECE R155] — addresses firmware integrity, ECU authentication, and transport security. These are necessary but insufficient: they do not constrain what an authenticated actor is *authorised to say* at the interaction level. An attacker who cannot compromise the brakes can still suppress a collision warning, inject a fake alert, or elevate the priority of a benign notification to displace a critical one.
 
 SIA separates trust into two artefacts. **Trust requirements** are declared on the node in the ontology — what consumers must verify before propagating or rendering. **Trust attestation** is attached to the instance by the emitter — cryptographic and provenance evidence that requirements are met. The Trust Policy verifies attestation satisfies requirements before the node propagates. Trust failures are **fail-closed**: the node is rejected and a `SecurityEvent` is logged; it never reaches Translation or a renderer. This is distinct from `degradation_policy`, which governs only renderer capability fallback (e.g., routing to voice when the HUD is unavailable) *after* a trust check has already passed.
 
@@ -216,7 +216,7 @@ sequenceDiagram
 
 ## 7. Implications for AutomotiveUI Research
 
-SIA introduces a semantic vocabulary and a set of machine-readable contracts that open several research directions directly relevant to the AutomotiveUI community.
+SIA's value depends on empirical foundations that the AutomotiveUI community is uniquely positioned to provide. We identify five concrete research handles, each addressable with methods this community already practices.
 
 **Attention as a first-class research variable.** The `attention_metrics` contract makes declared attention cost comparable across HMI designs, OEMs, and evaluation studies — without requiring every comparison to be grounded in a new user study. Researchers could evaluate whether declared proxies predict empirical TEORT, and how context modifiers should be calibrated. This creates a feedback loop between user studies and the ontology itself.
 
@@ -228,11 +228,13 @@ SIA introduces a semantic vocabulary and a set of machine-readable contracts tha
 
 **Standardisation input.** AutomotiveUI researchers regularly engage with industry and standards bodies. Empirical validation of the attention metric composition formula, the priority scale, and the ack_kind distinction (certified versus inferred acknowledgement) are directly actionable contributions to a future standardisation process.
 
+None of these threads requires the architecture be standardised first; on the contrary, the standardisation effort itself depends on this work happening early. We invite collaboration on any of them — from individual empirical studies to multi-site replications — and treat AutomotiveUI as the principal venue where SIA's empirical foundations should be developed.
+
 ---
 
 ## 8. Open Questions
 
-This work is scoped to a position paper; we identify the following near-term research and specification questions.
+This work is scoped to a position paper. We surface the following as the most urgent open questions, where community contribution would directly shape the standard's first version.
 
 1. *Schema formalism.* JSON Schema, OWL/SHACL, or a VSS-style custom format generating to JSON Schema. The choice has long-term tooling and adoption consequences.
 2. *Empirical validation of attention metric composition.* The `effective_cost = base × context_modifier` formula requires user study evidence. The composition law is likely not scalar.
@@ -245,6 +247,8 @@ This work is scoped to a position paper; we identify the following near-term res
    **Integration layer.** Thin adaptors to COVESA VSS, Eclipse Kuksa, and uProtocol so that SIA is a plug-in layer over existing SDV transports rather than a replacement. A renderer capability interface — analogous to Android's capability detection or React Native's platform abstraction — through which concrete surfaces declare what they can render and at what attention cost. An agent interface that accepts semantic node payloads from LLM-based agents and routes them through trust verification before any UI surface is reached.
 
    **Developer tooling.** A context simulator that exercises the Translation Layer against scripted driving contexts and failure modes; a structured debugger that makes suppression decisions transparent (*"collision warning suppressed — reason: `actor_class agent_local` ∉ `permitted_actor_classes`"*); and a declarative test harness expressing automotive certification scenarios as given/when/then predicates against the schema and policy engine. The test harness is likely the most direct contribution to ASIL-relevant certification workflows and the tool most likely to determine whether practitioners adopt SIA or not.
+
+Each of these is approachable through methods already standard in this community: simulator studies for attention calibration (#2), controlled experiments for the certified-vs-inferred acknowledgement distinction (#3), mixed-methods work on multi-hop trust scenarios (#4), and reference-implementation contributions for the tooling roadmap (#5). Short empirical studies and full specification contributions are equally welcome — and equally needed to shape the standard before it freezes.
 
 ---
 

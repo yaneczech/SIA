@@ -52,12 +52,17 @@ This paper sketches such a layer --- a Semantic Interaction Architecture
 declarative metadata contracts encoding predicted attention demand and trust
 provenance, and a policy architecture for context-driven renderer selection.
 We trace a safety-critical alert through verification, context-aware
-translation, and adversarial rejection. The argument is provocative but
-structurally simple: existing standards cover what lives \emph{below} the
-interaction (signals, transports, services) and what lives \emph{above} it
-(renderers, widgets, frameworks). The thing in the middle ---
-\emph{what an interaction is, in itself} --- has no name, no contract, and no
-audit trail. SIA proposes one.
+translation, and adversarial rejection. The architecture opens concrete
+handles for AutomotiveUI research: empirical calibration of attention
+metrics, cross-modal equivalence studies, and trust calibration in
+AI-augmented vehicles. It also identifies a near-term specification
+agenda --- ontology formalism, multi-hop trust provenance, and
+certified-vs-inferred acknowledgement --- that this community is positioned
+to drive. The argument is provocative but structurally simple: existing
+standards cover what lives \emph{below} the interaction (signals, transports,
+services) and what lives \emph{above} it (renderers, widgets, frameworks).
+The thing in the middle --- \emph{what an interaction is, in itself} --- has
+no name, no contract, and no audit trail. SIA proposes one.
 \end{abstract}
 
 \keywords{software-defined vehicle, semantic interaction, HMI architecture,
@@ -303,7 +308,7 @@ fields for each type.
 
 \subsection{Trust}
 
-Current SDV cybersecurity practice --- ISO/SAE 21434, UNECE R155 --- addresses
+Current SDV cybersecurity practice --- ISO/SAE 21434~\cite{iso21434}, UNECE R155~\cite{unece-r155} --- addresses
 firmware integrity, ECU authentication, and transport security. These are
 necessary but insufficient: they do not constrain what an authenticated actor
 is \emph{authorised to say} at the interaction level. An attacker who cannot
@@ -430,9 +435,9 @@ ontology declaration, not the instance.
 \section{Implications for AutomotiveUI Research}
 %% ---------------------------------------------------------------
 
-SIA introduces a semantic vocabulary and a set of machine-readable contracts
-that open several research directions directly relevant to the AutomotiveUI
-community.
+SIA's value depends on empirical foundations that the AutomotiveUI community
+is uniquely positioned to provide. We identify five concrete research handles,
+each addressable with methods this community already practices.
 
 \paragraph{Attention as a first-class research variable.}
 The \texttt{attention\_metrics} contract makes declared attention cost
@@ -472,12 +477,19 @@ scale, and the \texttt{ack\_kind} distinction (certified versus inferred
 acknowledgement) are directly actionable contributions to a future
 standardisation process.
 
+None of these threads requires the architecture be standardised first; on the
+contrary, the standardisation effort itself depends on this work happening
+early. We invite collaboration on any of them --- from individual empirical
+studies to multi-site replications --- and treat AutomotiveUI as the principal
+venue where SIA's empirical foundations should be developed.
+
 %% ---------------------------------------------------------------
 \section{Open Questions}
 %% ---------------------------------------------------------------
 
-This work is scoped to a position paper; we identify the following near-term
-research and specification questions.
+This work is scoped to a position paper. We surface the following as the most
+urgent open questions, where community contribution would directly shape the
+standard's first version.
 
 \begin{enumerate}
   \item \emph{Schema formalism.} JSON Schema, OWL/SHACL, or a VSS-style custom
@@ -542,6 +554,14 @@ research and specification questions.
         not.
     \end{description}
 \end{enumerate}
+
+Each of these is approachable through methods already standard in this
+community: simulator studies for attention calibration (\#2), controlled
+experiments for the certified-vs-inferred acknowledgement distinction (\#3),
+mixed-methods work on multi-hop trust scenarios (\#4), and
+reference-implementation contributions for the tooling roadmap (\#5). Short
+empirical studies and full specification contributions are equally welcome ---
+and equally needed to shape the standard before it freezes.
 
 %% ---------------------------------------------------------------
 %% References
