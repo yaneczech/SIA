@@ -1,3 +1,5 @@
+<img src="./figures/sia-logo.svg" alt="SIA" width="112" height="54">
+
 # Semantic Interaction Architecture (SIA)
 
 **A [Cars Making Sense](#about-cars-making-sense) initiative · v0.1 draft · May 2026**

@@ -1,3 +1,5 @@
+<img src="./figures/sia-logo.svg" alt="SIA" width="112" height="54">
+
 # Toward a Semantic Interaction Architecture for Software-Defined Vehicles
 
 **A Position Paper on Semantic Mediation for In-Vehicle Interaction**
@@ -72,7 +74,7 @@ graph TB
     DAT --- MW
     MW --- HW
 
-    style SIA fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
+    style SIA fill:#eef0ff,stroke:#454ADE,stroke-width:2px,color:#454ADE
 ```
 
 *Figure 2. Position of the proposed Semantic Interaction Architecture relative to existing SDV layers.*
@@ -120,7 +122,7 @@ graph TB
     RT -->|"modality decision · dispatch"| EXT_R
     EXT_R <-->|"render · input · ack"| EXT1
 
-    style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
+    style O fill:#eef0ff,stroke:#454ADE,stroke-width:2px,color:#454ADE
 ```
 
 *Figure 3. Mediation architecture. SIA contains three functional components (Ontology, Translation, Runtime) and two cross-cutting policies (Trust, Context). Emitters and renderers are external: emitters submit nodes through Trust Policy; renderers register capabilities into Translation and consume the resulting modality decisions from Runtime. The Ontology Language + Schema Profile is the authoritative reference for both Trust Policy and Translation Layer.*
@@ -183,7 +185,7 @@ graph TB
     S --> S1 & S2
     T --> T1 & T2
 
-    style I fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
+    style I fill:#eef0ff,stroke:#454ADE,stroke-width:2px,color:#454ADE
 ```
 
 *Figure 4. Node taxonomy. Four primary types with distinct metadata contracts; Event splits into Alert and Notification. Naming follows reverse-DNS hierarchy; subclasses may strengthen but not weaken contracts.*

@@ -1,19 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 460" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 495" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
   <title id="title">Semantic interaction node taxonomy</title>
   <desc id="desc">Taxonomy diagram splitting Interaction nodes into Action, Event, State, and Task, with Event further split into Alert and Notification.</desc>
   <style>
-    .root { fill: #f0fdfa; stroke: #0f766e; stroke-width: 1.8; }
+    .root { fill: #eef0ff; stroke: #454ADE; stroke-width: 1.8; }
     .type { fill: #fafafa; stroke: #1a1a1a; stroke-width: 1.2; }
     .subtype { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.2; }
     .leaf { fill: #ffffff; stroke: #d4d4d4; stroke-width: 1; }
-    .label-root { font-size: 13px; font-weight: 700; fill: #0f766e; }
+    .label-root { font-size: 13px; font-weight: 700; fill: #3730a3; }
     .label-type { font-size: 13px; font-weight: 600; fill: #1a1a1a; }
     .label-sub { font-size: 12px; font-weight: 500; fill: #1a1a1a; }
     .label-leaf { font-size: 10.5px; fill: #404040; }
     .note { font-size: 10px; fill: #525252; font-style: italic; }
     .branch { fill: none; stroke: #737373; stroke-width: 1; }
     .figcap { font-size: 11px; fill: #525252; }
-    .pill-text { font-size: 9.5px; fill: #0f766e; font-weight: 600; }
+    .pill-text { font-size: 9.5px; fill: #3730a3; font-weight: 600; }
   </style>
 
   <!-- Root -->
@@ -143,4 +143,7 @@
 
   <!-- caption -->
   <text x="380" y="440" text-anchor="middle" class="figcap">Figure 4. Node taxonomy. Four primary types with distinct metadata contracts; Event splits into Alert and Notification.</text>
+
+  <!-- Corner brand -->
+  <image href="sia-logo.svg" x="700" y="463" width="50" height="24" opacity="0.85"/>
 </svg>

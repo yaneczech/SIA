@@ -1,5 +1,7 @@
 # Toward a Semantic Mediation Layer for In-Vehicle Interaction
 
+*An architecture of meaning that survives the displays, the agents, and the decade.*
+
 *Work-in-Progress — AutomotiveUI 2026*
 *[ANONYMOUS FOR REVIEW]*
 
@@ -7,17 +9,19 @@
 
 ## Abstract
 
-Software-defined vehicles are accumulating interaction surfaces faster than the abstractions needed to manage them. Head-up displays, instrument clusters, infotainment touchscreens, voice assistants, and on-device AI agents each demand separate, screen-first implementations of the same occupant-facing intent. This paper argues for a *semantic mediation layer* — positioned above existing SDV service and data abstractions and below concrete renderers — that would reduce rework cost, enable cross-renderer consistency, and introduce machine-checkable attention and trust guarantees into the in-vehicle interaction stack. We describe a typed node taxonomy (Actions, Events, States, Tasks), a declarative metadata contract encoding predicted attention demand and trust provenance on every interaction node, and a policy architecture for context-driven renderer selection. A worked example traces a safety-critical alert through trust verification, context-aware translation, and adversarial rejection. We identify implications for the AutomotiveUI research agenda and open questions for standardisation.
+The software-defined vehicle is reshaping every layer of the in-cabin stack — except the one that matters most to the occupant. Industry effort concentrates on pixels, frameworks, and ever-larger displays, while no shared abstraction defines what an in-vehicle interaction *means*, independent of which screen renders it or which AI agent emits it. We argue that the SDV stack is missing a *mediation boundary*: a vendor-neutral layer in which interactions are described by their meaning, attention demand, contextual fitness, and authority of origin, rather than by buttons, screens, or widgets. This paper sketches such a layer — a Semantic Interaction Architecture (SIA) — with a typed node taxonomy (Actions, Events, States, Tasks), declarative metadata contracts encoding predicted attention demand and trust provenance, and a policy architecture for context-driven renderer selection. We trace a safety-critical alert through verification, context-aware translation, and adversarial rejection. The argument is provocative but structurally simple: existing standards cover what lives *below* the interaction (signals, transports, services) and what lives *above* it (renderers, widgets, frameworks). The thing in the middle — *what an interaction is, in itself* — has no name, no contract, and no audit trail. SIA proposes one.
 
 ---
 
 ## 1. Introduction
 
-The software-defined vehicle is conventionally defined at the infrastructure level: compute topology, OTA updates, service-oriented architecture. From the occupant's perspective, however, the SDV manifests almost entirely through interaction — head-up displays, voice assistants, haptic feedback, and increasingly AI agents acting on the occupant's behalf. The interaction layer is where the value of the SDV becomes perceptible, where regulatory exposure concentrates, and where the marginal cost of change is highest.
+The software-defined vehicle is reshaping every layer of the in-cabin stack except the one that matters most to the occupant. Industry investment flows into pixels, GPUs, larger displays, voice models, gesture recognition, and AI agents — each fighting at the surface. But there is no shared abstraction that defines what an in-vehicle interaction *means*, independent of which screen happens to render it today, or which AI agent happens to emit it tomorrow.
 
-Current HMI stacks are screen-first. A graphical layout binds a fixed widget to a fixed input device; voice and haptic modalities are added as alternatives after the fact. When a new surface arrives — or an AI agent needs to emit an interaction — the logic must be rewritten. Engineering cost rises with each new screen size or modality. User experience cost rises as the same intent (*acknowledge an alert*, *increase volume*, *navigate back*) acquires inconsistent behaviour across vehicles, generations, and contexts. Security cost rises as AI agents and third-party applications gain the ability to emit interactions that are indistinguishable, from the occupant's standpoint, from safety-critical subsystems.
+This is not a tooling gap; it is a categorical one. The SDV stack has rich abstractions for signals (COVESA VSS), transports (uProtocol, Zenoh, SOME/IP), data brokering (Kuksa), and middleware (AUTOSAR Classic and Adaptive). It has rich vendor-specific frameworks for rendering (Qt Automotive, Kanzi, Android Automotive). What it does not have is a layer *between* them — a mediation boundary in which the meaning, attention demand, trust provenance, and contextual fitness of an interaction are described independently of its surface form. The interaction layer is where the value of the SDV becomes perceptible, where regulatory exposure concentrates, and where the marginal cost of change is highest — yet it remains the least abstracted layer of the stack.
 
-We argue these costs are symptoms of a missing mediation boundary — not a tooling deficit or a renderer deficit, but a missing layer of abstraction. We propose a Semantic Interaction Architecture (SIA): a vendor-neutral layer in which selected in-vehicle interactions are described by their meaning, attention demand, contextual fitness, and authority of origin, rather than by buttons, screens, or widgets.
+Current HMI stacks are screen-first. A graphical layout binds a fixed widget to a fixed input device; voice and haptic modalities are added as alternatives after the fact. When a new surface arrives — or an AI agent needs to emit an interaction — the logic must be rewritten. Engineering cost rises with each new screen size or modality. User experience cost rises as the same intent (*acknowledge an alert*, *increase volume*, *navigate back*) acquires inconsistent behaviour across vehicles, generations, and contexts. Security cost rises as AI agents and third-party applications gain the ability to emit interactions that are indistinguishable, from the occupant's standpoint, from safety-critical subsystems. These costs are symptoms of the missing boundary — not a tooling deficit, not a renderer deficit, but an absent layer of architecture.
+
+A vehicle in service for fifteen years will outlive its displays, its voice models, its compute hardware, and quite possibly its operating system. What it cannot afford to outlive is the *meaning* of `Alert.Collision.Warning`. We propose that meaning — not pixels — is the right unit of design at the interaction layer, because meaning is what must survive the turnover of every other component. The Semantic Interaction Architecture (SIA) is a vendor-neutral layer in which selected in-vehicle interactions are described by their meaning, attention demand, contextual fitness, and authority of origin, rather than by buttons, screens, or widgets. Its central claim is uncomfortable but precise: while the industry has spent two decades building the surface, the structure underneath has remained implicit. SIA names it.
 
 The first version of such a layer should be deliberately narrow. We scope the proposal to three cores: *intent/action abstraction* for high-value commands and events, *attention policy* for priority, interruptibility, and driving context, and *trust provenance* for determining which actors may emit which interaction types with which authority. The ontology language is designed for incremental adoption and long lifecycle compatibility.
 
@@ -66,7 +70,7 @@ graph TB
     RT -->|"modality decision · dispatch"| EXT_R
     EXT_R <-->|"render · input · ack"| EXT1
 
-    style O fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
+    style O fill:#eef0ff,stroke:#454ADE,stroke-width:2px,color:#454ADE
 ```
 
 *Figure 1. Mediation architecture. SIA contains three functional components (Ontology, Translation, Runtime) and two cross-cutting policies (Trust, Context). Emitters and renderers are external; they interface with SIA through Trust Policy (entry) and capability/dispatch flows (exit).*
@@ -100,7 +104,7 @@ graph TB
     I --> A & E & S & T
     E --> AL & N
 
-    style I fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f766e
+    style I fill:#eef0ff,stroke:#454ADE,stroke-width:2px,color:#454ADE
 ```
 
 *Figure 2. Node taxonomy. Four primary types with distinct metadata contracts; Event splits into Alert and Notification. Subclasses may strengthen but not weaken contracts.*

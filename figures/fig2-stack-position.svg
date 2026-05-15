@@ -1,14 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 540" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 575" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" role="img" aria-labelledby="title desc">
   <title id="title">Position of Semantic Interaction Architecture in the SDV stack</title>
   <desc id="desc">Layered diagram placing the proposed Semantic Interaction Architecture between HMI renderers and existing SDV services, data, middleware, and hardware.</desc>
   <style>
     .layer { fill: #ffffff; stroke: #1a1a1a; stroke-width: 1.2; }
     .layer-sub { fill: #fafafa; stroke: #1a1a1a; stroke-width: 1.2; }
-    .proposed { fill: #f0fdfa; stroke: #0f766e; stroke-width: 2; }
+    .proposed { fill: #eef0ff; stroke: #454ADE; stroke-width: 2; }
     .layer-label { font-size: 13px; font-weight: 600; fill: #1a1a1a; }
-    .layer-label-accent { font-size: 13px; font-weight: 700; fill: #0f766e; }
+    .layer-label-accent { font-size: 13px; font-weight: 700; fill: #3730a3; }
     .component { font-size: 11px; fill: #404040; }
-    .component-accent { font-size: 11px; fill: #0f766e; }
+    .component-accent { font-size: 11px; fill: #3730a3; }
     .side-note { font-size: 10px; fill: #525252; font-style: italic; }
     .scope { font-size: 10px; font-weight: 600; fill: #525252; letter-spacing: 0.5px; }
     .figcap { font-size: 11px; fill: #525252; }
@@ -80,4 +80,7 @@
 
   <!-- caption -->
   <text x="380" y="520" text-anchor="middle" class="figcap">Figure 2. Position of the proposed Semantic Interaction Architecture relative to existing SDV layers.</text>
+
+  <!-- Corner brand -->
+  <image href="sia-logo.svg" x="700" y="543" width="50" height="24" opacity="0.85"/>
 </svg>
