@@ -59,13 +59,13 @@ Figure 2 positions the proposed layer in the SDV stack.
 
 ```mermaid
 graph TB
-    OCC["Occupant — Driver · Front passenger · Rear passenger"]
-    HMI["Renderers and Input Devices\nHUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel · Gesture · Eye tracking"]
-    SIA["★ Semantic Interaction Architecture\nOntology Language · Translation · Interaction Coordination Runtime\nContext Policy · Trust Policy"]
-    SVC["Services and Orchestration\nKuksa Databroker · uProtocol · Zenoh · Chariott · Ankaios · Symphony"]
-    DAT["Data Model — COVESA VSS"]
-    MW["Middleware — AUTOSAR Classic · Adaptive · S-CORE"]
-    HW["Hardware — HPC · ECUs · Sensors · Actuators · CAN · Ethernet · SOME/IP"]
+    OCC["<b>Occupant</b><br/>Driver · Front passenger · Rear passenger"]
+    HMI["<b>Renderers and Input Devices</b><br/>HUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel · Gesture · Eye tracking"]
+    SIA["<b>★ Semantic Interaction Architecture</b><br/>Ontology Language · Translation · Interaction Coordination Runtime<br/>Context Policy · Trust Policy"]
+    SVC["<b>Services and Orchestration</b><br/>Kuksa Databroker · uProtocol · Zenoh · Chariott · Ankaios · Symphony"]
+    DAT["<b>Data Model</b><br/>COVESA VSS"]
+    MW["<b>Middleware</b><br/>AUTOSAR Classic · Adaptive · S-CORE"]
+    HW["<b>Hardware</b><br/>HPC · ECUs · Sensors · Actuators · CAN · Ethernet · SOME/IP"]
 
     OCC --- HMI
     HMI --- SIA
@@ -98,31 +98,47 @@ We propose three functional components and two cross-cutting policy functions, i
 **Renderers and input devices are external to SIA.** Concrete output and input surfaces — HUD, cluster, IVI touchscreen, voice, haptic, AR overlay, steering wheel controls — are not components of SIA. They are vendor-specific implementations that interface with SIA in two directions: they *declare* measurable capabilities into the Translation Layer (Section 9), and they *consume* the modality decisions produced by the Coordination Runtime. This boundary is deliberate: it preserves SIA's vendor neutrality and keeps the standard small enough to be implementable across heterogeneous OEM stacks. Renderers are the only entities that face the occupant directly; all nodes reaching them have already been verified by Trust Policy and coordinated by the Runtime.
 
 ```mermaid
-graph TB
-    EXT2(["Agents · Services · ADAS\nSDV transport — Kuksa · uProtocol · service registry"])
-    EXT_R(["Renderers and input devices — external\nHUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel"])
-    EXT1(["Occupant input · output"])
+flowchart TB
+    EXT2(["<b>Agents · Services · ADAS</b><br/>SDV transport — Kuksa · uProtocol · service registry"])
 
     subgraph SIA ["Semantic Interaction Architecture"]
-        O["Ontology Language + Schema Profile\nTyped primitives · metadata contracts · compatibility\n— long-term language of meaning —"]
-        TL["Trust Policy\nReq. vs attestation\nactor_class · freshness · replay · provenance"]
-        CE["Context Policy\nSAE level · Road type · Vehicle state\nDriver state · Market jurisdiction"]
-        T["Translation Layer\nnode × capabilities × context → modality decision"]
-        RT["Interaction Coordination Runtime\nFocus · task-flow · acknowledgement · cross-renderer consistency"]
+        direction TB
+        O["<b>Ontology Language + Schema Profile</b><br/>Typed primitives · metadata contracts · compatibility<br/><i>— long-term language of meaning —</i>"]
+
+        subgraph FLOW [" "]
+            direction LR
+            TL["<b>Trust Policy</b><br/>Req. vs attestation<br/>actor_class · freshness · replay · provenance"]
+            T["<b>Translation Layer</b><br/>node × capabilities × context → modality decision"]
+            RT["<b>Interaction Coordination Runtime</b><br/>focus · task-flow · acknowledgement · cross-renderer consistency"]
+        end
+
+        CE["<b>Context Policy</b><br/>SAE level · Road type · Vehicle state · Driver state · Market jurisdiction"]
     end
 
+    EXT_R(["<b>Renderers and input devices — external</b><br/>HUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel"])
+    EXT1(["<b>Occupant</b><br/>input/output"])
+
     EXT2 -->|"emit node + attestation"| TL
-    O -->|"schema"| TL
+    O -.->|"schema"| TL
+    O -.->|"contract"| T
     TL -->|"verified"| T
-    O -->|"contract"| T
-    EXT_R -->|"capabilities"| T
-    CE -->|"modulates"| T
-    CE -->|"modulates"| RT
     T --> RT
+    CE -.->|"modulates"| T
+    CE -.->|"modulates"| RT
     RT -->|"modality decision · dispatch"| EXT_R
+    EXT_R -.->|"capabilities"| T
     EXT_R <-->|"render · input · ack"| EXT1
 
-    style O fill:#eef0ff,stroke:#454ADE,stroke-width:2px,color:#454ADE
+    style O fill:#454ADE,stroke:#454ADE,stroke-width:2px,color:#ffffff
+    style TL fill:#fde047,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
+    style CE fill:#fde047,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
+    style T fill:#ffffff,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
+    style RT fill:#ffffff,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
+    style EXT2 fill:#7a5d4d,stroke:#1a1a1a,stroke-width:1.5px,color:#ffffff
+    style EXT_R fill:#a85555,stroke:#1a1a1a,stroke-width:1.5px,color:#ffffff
+    style EXT1 fill:#a85555,stroke:#1a1a1a,stroke-width:1.5px,color:#ffffff
+    style SIA fill:#c7d2fe,stroke:#454ADE,stroke-width:2px
+    style FLOW fill:none,stroke:none
 ```
 
 *Figure 3. Mediation architecture. SIA contains three functional components (Ontology, Translation, Runtime) and two cross-cutting policies (Trust, Context). Emitters and renderers are external: emitters submit nodes through Trust Policy; renderers register capabilities into Translation and consume the resulting modality decisions from Runtime. The Ontology Language + Schema Profile is the authoritative reference for both Trust Policy and Translation Layer.*
@@ -155,15 +171,15 @@ A common failure mode in interaction schemas is conflating semantically differen
 
 ```mermaid
 graph TB
-    I(["Interaction"])
+    I(["<b>Interaction</b>"])
 
-    A["Action\nuser → system\nattention_metrics · temporal_type · recommended_modality"]
-    E["Event\nsystem → user"]
-    S["State\nruntime-internal\nscope · target_role · consistency_class"]
-    T["Task\ncomposed flow\nstep_count · interruptible_at · resumable_across_contexts"]
+    A["<b>Action</b><br/><i>user → system</i><br/>attention_metrics · temporal_type · recommended_modality"]
+    E["<b>Event</b><br/><i>system → user</i>"]
+    S["<b>State</b><br/><i>runtime-internal</i><br/>scope · target_role · consistency_class"]
+    T["<b>Task</b><br/><i>composed flow</i><br/>step_count · interruptible_at · resumable_across_contexts"]
 
-    AL["Alert\ntrust_requirements · priority · requires_ack"]
-    N["Notification\nsuppression_class · priority · merges_with"]
+    AL["<b>Alert</b><br/>trust_requirements · priority · requires_ack"]
+    N["<b>Notification</b><br/>suppression_class · priority · merges_with"]
 
     AL1["Alert.Collision.Warning"]
     AL2["Alert.Lane.Departure"]
