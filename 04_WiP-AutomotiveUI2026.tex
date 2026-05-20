@@ -106,7 +106,20 @@ Security cost rises as AI agents and third-party applications gain the ability
 to emit interactions that are indistinguishable, from the occupant's
 standpoint, from safety-critical subsystems. These costs are symptoms of the
 missing boundary --- not a tooling deficit, not a renderer deficit, but an
-absent layer of architecture.
+absent layer of architecture (Figure~\ref{fig:complexity}).
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figures/No_logo/fig1-complexity-comparison.png}
+  \caption{Where the cross-cutting interaction logic lives, before vs. after
+    SIA. Without SIA, every emitter--renderer pair carries its own
+    implementation of trust, context, capability, accessibility, fallback,
+    and audit logic --- a matrix of $N \times M$ duplications that diverges
+    over time. With SIA, this cross-cutting logic exists once at the
+    mediation boundary; renderers become thin stateless consumers and adding
+    new emitters or renderers is linear, not multiplicative.}
+  \label{fig:complexity}
+\end{figure}
 
 A vehicle in service for fifteen years will outlive its displays, its voice
 models, its compute hardware, and quite possibly its operating system. What it
@@ -162,7 +175,17 @@ requirements, 15-year vehicle lifecycles).
 
 SIA occupies the gap above SDV service abstractions and below concrete
 renderers --- the missing connective tissue that none of the above projects
-addresses.
+addresses (Figure~\ref{fig:stack}).
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figures/No_logo/fig2-stack-position.png}
+  \caption{Position of the proposed Semantic Interaction Architecture
+    relative to existing SDV layers. SIA sits above data and service
+    abstractions (COVESA VSS, Kuksa, uProtocol) and below physical HMI
+    surfaces (HUD, cluster, IVI, voice, haptic, AR).}
+  \label{fig:stack}
+\end{figure}
 
 %% ---------------------------------------------------------------
 \section{Mediation Architecture}
@@ -177,18 +200,7 @@ existing stacks.
 
 \begin{figure}[h]
   \centering
-  % Placeholder: export figures/fig2-mediation-architecture.pdf from the
-  % Mermaid source in 01_Semantic-Interaction-Architecture-sdv.md (Fig 3 in the main paper)
-  % and uncomment: \includegraphics[width=\columnwidth]{figures/fig2-mediation-architecture}
-  \fbox{\parbox{0.92\columnwidth}{\centering\vspace{2em}
-    \textit{[Figure 1: Mediation architecture — SIA contains three functional
-    components (Ontology, Translation, Runtime) and two cross-cutting policies
-    (Trust, Context). Emitters (Agents/ADAS) and renderers are external.
-    Runtime flow: Emitters → Trust Policy → Translation → Runtime →
-    external Renderers ↔ Occupant. Renderer capabilities feed back into
-    Translation; Context Policy modulates Translation and Runtime.
-    Insert PDF export of Mermaid diagram here.]}
-  \vspace{2em}}}
+  \includegraphics[width=\linewidth]{figures/No_logo/fig3-mediation-architecture.png}
   \caption{Mediation architecture. SIA contains three functional components
     (Ontology, Translation, Runtime) and two cross-cutting policies (Trust,
     Context). Emitters and renderers are external; they interface with SIA
@@ -245,11 +257,7 @@ primary semantic primitives, each with its own metadata contract.
 
 \begin{figure}[h]
   \centering
-  \fbox{\parbox{0.92\columnwidth}{\centering\vspace{2em}
-    \textit{[Figure 2: Node taxonomy — Interaction splits into Action, Event,
-    State, Task; Event splits into Alert and Notification.
-    Insert PDF export of Mermaid diagram here.]}
-  \vspace{2em}}}
+  \includegraphics[width=\linewidth]{figures/No_logo/fig4-node-taxonomy.png}
   \caption{Node taxonomy. Four primary types with distinct metadata contracts;
     Event splits into Alert and Notification. Subclasses may strengthen but not
     weaken contracts.}
@@ -395,10 +403,10 @@ fallback_chain: [hud, cluster, voice, haptic]
 \begin{figure}[h]
   \centering
   \fbox{\parbox{0.92\columnwidth}{\centering\vspace{2em}
-    \textit{[Figure 3: Sequence diagram — ADAS emits instance + attestation to
+    \textit{[Figure 5: Sequence diagram --- ADAS emits instance + attestation to
     Trust Policy; on failure: reject + log SecurityEvent; on success: verified
     node propagates to Translation, Runtime, Renderers; ack closes loop.
-    Insert PDF export of Mermaid sequenceDiagram here.]}
+    Anonymised PNG export pending.]}
   \vspace{2em}}}
   \caption{Sequence flow for Alert.Collision.Warning. Trust Policy is a
     chokepoint before Translation. Renderer dispatch is multicast;
