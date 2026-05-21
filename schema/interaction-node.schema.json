@@ -1,196 +1,413 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/janjanecek/SIA/schema/interaction-node.schema.json",
-  "title": "Semantic Interaction Node",
-  "description": "Minimal draft schema profile for the declarative metadata contract described by SIA v0.1. This is intended as an implementable subset of a broader ontology language. The choice of formalism (JSON Schema vs OWL/SHACL vs custom) is held open in Section 12 of the position paper — this file is one candidate, not a binding commitment.",
-  "type": "object",
-  "required": [
-    "node",
-    "since_version",
-    "direction",
-    "target_role",
-    "inherits_from"
-  ],
-  "properties": {
-    "node": {
-      "type": "string",
-      "pattern": "^Interaction\\.(Action|Event|State|Task)(\\.[A-Za-z0-9_]+)+$"
-    },
-    "inherits_from": {
-      "type": "string",
-      "pattern": "^Interaction(\\.[A-Za-z0-9_]+)+$",
-      "description": "Reference to the parent node in the ontology hierarchy. Declaration-time only; not present on runtime instances."
-    },
-    "since_version": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    },
-    "deprecated_since": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    },
-    "replaced_by": {
-      "type": "string"
-    },
-    "compatible_with_min_version": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    },
-    "direction": {
-      "enum": ["input", "output", "internal", "composite"],
-      "description": "input = Action (user → system); output = Event (system → user); internal = State; composite = Task (multi-step over Actions and States)."
-    },
-    "temporal_type": {
-      "enum": ["discrete", "sustained", "continuous"]
-    },
-    "recommended_modality": {
-      "type": "string"
-    },
-    "attention_metrics": {
-      "type": "object",
-      "properties": {
-        "glance_time_estimated_ms": {
-          "type": "integer",
-          "minimum": 0
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/yaneczech/SIA/schema/interaction-node.schema.json",
+    "title": "Semantic Interaction Node",
+    "description": "Illustrative JSON Schema profile for the declarative metadata contract described by SIA v0.3.1. It is an implementable subset of the broader Semantic Interaction Architecture, aligned with Minimal SIA Profile v1 where possible. JSON Schema is used here as a runtime validation candidate; the paper still treats SHACL, JSON Schema, CBOR/Protobuf, and a custom .vspec-style DSL as open specification choices.",
+    "type": "object",
+    "required": [
+        "node",
+        "since_version",
+        "direction",
+        "target_role",
+        "inherits_from"
+    ],
+    "properties": {
+        "node": {
+            "type": "string",
+            "pattern": "^Interaction\\.(Action|Event|State|Task)(\\.[A-Za-z0-9_]+)+$",
+            "description": "Stable semantic node identifier. In Minimal SIA Profile v1, emitted nodes are limited to Action plus the concrete Event subtypes Alert and Notification."
         },
-        "mean_single_glance_ms": {
-          "type": "integer",
-          "minimum": 0
+        "inherits_from": {
+            "type": "string",
+            "pattern": "^Interaction(\\.[A-Za-z0-9_]+)+$",
+            "description": "Reference to the parent node in the ontology hierarchy. Declaration-time only; not present on runtime instances."
         },
-        "task_steps": {
-          "type": "integer",
-          "minimum": 0
+        "since_version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
         },
-        "voice_alt_available": {
-          "type": "boolean"
+        "deprecated_since": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
         },
-        "cognitive_load": {
-          "enum": ["minimal", "moderate", "high", "locked_while_driving"]
-        }
-      },
-      "additionalProperties": false
-    },
-    "priority": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 100
-    },
-    "interruptibility": {
-      "type": "boolean"
-    },
-    "requires_ack": {
-      "type": "boolean"
-    },
-    "ack_kind": {
-      "type": "string"
-    },
-    "ack_timeout_ms": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Base declarative timeout. Context Policy may scale the effective value at runtime per the modifier whitelist in Section 8."
-    },
-    "ack_authority": {
-      "enum": ["driver_only", "any_occupant", "system"]
-    },
-    "trust_requirements": {
-      "type": "object",
-      "properties": {
-        "signed_origin_required": {
-          "type": "boolean"
+        "replaced_by": {
+            "type": "string",
+            "pattern": "^Interaction(\\.[A-Za-z0-9_]+)+$"
         },
-        "permitted_actor_classes": {
-          "type": "array",
-          "items": {
+        "compatible_with_min_version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "direction": {
             "enum": [
-              "human_direct",
-              "human_voice",
-              "agent_local",
-              "agent_cloud",
-              "adas",
-              "vsc",
-              "service",
-              "third_party_app"
+                "occupant_to_system",
+                "system_to_occupant",
+                "runtime_internal",
+                "composite_flow"
+            ],
+            "description": "occupant_to_system = Action; system_to_occupant = Alert or Notification; runtime_internal = State; composite_flow = Task."
+        },
+        "temporal_type": {
+            "enum": [
+                "discrete",
+                "sustained",
+                "continuous"
             ]
-          },
-          "uniqueItems": true
         },
-        "max_age_ms": {
-          "type": "integer",
-          "minimum": 0
+        "recommended_modality": {
+            "type": "array",
+            "items": {
+                "enum": [
+                    "visual",
+                    "auditory",
+                    "haptic",
+                    "multimodal",
+                    "input_only"
+                ]
+            },
+            "uniqueItems": true,
+            "description": "Semantic modality preference, not a renderer name. Concrete renderer selection is handled by capability negotiation."
         },
-        "replay_protection": {
-          "enum": ["none", "recommended", "required"]
+        "attention_metrics": {
+            "type": "object",
+            "properties": {
+                "glance_time_estimated_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "mean_single_glance_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "task_steps": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "voice_alt_available": {
+                    "type": "boolean"
+                },
+                "cognitive_load": {
+                    "enum": [
+                        "minimal",
+                        "moderate",
+                        "high",
+                        "locked_while_driving"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "description": "Declared attention-demand proxies. These are estimates for runtime enforcement and later audit; they do not by themselves prove regulatory compliance."
+        },
+        "priority": {
+            "enum": [
+                "critical",
+                "high",
+                "normal",
+                "low",
+                "background"
+            ],
+            "description": "Qualitative priority band declared on the node, not supplied by runtime instances. Deployment profiles may map these bands to local numeric arbitration values."
+        },
+        "interruptibility": {
+            "enum": [
+                "non_interruptible",
+                "interruptible",
+                "deferable"
+            ]
+        },
+        "requires_ack": {
+            "type": "boolean"
+        },
+        "ack_kind": {
+            "enum": [
+                "none",
+                "explicit_input",
+                "gaze",
+                "timeout",
+                "explicit_or_timeout",
+                "gaze_or_timeout",
+                "awareness_logged"
+            ],
+            "description": "Acknowledgement semantics. Deployments should distinguish deterministic input from inferred acknowledgement where certification requires it."
+        },
+        "ack_timeout_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Base declarative timeout. Context Policy may scale the effective runtime value only when the field is included in the context-modifier whitelist."
+        },
+        "ack_authority": {
+            "enum": [
+                "driver_only",
+                "any_occupant",
+                "system"
+            ]
+        },
+        "trust_requirements": {
+            "type": "object",
+            "properties": {
+                "signed_origin_required": {
+                    "type": "boolean"
+                },
+                "permitted_actor_classes": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "human_direct",
+                            "agent_local",
+                            "agent_cloud",
+                            "adas",
+                            "vsc",
+                            "service",
+                            "third_party_app"
+                        ]
+                    },
+                    "uniqueItems": true,
+                    "description": "Actor classes describe who originates the interaction. Voice is a modality or authentication channel, not a separate actor class. Minimal SIA Profile v1 uses human_direct, adas, service, and third_party_app."
+                },
+                "max_age_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "replay_protection": {
+                    "enum": [
+                        "none",
+                        "recommended",
+                        "required"
+                    ]
+                },
+                "session_revocation_required": {
+                    "type": "boolean",
+                    "description": "Whether a valid symmetric Tier-2 session ticket must remain explicitly revocable before expiry by an IDS, policy monitor, or runtime supervisor."
+                }
+            },
+            "additionalProperties": false
+        },
+        "target_role": {
+            "enum": [
+                "driver",
+                "front_passenger",
+                "rear_passenger",
+                "any_occupant",
+                "system_internal"
+            ]
+        },
+        "scope": {
+            "type": "string"
+        },
+        "consistency_class": {
+            "enum": [
+                "strong",
+                "eventual",
+                "best_effort"
+            ]
+        },
+        "accessibility_alt": {
+            "type": "object",
+            "additionalProperties": true
+        },
+        "regulatory_basis": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true
+        },
+        "assessment_basis": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true
+        },
+        "pii_class": {
+            "enum": [
+                "none",
+                "personal",
+                "sensitive",
+                "special_category"
+            ],
+            "description": "Aligned with GDPR vocabulary: personal = Art. 4(1); sensitive = de-facto industry tier between personal and special_category; special_category = Art. 9."
+        },
+        "temporal_freshness_ms": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "suppression_class": {
+            "enum": [
+                "safety_critical",
+                "regulated",
+                "system",
+                "user",
+                "third_party"
+            ]
+        },
+        "merges_with": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true
+        },
+        "fallback_chain": {
+            "type": "array",
+            "items": {
+                "enum": [
+                    "cluster",
+                    "ivi",
+                    "voice"
+                ]
+            },
+            "description": "Renderer names allowed by Minimal SIA Profile v1. HUD, haptic, AR, and steering-wheel surfaces are future profile extensions."
+        },
+        "degradation_policy": {
+            "enum": [
+                "escalate",
+                "downgrade",
+                "suppress",
+                "no_degradation"
+            ]
+        },
+        "context_degradation_policy": {
+            "enum": [
+                "safe_worst_case",
+                "fail_closed"
+            ],
+            "description": "Policy to apply when a core context axis cannot be determined. Unknown context must not relax constraints."
+        },
+        "step_count": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "interruptible_at": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "resumable_across_contexts": {
+            "type": "boolean"
         }
-      },
-      "additionalProperties": false
     },
-    "target_role": {
-      "enum": ["driver", "front_passenger", "rear_passenger", "any_occupant", "system_internal"]
-    },
-    "scope": {
-      "type": "string"
-    },
-    "consistency_class": {
-      "enum": ["strong", "eventual", "best_effort"]
-    },
-    "accessibility_alt": {
-      "type": "object",
-      "additionalProperties": true
-    },
-    "regulatory_basis": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "uniqueItems": true
-    },
-    "assessment_basis": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "uniqueItems": true
-    },
-    "pii_class": {
-      "enum": ["none", "personal", "sensitive", "special_category"],
-      "description": "Aligned with GDPR vocabulary: personal = Art. 4(1); sensitive = de-facto industry tier between personal and special_category; special_category = Art. 9."
-    },
-    "temporal_freshness_ms": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "suppression_class": {
-      "enum": ["safety_critical", "regulated", "system", "user", "third_party"]
-    },
-    "merges_with": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "uniqueItems": true
-    },
-    "fallback_chain": {
-      "type": "array",
-      "items": {
-        "enum": ["hud", "cluster", "ivi", "voice", "haptic", "ar", "steering_wheel"]
-      }
-    },
-    "degradation_policy": {
-      "enum": ["escalate", "downgrade", "suppress", "no_degradation"]
-    },
-    "step_count": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "interruptible_at": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "resumable_across_contexts": {
-      "type": "boolean"
-    }
-  },
-  "additionalProperties": false
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "node": {
+                        "pattern": "^Interaction\\.Event\\.Alert\\."
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "priority",
+                    "interruptibility",
+                    "requires_ack",
+                    "ack_kind",
+                    "ack_timeout_ms",
+                    "ack_authority",
+                    "trust_requirements",
+                    "attention_metrics",
+                    "temporal_type",
+                    "temporal_freshness_ms",
+                    "suppression_class",
+                    "fallback_chain",
+                    "degradation_policy"
+                ]
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "node": {
+                        "pattern": "^Interaction\\.Event\\.Notification\\."
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "priority",
+                    "interruptibility",
+                    "attention_metrics",
+                    "temporal_type",
+                    "suppression_class",
+                    "fallback_chain",
+                    "degradation_policy"
+                ]
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "node": {
+                        "pattern": "^Interaction\\.Action\\."
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "temporal_type",
+                    "recommended_modality",
+                    "attention_metrics"
+                ]
+            }
+        }
+    ],
+    "additionalProperties": false,
+    "examples": [
+        {
+            "node": "Interaction.Event.Alert.Collision.Warning",
+            "since_version": "1.0.0",
+            "inherits_from": "Interaction.Event.Alert",
+            "direction": "system_to_occupant",
+            "target_role": "driver",
+            "priority": "critical",
+            "interruptibility": "non_interruptible",
+            "requires_ack": true,
+            "ack_kind": "explicit_or_timeout",
+            "ack_timeout_ms": 2000,
+            "ack_authority": "driver_only",
+            "temporal_type": "discrete",
+            "attention_metrics": {
+                "glance_time_estimated_ms": 800,
+                "mean_single_glance_ms": 300,
+                "task_steps": 0,
+                "voice_alt_available": true,
+                "cognitive_load": "high"
+            },
+            "trust_requirements": {
+                "signed_origin_required": true,
+                "permitted_actor_classes": [
+                    "adas"
+                ],
+                "max_age_ms": 200,
+                "replay_protection": "required",
+                "session_revocation_required": true
+            },
+            "temporal_freshness_ms": 500,
+            "suppression_class": "safety_critical",
+            "merges_with": [],
+            "fallback_chain": [
+                "cluster",
+                "voice"
+            ],
+            "degradation_policy": "escalate",
+            "context_degradation_policy": "safe_worst_case",
+            "accessibility_alt": {
+                "low_vision": [
+                    "voice"
+                ],
+                "hearing_impaired": [
+                    "cluster"
+                ]
+            },
+            "regulatory_basis": [
+                "UNECE_R152",
+                "ISO_15623"
+            ],
+            "assessment_basis": [
+                "NHTSA_FCW_NCAP"
+            ],
+            "pii_class": "none"
+        }
+    ]
 }
