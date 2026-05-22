@@ -112,7 +112,7 @@ This is the central interaction-integrity property: SIA does not determine wheth
 
 ---
 
-## A.4 Translation under three contexts
+## A.4 Translation under selected contexts
 
 The same verified node may be dispatched differently depending on context and renderer capabilities. In v1, the available renderer set is deliberately small: **cluster**, **IVI** and **voice**.
 
@@ -137,7 +137,7 @@ Translation Layer decision:
 - **Concurrent:** short voice prompt, because `voice_alt_available: true` and the alert is critical.
 - **Rejected:** IVI, because it is a general interactive surface and may exceed the active attention budget during manual highway driving.
 
-Effective attention cost, using the illustrative modifier from the main paper:
+Effective attention cost using an illustrative dense-traffic modifier (the specific value is not normatively defined in v1; it is an example of the kind of empirically calibrated modifier a deployment would configure):
 
 ```text
 800 ms × 1.2 dense-traffic modifier = 960 ms
@@ -191,7 +191,7 @@ context:
   market_jurisdiction: DE
 ```
 
-At L4 autonomy, the ADS handles the collision response autonomously; the occupant alert serves primarily as awareness and recovery information. The node identity, trust requirement, priority and fallback chain remain unchanged. Context Policy may only adjust whitelisted numeric fields, such as acknowledgement timing.
+At L4 autonomy, the Automated Driving System (ADS) handles the collision response autonomously; the occupant alert serves primarily as awareness and recovery information. The node identity, trust requirement, priority and fallback chain remain unchanged. Context Policy may only adjust whitelisted numeric fields, such as acknowledgement timing.
 
 Translation Layer decision:
 
@@ -246,7 +246,7 @@ Trust Policy rejects it because `agent_local` is not permitted to emit this node
 
 An adversary attempts to attach `priority: critical` or `priority: 99` to a benign notification.
 
-Trust Policy and Runtime ignore instance-level priority for declared semantic nodes. Priority is resolved from the ontology declaration. A runtime payload may not raise its own semantic authority.
+The ontology declaration is authoritative for priority. The Translation Layer resolves priority from the schema, not from the runtime payload, so any instance-level priority field is ignored. Trust Policy is not the enforcement point here — a node may pass trust verification and still have its injected priority silently discarded, because semantic authority over priority is a property of the declaration, not the instance. A runtime payload may not raise its own semantic authority.
 
 ### A.5.5 Valid session, malicious behaviour
 

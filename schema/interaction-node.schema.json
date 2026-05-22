@@ -234,12 +234,14 @@
         },
         "suppression_class": {
             "enum": [
+                "non_suppressible",
                 "safety_critical",
                 "regulated",
                 "system",
                 "user",
                 "third_party"
-            ]
+            ],
+            "description": "non_suppressible: no runtime actor may suppress or defer this interaction regardless of context or priority. safety_critical: a subtype where the reason for non-suppression is safety relevance; kept for backward compatibility but non_suppressible is preferred. regulated: suppression would violate a regulatory obligation. system: suppression is at system discretion only. user: occupant may suppress or defer. third_party: third-party apps may suppress within policy."
         },
         "merges_with": {
             "type": "array",
@@ -261,11 +263,13 @@
         },
         "degradation_policy": {
             "enum": [
+                "fail_to_cluster_plus_audio",
                 "escalate",
                 "downgrade",
                 "suppress",
                 "no_degradation"
-            ]
+            ],
+            "description": "fail_to_cluster_plus_audio: if the primary renderer is unavailable, fall back to instrument cluster with a concurrent audio prompt; use for safety-critical alerts where cluster+audio is the minimum acceptable delivery. escalate: attempt a higher-priority or less suppressible renderer. downgrade: fall back to a lower-fidelity modality. suppress: silently discard if the preferred renderer is unavailable. no_degradation: fail closed rather than degrade."
         },
         "context_degradation_policy": {
             "enum": [
@@ -372,7 +376,7 @@
                 "mean_single_glance_ms": 300,
                 "task_steps": 0,
                 "voice_alt_available": true,
-                "cognitive_load": "high"
+                "cognitive_load": "minimal"
             },
             "trust_requirements": {
                 "signed_origin_required": true,
@@ -384,13 +388,13 @@
                 "session_revocation_required": true
             },
             "temporal_freshness_ms": 500,
-            "suppression_class": "safety_critical",
+            "suppression_class": "non_suppressible",
             "merges_with": [],
             "fallback_chain": [
                 "cluster",
                 "voice"
             ],
-            "degradation_policy": "escalate",
+            "degradation_policy": "fail_to_cluster_plus_audio",
             "context_degradation_policy": "safe_worst_case",
             "accessibility_alt": {
                 "low_vision": [

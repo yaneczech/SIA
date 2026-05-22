@@ -115,9 +115,13 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 
 - [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — the main proposal: motivation, related work, architecture, node taxonomy, metadata contracts, Trust Policy, Attention Policy, context model, capability negotiation, versioning, Minimal SIA Profile v1, and path forward.
 - [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a concrete `Alert.Collision.Warning` traced end-to-end through ontology declaration, trust verification, translation, context handling, acknowledgement, and adversarial scenarios.
-- [**Draft JSON Schema**](./schema/interaction-node.schema.json) — illustrative machine-readable encoding of the metadata contract, if present in this repository. The paper treats schema formalism as an open design question: SHACL as authoring source of truth, JSON Schema / CBOR / Protobuf as possible runtime contracts, and a `.vspec`-style DSL as a candidate authoring surface.
+- [**Draft JSON Schema**](./schema/interaction-node.schema.json) — illustrative machine-readable encoding of the metadata contract. The paper treats schema formalism as an open design question: SHACL as authoring source of truth, JSON Schema / CBOR / Protobuf as possible runtime contracts, and a `.vspec`-style DSL as a candidate authoring surface.
 
-If this repository contains revised filenames such as `*_revised_v0.3.1.md`, those are the current working drafts. Once accepted, they should replace the canonical filenames above.
+---
+
+## Work in progress
+
+- [**AutomotiveUI 2026 — draft paper**](./wip/AutomotiveUI2026.md) — a position paper submission for the AutomotiveUI 2026 conference, adapting the SIA proposal for that venue. Also available as [LaTeX source](./wip/AutomotiveUI2026.tex) with a [reference list](./wip/references.bib).
 
 ---
 

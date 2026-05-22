@@ -8,7 +8,7 @@
 
 **Author:** Jan Janeček  
 **Affiliation:** Cars Making Sense  
-**Version:** 0.3 — Edited draft  
+**Version:** 0.3.1 — Edited draft  
 **Date:** May 2026
 
 ---
@@ -75,7 +75,7 @@ SIA is not a replacement for existing SDV work. It is intended as a narrow layer
 
 **AUTOSAR Classic and Adaptive, Eclipse S-CORE and SOAFEE** address middleware, runtime and safety-oriented system architecture. They are below the proposed interaction boundary.
 
-**Android Automotive Car App Library** is an important production analogue: apps declare templates and the host renders them with built-in distraction constraints. Its scope is intentionally narrow, application-category specific and tied to a specific ecosystem. SIA generalises the principle to a vehicle-wide semantic contract, while leaving renderer implementation external.
+**Android Automotive Car App Library** is an important production analogue: apps declare templates and the host renders them with built-in distraction constraints. Its scope is intentionally narrow, application-category specific and tied to a specific ecosystem. SIA generalises the principle to a vehicle-wide semantic contract, while leaving renderer implementation external. The growing complexity of automotive HMI surfaces, security surfaces and user-experience demands that motivate SIA are surveyed in Grobelna et al. 2025.
 
 **W3C Multimodal Architecture and EMMA** define generic models for multimodal input. They are relevant as possible substrates for input mapping, but they are not automotive-specific and do not carry the safety, trust and attention contracts proposed here.
 
@@ -88,6 +88,7 @@ Several prior works intersect with SIA’s scope:
 - **Klotz et al. 2018 / VSSo** formalised vehicle signals as an ontology over VSS. It is a data-layer ontology and an important input to SIA’s Context Policy.
 - **Laclau et al. 2024 / AXIL** proposed a user-experience-focused runtime priority model for service orchestration in SDVs. AXIL is application/service oriented; SIA’s priority and attention metadata are per interaction.
 - **Cappelli & Di Marzo Serugendo 2025 / Onto-CMS** is the closest contemporary neighbour, addressing ontology-based customisation management for driver–vehicle interfaces. It can be seen as complementary: Onto-CMS helps decide which interface elements may be customised; SIA describes what an interaction means, what it costs and who may emit it.
+- **Sigüenza et al. 2012** explored integration of HMI with the Semantic Sensor Web using SOSA/SSN-style observation models, relevant as a pattern for how observable vehicle data can be shared in a semantically typed way. SIA's Context Policy draws on the same principle of typed observation streams, applied to context axes rather than raw sensor data.
 
 These works show that semantic representation in automotive HMI is not new. The novelty claimed here is not the existence of semantics, but the integration of semantics with trust provenance, attention metrics, context and renderer capability negotiation in a narrow runtime boundary.
 
@@ -306,7 +307,7 @@ Interaction integrity is the property that the meaning, priority and origin of a
 
 SIA does not determine whether a physical collision is imminent. That is the job of ADAS and its sensors. SIA determines whether an emitted `Alert.Collision.Warning` is authorised, fresh, attributable, policy-compliant and eligible for presentation. A correctly attested but factually wrong warning is a sensing or ADAS fault; a spoofed, stale or unauthorised warning is an SIA trust failure.
 
-This distinction matters as in-cabin AI agents, third-party applications and cloud services acquire more expressive power. An attacker or misaligned agent may not need control over braking to create risk. It may attempt to suppress a warning, inject a fake alert, raise the priority of a benign message, or issue a safety-relevant instruction while authenticated as a benign actor. Service-level authentication establishes whether a component may speak; SIA constrains what semantic categories it may speak with.
+This distinction matters as in-cabin AI agents, third-party applications and cloud services acquire more expressive power. An attacker or misaligned agent may not need control over braking to create risk. It may attempt to suppress a warning, inject a fake alert, raise the priority of a benign message, or issue a safety-relevant instruction while authenticated as a benign actor. Service-level authentication establishes whether a component may speak; SIA constrains what semantic categories it may speak with. Recent work on LLM-based driving assistants and agent-to-agent threat taxonomies illustrates why semantic authority constraints are becoming a practical requirement rather than a theoretical concern (Kumar et al. 2026; Stappen et al. 2026).
 
 ### 6.1 Trust requirements
 
@@ -316,10 +317,12 @@ Trust requirements are declared on the node:
 Alert.Collision.Warning:
   trust_requirements:
     signed_origin_required: true
-    permitted_actor_classes: [adas, vsc]
+    permitted_actor_classes: [adas]
     max_age_ms: 200
     replay_protection: required
 ```
+
+This example reflects the Minimal SIA Profile v1, which includes only `adas` as a permitted class for collision warnings. In the full architecture, `vsc` (vehicle-state-critical) may also appear here once that class is added in the first extension profile (see §11.1).
 
 Authority is expressed through `permitted_actor_classes`. A generic scalar such as `min_trust_level` is intentionally avoided because it duplicates and obscures the actor taxonomy.
 
@@ -341,7 +344,7 @@ Trust Policy verifies that the attestation satisfies the declared requirements b
 
 ### 6.3 Actor classes
 
-A minimal actor taxonomy may start with:
+The full architecture can use the following actor taxonomy. The Minimal SIA Profile v1 uses only the subset defined in §11.1 (`human_direct`, `adas`, `service`, `third_party_app`); the remaining classes are deferred to the first extension profile.
 
 | Class | Description | Example |
 | --- | --- | --- |
@@ -385,14 +388,14 @@ attention_metrics:
   cognitive_load: moderate
 ```
 
-The Translation Layer composes the static estimate with a context modifier:
+The Translation Layer composes the static estimate with a context modifier. The modifier is applied independently to each numeric attention field; for example, for the primary glance budget:
 
 ```text
-effective_cost(node, context) =
-    node.attention_metrics × context.attention_modifier
+effective_glance_cost(node, context) =
+    node.attention_metrics.glance_time_estimated_ms × context.attention_modifier
 ```
 
-The result can be compared against deployment-defined budgets. For example, a safety alert during manual highway driving may be allowed only if it can be conveyed through a low-glance path, while a media-browsing task may be suppressed or deferred.
+The same pattern applies to `mean_single_glance_ms` and selected acknowledgement timeouts. Non-numeric fields such as `cognitive_load` and `voice_alt_available` are not scaled. The result can be compared against deployment-defined budgets. For example, a safety alert during manual highway driving may be allowed only if it can be conveyed through a low-glance path, while a media-browsing task may be suppressed or deferred.
 
 The important claim is limited. SIA does not prove that an interaction complies with NHTSA, ISO 15005, ISO 15007, JAMA or any other guideline. Proof requires empirical procedures such as occlusion testing and eye-glance measurement in the integrated vehicle. SIA standardises the contract that makes attention demand visible to software: a node carries an estimate, the runtime has an enforcement point, and an audit can reconstruct which budget applied in which context.
 
@@ -436,7 +439,7 @@ If a core context axis cannot be determined, Context Policy must degrade to the 
 
 ## 9. Capability Negotiation
 
-Renderers and input devices declare measurable capabilities rather than informal labels.
+Renderers and input devices declare measurable capabilities rather than informal labels. The examples below illustrate the broader architecture; the Minimal SIA Profile v1 restricts the active renderer set to cluster, IVI and voice, and defers HUD, haptic, AR and steering-wheel surfaces.
 
 ```yaml
 Renderer.Cluster:
@@ -472,7 +475,7 @@ The Translation Layer computes candidate renderers by filtering against node req
 When several renderers qualify, arbitration should be deterministic and auditable:
 
 1. **Safety mandate.** If the node requires a safety-certified surface, non-qualifying renderers are eliminated.
-2. **Modality preference.** Among surviving candidates, the renderer that best satisfies the node’s recommended modality and time-to-indication wins.
+2. **Modality preference.** Among surviving candidates, the renderer that best satisfies the node’s recommended modality and minimises time-to-indication — the interval from dispatch decision to perceptible occupant output — wins.
 3. **Context availability.** If gaze or occupant-attention data is available, the system may prefer the surface the occupant is already attending to, but never in a way that overrides safety requirements.
 
 The output should be explainable in logs: for example, “cluster selected because HUD unavailable; IVI rejected due to attention budget”.
@@ -489,6 +492,8 @@ deprecated_since: 2.0.0
 replaced_by: Interaction.Action.Navigate.Hierarchical.Back
 compatible_with_min_version: 1.2.0
 ```
+
+`compatible_with_min_version` is a schema-level versioning annotation that declares the oldest consumer version that can safely process the node. It is not a runtime metadata field and does not appear in the §5 metadata table; it is resolved at authoring time and baked into compiled runtime contracts.
 
 The following rules should govern evolution:
 
@@ -513,7 +518,7 @@ The full architecture is intentionally broader than the first implementation tar
 
 | Type | Example v1 nodes | Typical emitter | Default modality |
 | --- | --- | --- | --- |
-| `Alert` | `Alert.Collision.Warning`, `Alert.Lane.Departure`, `Alert.Driver.Drowsiness`, `Alert.TirePressure.Low`, `Alert.Powertrain.Fault` | `adas`, `vsc`, `service` | cluster + audio |
+| `Alert` | `Alert.Collision.Warning`, `Alert.Lane.Departure`, `Alert.Driver.Drowsiness`, `Alert.TirePressure.Low`, `Alert.Powertrain.Fault` | `adas`, `service` | cluster + audio |
 | `Notification` | `Notification.Navigation.Maneuver`, `Notification.Call.Incoming`, `Notification.Message.Received`, `Notification.Media.NowPlaying`, `Notification.Charging.Status` | `service`, `third_party_app` | IVI or voice |
 | `Action` | `Action.Media.Control`, `Action.Navigation.Destination.Set`, `Action.Climate.Temperature.Set`, `Action.Phone.Call.Initiate`, `Action.Voice.Command.Submit` | `human_direct` | context-dependent |
 
@@ -562,18 +567,21 @@ regulatory_basis:
   - UNECE R152
 ```
 
-A matching runtime emission would carry the instance-specific attestation:
+A matching runtime emission would carry the instance-specific payload and attestation (see Appendix A for a full end-to-end trace):
 
 ```yaml
 node_id: Interaction.Event.Alert.Collision.Warning
 payload:
-  distance_m: 18
+  time_to_collision_s: 1.4
+  threat_bearing_deg: 12
+  threat_range_m: 18
   relative_speed_kmh: 42
 attestation:
   actor_class: adas
   actor_id: ADAS_v2.3.1
   timestamp_ms: 1778803920123
   nonce: <random-per-emission>
+  provenance_chain: [adas]
   signature: <signature-over-canonical-instance>
 ```
 
@@ -596,7 +604,7 @@ This makes v1 a practical falsification target. If the architecture cannot be ma
 | Standard or work | Layer | Relationship |
 | --- | --- | --- |
 | COVESA VSS | Data | Populates context axes; nodes may reference VSS signals |
-| W3C VSSO | Data ontology | Ontology over VSS; potential Context Policy substrate |
+| W3C VSSo | Data ontology | Ontology over VSS; potential Context Policy substrate |
 | W3C SOSA/SSN | Sensor observations | Modelling pattern for observable/actuatable distinction |
 | W3C MMI / EMMA | Multimodal input | Candidate input vocabulary for Translation Layer mapping |
 | ISO 15005 / ISO 15007 / ISO 17287 | Ergonomics | Source family for attention and task-load semantics |
