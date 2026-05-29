@@ -33,7 +33,7 @@ This paper takes the position that the recurring inconsistency of in-vehicle int
 
 A natural objection is that any additional boundary creates additional complexity. We argue the inverse. The complexity already exists today, but it is duplicated across every emitter–renderer pair: each direct path may implement its own trust checks, context rules, capability assumptions, accessibility fallbacks, acknowledgement logic and audit behaviour. SIA does not introduce this complexity; it consolidates it into one auditable boundary.
 
-![Figure 1 — complexity comparison](./figures/fig1-complexity-comparison.svg)
+![Figure 1 — complexity comparison](./figures/fig1-complexity-comparison.png)
 
 *Figure 1. Without SIA, cross-cutting interaction logic is duplicated across emitter–renderer pairs. With SIA, this logic is consolidated at a mediation boundary; renderers become thinner consumers and adding new emitters or renderers becomes linear rather than multiplicative.*
 
