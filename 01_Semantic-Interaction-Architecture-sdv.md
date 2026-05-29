@@ -104,25 +104,7 @@ SIA is therefore deliberately a second-wave proposal: a small mediation contract
 
 ### 2.4 Position in the SDV stack
 
-```mermaid
-graph TB
-    OCC["<b>Occupant</b><br/>Driver · Front passenger · Rear passenger"]
-    HMI["<b>Renderers and Input Devices</b><br/>HUD · Cluster · IVI · Voice · Haptic · AR · Steering wheel · Gesture · Eye tracking"]
-    SIA["<b>★ Semantic Interaction Architecture</b><br/>Ontology/Schema · Translation · Coordination<br/>Trust Policy · Context Policy"]
-    SVC["<b>Services and Orchestration</b><br/>Kuksa · uProtocol · Zenoh · Chariott · S-CORE"]
-    DAT["<b>Data Model</b><br/>COVESA VSS"]
-    MW["<b>Middleware</b><br/>AUTOSAR Classic · Adaptive"]
-    HW["<b>Hardware</b><br/>HPC · ECUs · Sensors · Actuators · CAN · Ethernet"]
-
-    OCC --- HMI
-    HMI --- SIA
-    SIA --- SVC
-    SVC --- DAT
-    DAT --- MW
-    MW --- HW
-
-    style SIA fill:#eef0ff,stroke:#454ADE,stroke-width:2px,color:#454ADE
-```
+![Figure 2 — Position of SIA in the SDV stack](./figures/fig2-stack-position.png)
 
 *Figure 2. SIA sits above existing data and service abstractions and below concrete renderers. It is not a renderer, GUI toolkit, data model or middleware replacement.*
 
@@ -146,49 +128,7 @@ The architecture has three functional components and two cross-cutting policies.
 
 Renderers and input devices are external to SIA. They declare measurable capabilities into the Translation Layer and consume the resulting modality decisions. This boundary is deliberate: SIA should standardise the interaction contract, not the visual design or implementation of each HMI surface.
 
-```mermaid
-flowchart TB
-    EXT2(["<b>Agents · Services · ADAS · Apps</b><br/>SDV transport — Kuksa · uProtocol · service registry"])
-
-    subgraph SIA ["Semantic Interaction Architecture"]
-        direction TB
-        O["<b>Ontology Language + Schema Profile</b><br/>Typed primitives · metadata contracts · compatibility"]
-
-        subgraph FLOW [" "]
-            direction LR
-            TL["<b>Trust Policy</b><br/>requirements vs attestation"]
-            T["<b>Translation Layer</b><br/>node × capabilities × context → modality decision"]
-            RT["<b>Interaction Coordination Runtime</b><br/>focus · acknowledgement · fallback · consistency"]
-        end
-
-        CE["<b>Context Policy</b><br/>vehicle_state · road_type · driver_state · jurisdiction"]
-    end
-
-    EXT_R(["<b>Renderers and input devices — external</b><br/>Cluster · IVI · Voice · HUD · Haptic · Steering wheel"])
-    EXT1(["<b>Occupant</b><br/>input/output"])
-
-    EXT2 -->|"emit node + attestation"| TL
-    O -.->|"schema"| TL
-    O -.->|"contract"| T
-    TL -->|"verified"| T
-    T --> RT
-    CE -.->|"modulates"| T
-    CE -.->|"modulates"| RT
-    RT -->|"modality decision · dispatch"| EXT_R
-    EXT_R -.->|"capabilities"| T
-    EXT_R <-->|"render · input · ack"| EXT1
-
-    style O fill:#454ADE,stroke:#454ADE,stroke-width:2px,color:#ffffff
-    style TL fill:#fde047,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
-    style CE fill:#fde047,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
-    style T fill:#ffffff,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
-    style RT fill:#ffffff,stroke:#1a1a1a,stroke-width:1.5px,color:#1a1a1a
-    style EXT2 fill:#7a5d4d,stroke:#1a1a1a,stroke-width:1.5px,color:#ffffff
-    style EXT_R fill:#a85555,stroke:#1a1a1a,stroke-width:1.5px,color:#ffffff
-    style EXT1 fill:#a85555,stroke:#1a1a1a,stroke-width:1.5px,color:#ffffff
-    style SIA fill:#c7d2fe,stroke:#454ADE,stroke-width:2px
-    style FLOW fill:none,stroke:none
-```
+![Figure 3 — Mediation architecture](./figures/fig3-mediation-architecture.png)
 
 *Figure 3. SIA contains three functional components and two policies. Emitters submit nodes through Trust Policy; renderers register capabilities and consume modality decisions.*
 
@@ -198,30 +138,7 @@ flowchart TB
 
 A common failure mode in interaction schemas is treating all interactions as generic messages. SIA separates semantically different node types because they carry different obligations.
 
-```mermaid
-graph TB
-    I(["<b>Interaction</b>"])
-    A["<b>Action</b><br/><i>occupant → system</i>"]
-    E["<b>Event</b><br/><i>system → occupant</i>"]
-    S["<b>State</b><br/><i>runtime-internal</i>"]
-    T["<b>Task</b><br/><i>composed flow</i>"]
-    AL["<b>Alert</b><br/>safety-relevant event"]
-    N["<b>Notification</b><br/>informational event"]
-
-    I --> A & E & S & T
-    E --> AL & N
-
-    AL --> AL1["Alert.Collision.Warning"]
-    AL --> AL2["Alert.Lane.Departure"]
-    N --> N1["Notification.Message.Received"]
-    N --> N2["Notification.Media.NowPlaying"]
-    A --> A1["Action.Navigate.Back"]
-    A --> A2["Action.Media.Volume.Increase"]
-    S --> S1["State.Focus.Domain"]
-    T --> T1["Task.Route.PlanWithStops"]
-
-    style I fill:#eef0ff,stroke:#454ADE,stroke-width:2px,color:#454ADE
-```
+![Figure 4 — Node taxonomy](./figures/fig4-node-taxonomy.png)
 
 *Figure 4. Four primary semantic types. In v1, only `Action` and two concrete `Event` subtypes — `Alert` and `Notification` — are emitted.*
 

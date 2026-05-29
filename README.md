@@ -119,15 +119,7 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 
 ---
 
-## Work in progress
-
-- [**AutomotiveUI 2026 — draft paper**](./wip/AutomotiveUI2026.md) — a position paper submission for the AutomotiveUI 2026 conference, adapting the SIA proposal for that venue. Also available as [LaTeX source](./wip/AutomotiveUI2026.tex) with a [reference list](./wip/references.bib).
-
----
-
 ## Key diagrams
-
-The diagrams are embedded in the paper as Mermaid sources, with SVG exports in `./figures/` where available:
 
 - **Fig. 1** — Complexity comparison: before vs. after SIA
 - **Fig. 2** — Position of SIA in the SDV stack

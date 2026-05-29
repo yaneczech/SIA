@@ -85,26 +85,7 @@ Trust Policy checks signature validity, permitted actor class, age against `max_
 
 ## A.3 Trust verification flow
 
-```mermaid
-sequenceDiagram
-    participant ADAS as ADAS emitter
-    participant Trust as Trust Policy
-    participant Trans as Translation Layer
-    participant Runtime as Coordination Runtime
-    participant Renderers as External renderers: Cluster · IVI · Voice
-
-    ADAS->>Trust: emit instance + attestation
-
-    alt trust verification fails
-        Trust-->>ADAS: reject + log security event
-    else trust verification passes
-        Trust->>Trans: verified semantic node
-        Trans->>Runtime: selected renderer set + fallback policy
-        Runtime->>Renderers: dispatch
-        Renderers->>Runtime: acknowledgement or timeout
-        Runtime->>Trust: close interaction + audit log
-    end
-```
+![Figure A.1 — Alert.Collision.Warning trust and translation flow](./figures/figA1-alert-flow.png)
 
 *Figure A.1. Trust verification is a chokepoint before Translation. A failed node never reaches a renderer, regardless of declared priority.*
 
