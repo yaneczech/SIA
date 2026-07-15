@@ -1,0 +1,60 @@
+{
+  "$comment": "TEST KEYS ONLY. Published so implementers can verify their signing and verification code against the signed examples. These keys carry no authority; production deployments provision keys through their own HSM and PKI. Never use these keys outside conformance testing.",
+  "spec_version": "0.4.0",
+  "keys": {
+    "vehicle-hsm:adas:7": {
+      "algorithm": "ES256",
+      "private_jwk": {
+        "kty": "EC",
+        "x": "xWqb3tZXEs0X8RyUgiqw5KYUWI9zV6v9_iqLBSitFjU",
+        "y": "7w1BjjBe9OdZ6GBbUSJiWbHyKJC1rgQuwAYP-rJV61Q",
+        "crv": "P-256",
+        "d": "td4ZAF_ThpfDAILgNDSw5OVxoURbX5a1ufELUMW1zXk"
+      },
+      "public_jwk": {
+        "kty": "EC",
+        "x": "xWqb3tZXEs0X8RyUgiqw5KYUWI9zV6v9_iqLBSitFjU",
+        "y": "7w1BjjBe9OdZ6GBbUSJiWbHyKJC1rgQuwAYP-rJV61Q",
+        "crv": "P-256"
+      }
+    },
+    "vehicle-hsm:renderer-registry:2": {
+      "algorithm": "ES256",
+      "private_jwk": {
+        "kty": "EC",
+        "x": "7RS068xpjdhaozvRf7rYR_ceZ47HY0n3eDBoK7Zsx_0",
+        "y": "oBbgNO81wE89WIP4MVBiVEsxn3XMMusibrtGpxaBGbU",
+        "crv": "P-256",
+        "d": "NSDfs4-jWakAX34gUOBz-RHtla-sHm8CLaMuEeRI7xk"
+      },
+      "public_jwk": {
+        "kty": "EC",
+        "x": "7RS068xpjdhaozvRf7rYR_ceZ47HY0n3eDBoK7Zsx_0",
+        "y": "oBbgNO81wE89WIP4MVBiVEsxn3XMMusibrtGpxaBGbU",
+        "crv": "P-256"
+      }
+    },
+    "vehicle-hsm:context:3": {
+      "algorithm": "EdDSA",
+      "private_jwk": {
+        "crv": "Ed25519",
+        "d": "ZDqZRDlYF9wrknt_GHpU808vvAWGqZpiZ1cUAPauhTU",
+        "x": "tRAsLm3gLTzvvx7JgwHWxMi2fi9r5gfv-taQFVS703Y",
+        "kty": "OKP"
+      },
+      "public_jwk": {
+        "crv": "Ed25519",
+        "x": "tRAsLm3gLTzvvx7JgwHWxMi2fi9r5gfv-taQFVS703Y",
+        "kty": "OKP"
+      }
+    },
+    "vehicle-hsm:cluster:4": {
+      "algorithm": "HMAC-SHA-256",
+      "secret_b64url": "-Pl5gX0dCriehmLo32E102qgQoGNjeq_mPxeO_BUslo"
+    },
+    "vehicle-hsm:input:5": {
+      "algorithm": "HMAC-SHA-256",
+      "secret_b64url": "jMS5bZryw7KliwaqNtdTUec4O0osp1naGCNqJZpSBAs"
+    }
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "spec_version": "0.4.0",
+  "vectors": [
+    {
+      "name": "emitter-valid-instance",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "valid",
+      "base": "collision-warning.instance.json",
+      "reason": "A correctly attested collision-warning instance validates."
+    },
+    {
+      "name": "emitter-priority-injection-rejected",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.instance.json",
+      "patch": { "priority": "critical" },
+      "reason": "The runtime envelope is closed; a payload-side priority override must be rejected, not ignored."
+    },
+    {
+      "name": "emitter-renderer-override-rejected",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.instance.json",
+      "patch": { "preferred_renderers": ["ivi"] },
+      "reason": "Renderer selection belongs to the declaration and Translation, never to the emission."
+    },
+    {
+      "name": "emitter-unknown-algorithm-rejected",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.instance.json",
+      "patch": { "attestation": { "algorithm": "RS256" } },
+      "reason": "Algorithm identifiers outside the fixed profile must be rejected (downgrade resistance)."
+    },
+    {
+      "name": "emitter-missing-key-id-rejected",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.instance.json",
+      "patch": { "attestation": { "key_id": null } },
+      "reason": "An attestation without a key identity cannot be verified or revoked."
+    },
+    {
+      "name": "emitter-action-node-deferred",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.instance.json",
+      "patch": { "node_id": "Interaction.Action.Media.Control" },
+      "reason": "Action is not emittable in the sia-minimal 0.4 profile."
+    },
+    {
+      "name": "renderer-valid-presented-receipt",
+      "contract": "delivery-receipt.schema.json",
+      "classes": ["renderer", "runtime"],
+      "expect": "valid",
+      "base": "collision.delivery-receipt.json",
+      "reason": "An authenticated presented receipt validates."
+    },
+    {
+      "name": "renderer-cannot-issue-timeout",
+      "contract": "delivery-receipt.schema.json",
+      "classes": ["renderer", "runtime"],
+      "expect": "invalid",
+      "base": "collision.delivery-receipt.json",
+      "patch": { "state": "timed_out", "reason_code": "DELIVERY_TIMEOUT" },
+      "reason": "Delivery timeout is a Coordination Runtime event; a renderer must not claim it."
+    },
+    {
+      "name": "renderer-success-carries-no-failure-reason",
+      "contract": "delivery-receipt.schema.json",
+      "classes": ["renderer", "runtime"],
+      "expect": "invalid",
+      "base": "collision.delivery-receipt.json",
+      "patch": { "reason_code": "RENDERER_OUTPUT_FAILED" },
+      "reason": "A presented receipt with a failure reason is contradictory evidence."
+    },
+    {
+      "name": "renderer-capability-valid",
+      "contract": "renderer-capability.schema.json",
+      "classes": ["renderer", "runtime"],
+      "expect": "valid",
+      "base": "cluster.renderer.json",
+      "reason": "An attested safety-relevant capability declaration with evidence validates."
+    },
+    {
+      "name": "renderer-safety-claim-needs-evidence",
+      "contract": "renderer-capability.schema.json",
+      "classes": ["renderer", "runtime"],
+      "expect": "invalid",
+      "base": "cluster.renderer.json",
+      "patch": { "safety_assurance": { "evidence_ref": null } },
+      "reason": "A renderer must not self-promote to safety_relevant without accepted evidence."
+    },
+    {
+      "name": "runtime-valid-alert-declaration",
+      "contract": "interaction-node.schema.json",
+      "classes": ["runtime"],
+      "expect": "valid",
+      "base": "collision-warning.node.json",
+      "reason": "The published collision-warning declaration validates."
+    },
+    {
+      "name": "runtime-alert-must-never-block",
+      "contract": "interaction-node.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.node.json",
+      "patch": { "context_policy": { "on_blocked": { "disposition": "drop", "audit_required": true } } },
+      "reason": "An applicable critical Alert cannot be silently droppable by context policy."
+    },
+    {
+      "name": "runtime-coalesce-requires-ttl-and-key",
+      "contract": "interaction-node.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "now-playing.node.json",
+      "patch": { "context_policy": { "on_blocked": { "ttl_ms": null, "coalescing_key_fields": null } } },
+      "reason": "Unbounded or keyless coalescing is non-conformant retention."
+    },
+    {
+      "name": "runtime-empty-trust-contract-rejected",
+      "contract": "interaction-node.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "now-playing.node.json",
+      "patch": { "trust_requirements": { "signed_origin_required": null, "permitted_actor_classes": null, "max_ingress_age_ms": null, "replay_protection": null, "session_revocation_required": null } },
+      "reason": "A declaration without trust requirements must not enter a catalog."
+    },
+    {
+      "name": "runtime-timeout-is-not-an-occupant-action",
+      "contract": "occupant-response.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "collision.occupant-response.json",
+      "patch": { "state": "timed_out" },
+      "reason": "A response timeout must carry runtime evidence, never verified-input evidence."
+    },
+    {
+      "name": "runtime-context-requires-all-core-axes",
+      "contract": "context-snapshot.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "context-attentive.json",
+      "patch": { "axes": { "driver_state": null } },
+      "reason": "A decision snapshot missing a core axis is not a valid basis for policy."
+    },
+    {
+      "name": "runtime-audit-chain-needs-predecessor",
+      "contract": "audit-record.schema.json",
+      "classes": ["runtime"],
+      "expect": "valid",
+      "base": "collision.audit-record.json",
+      "reason": "A hash-linked audit record validates; chain-position invariants are covered by the invariant tests."
+    }
+  ]
+}

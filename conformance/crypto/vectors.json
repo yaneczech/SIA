@@ -1,0 +1,81 @@
+{
+  "$comment": "Cryptographic conformance vectors. Resolve the artifact (base example + optional RFC 7386 merge patch), build the signing input per Core Specification §6 (RFC 8785 canonical form with the signature member removed from the named container), and verify against the key_id's entry in test-keys.json. expect: verify = signature MUST validate; reject = verification MUST fail.",
+  "spec_version": "0.4.0",
+  "vectors": [
+    {
+      "name": "crypto-instance-es256-verifies",
+      "base": "collision-warning.instance.json",
+      "container": "attestation",
+      "expect": "verify",
+      "reason": "The published ADAS instance carries a valid ES256 signature in JOSE raw (r||s) encoding."
+    },
+    {
+      "name": "crypto-context-eddsa-verifies",
+      "base": "context-attentive.json",
+      "container": "integrity",
+      "expect": "verify",
+      "reason": "The context snapshot is authenticated by the vehicle context authority with Ed25519."
+    },
+    {
+      "name": "crypto-capability-es256-verifies",
+      "base": "cluster.renderer.json",
+      "container": "attestation",
+      "expect": "verify",
+      "reason": "The renderer capability claim is attested by the renderer registry."
+    },
+    {
+      "name": "crypto-receipt-hmac-verifies",
+      "base": "collision.delivery-receipt.json",
+      "container": "attestation",
+      "expect": "verify",
+      "reason": "The delivery receipt uses the symmetric session tier (HMAC-SHA-256)."
+    },
+    {
+      "name": "crypto-response-hmac-verifies",
+      "base": "collision.occupant-response.json",
+      "container": "evidence",
+      "expect": "verify",
+      "reason": "The explicit occupant response carries verified-input evidence."
+    },
+    {
+      "name": "crypto-tampered-payload-rejected",
+      "base": "collision-warning.instance.json",
+      "container": "attestation",
+      "patch": { "payload": { "time_to_collision_s": 9.9 } },
+      "expect": "reject",
+      "reason": "Any post-signing payload change must invalidate the signature."
+    },
+    {
+      "name": "crypto-tampered-nonce-rejected",
+      "base": "collision-warning.instance.json",
+      "container": "attestation",
+      "patch": { "attestation": { "nonce": "dGFtcGVyZWQtbm9uY2U" } },
+      "expect": "reject",
+      "reason": "The nonce is inside the signing input; replay defence depends on it being immutable."
+    },
+    {
+      "name": "crypto-wrong-key-rejected",
+      "base": "collision-warning.instance.json",
+      "container": "attestation",
+      "verify_with_key_id": "vehicle-hsm:renderer-registry:2",
+      "expect": "reject",
+      "reason": "A signature must verify only under the key named by key_id."
+    },
+    {
+      "name": "crypto-algorithm-confusion-rejected",
+      "base": "collision-warning.instance.json",
+      "container": "attestation",
+      "patch": { "attestation": { "algorithm": "HMAC-SHA-256" } },
+      "expect": "reject",
+      "reason": "The declared algorithm is inside the signing input and must match the key's algorithm; cross-algorithm verification is forbidden."
+    },
+    {
+      "name": "crypto-transplanted-signature-rejected",
+      "base": "context-attentive.json",
+      "container": "integrity",
+      "patch": { "captured_at_ms": 1784116799990 },
+      "expect": "reject",
+      "reason": "A signature transplanted onto different snapshot content must fail."
+    }
+  ]
+}

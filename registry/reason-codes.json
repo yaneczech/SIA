@@ -1,0 +1,59 @@
+{
+  "$comment": "SIA reason-code registry. Normative for wire artifacts: render-plan reason_code and rejected[].reason_code, delivery-receipt reason_code, retention-record reason_code, and audit-record outcome_code. Allocation policy: codes match ^[A-Z][A-Z0-9_]+$, are never reused with a different meaning, and are only deprecated, never deleted. A consumer that encounters an unknown code MUST treat it as the failure outcome for its phase and MUST NOT relax any policy because of it.",
+  "spec_version": "0.4.0",
+  "registry_version": "0.4.0",
+  "phases": {
+    "trust": [
+      { "code": "TRUST_VERIFIED", "meaning": "All trust checks passed; the instance enters the semantic pipeline." },
+      { "code": "TRUST_REJECTED_ENVELOPE", "meaning": "Closed-envelope or payload schema validation failed, including reserved-field injection." },
+      { "code": "TRUST_REJECTED_DECLARATION_DIGEST", "meaning": "The declaration digest referenced by the instance does not match the installed catalog." },
+      { "code": "TRUST_REJECTED_ACTOR", "meaning": "Actor class or actor identity is not permitted to emit this node." },
+      { "code": "TRUST_REJECTED_SIGNATURE", "meaning": "Signature or session authenticator verification failed." },
+      { "code": "TRUST_REJECTED_FRESHNESS", "meaning": "Ingress age exceeds max_ingress_age_ms." },
+      { "code": "TRUST_REJECTED_REPLAY", "meaning": "Nonce was already accepted within the replay window." },
+      { "code": "TRUST_REJECTED_REVOKED", "meaning": "Key or session is revoked at acceptance time." },
+      { "code": "TRUST_REJECTED_EXPIRED", "meaning": "Semantic validity had already lapsed at acceptance time." }
+    ],
+    "context": [
+      { "code": "CONTEXT_APPLICABLE", "meaning": "The node is meaningful in the current context; processing continues." },
+      { "code": "CONTEXT_NOT_APPLICABLE", "meaning": "Applicability predicate failed; the instance terminates as not_applicable." },
+      { "code": "CONTEXT_BLOCKED_DROPPED", "meaning": "Applicable but blocked; declared disposition drop was executed." },
+      { "code": "CONTEXT_COALESCED_DISTRACTED", "meaning": "Applicable but blocked while the driver is distracted; retained under the coalesce disposition." },
+      { "code": "CONTEXT_DEFERRED", "meaning": "Applicable but blocked; retained under the defer disposition." },
+      { "code": "CONTEXT_UNKNOWN_WORST_CASE", "meaning": "An unknown or stale core axis forced the stricter applicable policy." }
+    ],
+    "retention": [
+      { "code": "RETENTION_RELEASED", "meaning": "Re-evaluation succeeded; the instance re-enters translation." },
+      { "code": "RETENTION_SUPERSEDED", "meaning": "A newer instance replaced this entry for the canonical coalescing key." },
+      { "code": "RETENTION_EXPIRED", "meaning": "TTL elapsed before a successful re-evaluation; the instance was dropped." },
+      { "code": "RETENTION_EVICTED_QUOTA", "meaning": "A bounded queue quota forced deterministic eviction." },
+      { "code": "RETENTION_INVALIDATED", "meaning": "Semantic validity, revocation, or policy change invalidated the held instance." }
+    ],
+    "translation": [
+      { "code": "PRIMARY_AND_CONCURRENT_SELECTED", "meaning": "A primary renderer and at least one concurrent renderer were selected." },
+      { "code": "PRIMARY_SELECTED", "meaning": "Only a primary renderer was selected." },
+      { "code": "FALLBACK_SELECTED", "meaning": "The preferred renderer was unavailable; a declared fallback was selected." },
+      { "code": "NO_ELIGIBLE_RENDERER", "meaning": "No renderer satisfied capability, safety, and attention constraints." },
+      { "code": "SAFETY_PROFILE_INELIGIBLE", "meaning": "Renderer rejected: its safety assurance level does not satisfy the node." },
+      { "code": "ATTENTION_BUDGET_EXCEEDED", "meaning": "Renderer rejected: effective glance cost exceeds its declared budget." },
+      { "code": "RENDERER_OFFLINE", "meaning": "Renderer rejected: not currently registered as available." },
+      { "code": "NOT_IN_PRESENTATION_CONTRACT", "meaning": "Renderer rejected: not listed by the node's presentation contract." }
+    ],
+    "delivery": [
+      { "code": "DELIVERY_PRESENTED", "meaning": "The delivery success policy was satisfied by presented receipts." },
+      { "code": "DELIVERY_FALLBACK_PRESENTED", "meaning": "The success policy was satisfied, but only through a fallback renderer after the preferred output failed." },
+      { "code": "DELIVERY_TIMEOUT", "meaning": "Coordination Runtime closed delivery after the declared deadline." },
+      { "code": "RENDERER_OUTPUT_FAILED", "meaning": "The renderer reported that it could not produce the output." },
+      { "code": "DELIVERY_FAILED_POLICY", "meaning": "Receipts arrived but the declared success policy was not satisfied." }
+    ],
+    "occupant_response": [
+      { "code": "OCCUPANT_ACKNOWLEDGED", "meaning": "A verified occupant input satisfied the declared authority." },
+      { "code": "OCCUPANT_RESPONSE_TIMEOUT", "meaning": "Coordination Runtime closed the wait after the declared timeout." },
+      { "code": "OCCUPANT_RESPONSE_NOT_STARTED", "meaning": "Delivery success was never established, so no response wait was opened." }
+    ],
+    "closed": [
+      { "code": "CLOSED_COMPLETE", "meaning": "The interaction reached a terminal state with all obligations met." },
+      { "code": "CLOSED_FAIL_SAFE", "meaning": "The interaction was closed through a documented fail-safe path." }
+    ]
+  }
+}
