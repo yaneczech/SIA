@@ -1,0 +1,12 @@
+{
+  "retention_id": "a8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b25",
+  "instance_id": "b8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b26",
+  "disposition": "coalesce",
+  "state": "held",
+  "retained_at_ms": 1784116800100,
+  "expires_at_ms": 1784116830000,
+  "coalescing_key_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "reevaluate_on": ["driver_state_change", "vehicle_state_change"],
+  "policy_version": "0.4.0",
+  "reason_code": "CONTEXT_COALESCED_DISTRACTED"
+}

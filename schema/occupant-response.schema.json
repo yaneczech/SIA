@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/occupant-response.schema.json",
+  "title": "SIA Occupant Response",
+  "type": "object",
+  "required": ["response_id", "decision_id", "instance_id", "state", "authority", "occurred_at_ms", "input_channel", "evidence"],
+  "properties": {
+    "response_id": { "$ref": "#/$defs/uuid" },
+    "decision_id": { "$ref": "#/$defs/uuid" },
+    "instance_id": { "$ref": "#/$defs/uuid" },
+    "state": { "enum": ["acknowledged", "timed_out"] },
+    "authority": { "enum": ["driver_only", "any_occupant", "coordination_runtime"] },
+    "occurred_at_ms": { "type": "integer", "minimum": 0 },
+    "input_channel": { "type": ["string", "null"], "maxLength": 200 },
+    "evidence": {
+      "type": "object",
+      "required": ["kind", "key_id", "algorithm", "signature"],
+      "properties": {
+        "kind": { "enum": ["verified_input", "runtime_timeout"] },
+        "key_id": { "type": ["string", "null"], "maxLength": 200 },
+        "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256", "none"] },
+        "signature": { "type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]+$", "minLength": 8, "maxLength": 4096 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "state": { "const": "timed_out" } }, "required": ["state"] },
+      "then": {
+        "properties": {
+          "authority": { "const": "coordination_runtime" },
+          "input_channel": { "const": null },
+          "evidence": {
+            "type": "object",
+            "properties": { "kind": { "const": "runtime_timeout" }, "key_id": { "const": null }, "algorithm": { "const": "none" }, "signature": { "const": null } }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "state": { "const": "acknowledged" } }, "required": ["state"] },
+      "then": {
+        "properties": {
+          "authority": { "enum": ["driver_only", "any_occupant"] },
+          "input_channel": { "type": "string", "minLength": 1 },
+          "evidence": {
+            "type": "object",
+            "properties": { "kind": { "const": "verified_input" }, "key_id": { "type": "string", "minLength": 1 }, "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256"] }, "signature": { "type": "string" } }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" }
+  }
+}

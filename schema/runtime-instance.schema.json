@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/runtime-instance.schema.json",
+  "title": "SIA Runtime Interaction Instance",
+  "type": "object",
+  "required": [
+    "spec_version",
+    "profile_id",
+    "profile_version",
+    "catalog_version",
+    "node_id",
+    "node_schema_sha256",
+    "instance_id",
+    "occurred_at_ms",
+    "valid_until_ms",
+    "target_role",
+    "payload",
+    "attestation"
+  ],
+  "properties": {
+    "spec_version": { "const": "0.4.0" },
+    "profile_id": { "const": "sia-minimal" },
+    "profile_version": { "$ref": "#/$defs/semver" },
+    "catalog_version": { "$ref": "#/$defs/semver" },
+    "node_id": { "$ref": "#/$defs/nodeId" },
+    "node_schema_sha256": { "$ref": "#/$defs/sha256" },
+    "instance_id": { "$ref": "#/$defs/uuid" },
+    "occurred_at_ms": { "type": "integer", "minimum": 0 },
+    "valid_until_ms": { "type": "integer", "minimum": 1 },
+    "target_role": { "enum": ["driver", "front_passenger", "rear_passenger", "any_occupant"] },
+    "payload": { "type": "object" },
+    "attestation": { "$ref": "#/$defs/attestation" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nodeId": { "type": "string", "pattern": "^Interaction\\.Event\\.(Alert|Notification)(\\.[A-Z][A-Za-z0-9_]*)+$" },
+    "base64url": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "minLength": 8, "maxLength": 4096 },
+    "attestation": {
+      "type": "object",
+      "required": ["actor_class", "actor_id", "key_id", "algorithm", "timestamp_ms", "nonce", "provenance_chain", "signature"],
+      "properties": {
+        "actor_class": { "enum": ["human_direct", "adas", "service", "third_party_app", "agent_local", "agent_cloud"] },
+        "actor_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "key_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256"] },
+        "timestamp_ms": { "type": "integer", "minimum": 0 },
+        "nonce": { "$ref": "#/$defs/base64url" },
+        "provenance_chain": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+        },
+        "signature": { "$ref": "#/$defs/base64url" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

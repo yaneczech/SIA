@@ -1,0 +1,30 @@
+{
+  "context_id": "1a2b3c4d-1111-4aaa-8bbb-1234567890ab",
+  "captured_at_ms": 1784116800040,
+  "policy_version": "0.4.0",
+  "axes": {
+    "vehicle_state": {
+      "value": "moving",
+      "source_id": "Vehicle.SpeedState",
+      "observed_at_ms": 1784116800036,
+      "confidence": 100
+    },
+    "road_type": {
+      "value": "highway",
+      "source_id": "Navigation.RoadClass",
+      "observed_at_ms": 1784116799800,
+      "confidence": 96
+    },
+    "driver_state": {
+      "value": "attentive",
+      "source_id": "DMS.AttentionState",
+      "observed_at_ms": 1784116800028,
+      "confidence": 92
+    }
+  },
+  "integrity": {
+    "key_id": "vehicle-hsm:context:3",
+    "algorithm": "EdDSA",
+    "signature": "4lHO_SxX_vfDU3bvTsn87J9PBLMSeYBQB6heuWxY7zku0nTxQ8bMe-IfsNvrxIYqf_L4fsHJurhAxSA_nWpRDg"
+  }
+}

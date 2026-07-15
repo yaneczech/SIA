@@ -1,0 +1,18 @@
+{
+  "event_id": "98e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b27",
+  "sequence": 4,
+  "previous_record_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "record_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+  "timestamp_ms": 1784116800132,
+  "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
+  "phase": "delivery",
+  "outcome_code": "DELIVERY_PRESENTED",
+  "spec_version": "0.4.0",
+  "profile_version": "0.4.0",
+  "catalog_version": "0.4.0",
+  "policy_version": "0.4.0",
+  "details": {
+    "renderer_id": "Renderer.Cluster.Primary",
+    "receipt_id": "e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/delivery-receipt.schema.json",
+  "title": "SIA Renderer Delivery Receipt",
+  "type": "object",
+  "required": [
+    "receipt_id",
+    "decision_id",
+    "instance_id",
+    "renderer_id",
+    "issuer",
+    "state",
+    "observed_at_ms",
+    "elapsed_ms",
+    "reason_code",
+    "attestation"
+  ],
+  "properties": {
+    "receipt_id": { "$ref": "#/$defs/uuid" },
+    "decision_id": { "$ref": "#/$defs/uuid" },
+    "instance_id": { "$ref": "#/$defs/uuid" },
+    "renderer_id": { "type": "string", "pattern": "^Renderer\\.[A-Z][A-Za-z0-9_.-]+$" },
+    "issuer": { "enum": ["renderer", "coordination_runtime"] },
+    "state": { "enum": ["received", "presented", "failed", "timed_out"] },
+    "observed_at_ms": { "type": "integer", "minimum": 0 },
+    "elapsed_ms": { "type": "integer", "minimum": 0, "maximum": 600000 },
+    "reason_code": { "type": ["string", "null"], "pattern": "^[A-Z][A-Z0-9_]+$" },
+    "attestation": { "$ref": "#/$defs/integrity" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "state": { "const": "timed_out" } }, "required": ["state"] },
+      "then": { "properties": { "issuer": { "const": "coordination_runtime" }, "reason_code": { "const": "DELIVERY_TIMEOUT" } } }
+    },
+    {
+      "if": { "properties": { "state": { "enum": ["failed", "timed_out"] } }, "required": ["state"] },
+      "then": { "properties": { "reason_code": { "type": "string" } } }
+    },
+    {
+      "if": { "properties": { "state": { "enum": ["received", "presented"] } }, "required": ["state"] },
+      "then": { "properties": { "issuer": { "const": "renderer" }, "reason_code": { "const": null } } }
+    },
+    {
+      "if": { "properties": { "state": { "const": "failed" } }, "required": ["state"] },
+      "then": { "properties": { "issuer": { "const": "renderer" } } }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "integrity": {
+      "type": "object",
+      "required": ["key_id", "algorithm", "signature"],
+      "properties": {
+        "key_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256"] },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "minLength": 8, "maxLength": 4096 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

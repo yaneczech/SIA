@@ -1,0 +1,57 @@
+{
+  "id": "Interaction.Event.Notification.Assistant.Suggestion",
+  "inherits_from": "Interaction.Event.Notification",
+  "since_version": "0.4.0",
+  "direction": "system_to_occupant",
+  "target_role": "driver",
+  "temporal_type": "discrete",
+  "priority": "low",
+  "interruptibility": "deferable",
+  "semantic_validity_ms": 5000,
+  "payload_schema_ref": "sia:payload:assistant-suggestion:1",
+  "payload_schema_sha256": "c8e05f29474ff6b4b829f80c66eba9150891e1cf5376cee2495002b9766a7c6a",
+  "trust_requirements": {
+    "signed_origin_required": true,
+    "permitted_actor_classes": [
+      "agent_local",
+      "agent_cloud",
+      "service"
+    ],
+    "max_ingress_age_ms": 2000,
+    "replay_protection": "required",
+    "session_revocation_required": true
+  },
+  "attention_metrics": {
+    "glance_time_estimated_ms": 1000,
+    "mean_single_glance_ms": 400,
+    "task_steps": 1,
+    "voice_alt_available": true,
+    "cognitive_load": "minimal"
+  },
+  "context_policy": {
+    "applicability": "always",
+    "unknown_context": "safe_worst_case",
+    "on_blocked": {
+      "disposition": "drop",
+      "audit_required": true
+    }
+  },
+  "presentation_contract": {
+    "preferred_renderers": [
+      "ivi",
+      "voice"
+    ],
+    "required_renderers": [],
+    "delivery_success_policy": "any_selected_presented",
+    "delivery_timeout_ms": 1200,
+    "degradation_policy": "drop_with_audit"
+  },
+  "occupant_response": {
+    "kind": "none"
+  },
+  "pii_class": "personal",
+  "accessibility_alternatives": [
+    "visual",
+    "auditory"
+  ]
+}

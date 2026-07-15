@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/payloads/assistant-suggestion.v1.schema.json",
+  "title": "Payload: Interaction.Event.Notification.Assistant.Suggestion (sia:payload:assistant-suggestion:1)",
+  "type": "object",
+  "required": ["suggestion_text", "category"],
+  "properties": {
+    "suggestion_text": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "category": { "enum": ["navigation", "comfort", "media", "information"] },
+    "expires_after_ms": { "type": "integer", "minimum": 1, "maximum": 86400000 }
+  },
+  "additionalProperties": false
+}

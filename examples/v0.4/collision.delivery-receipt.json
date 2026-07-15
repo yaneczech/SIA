@@ -1,0 +1,16 @@
+{
+  "receipt_id": "e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23",
+  "decision_id": "d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22",
+  "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
+  "renderer_id": "Renderer.Cluster.Primary",
+  "issuer": "renderer",
+  "state": "presented",
+  "observed_at_ms": 1784116800132,
+  "elapsed_ms": 72,
+  "reason_code": null,
+  "attestation": {
+    "key_id": "vehicle-hsm:cluster:4",
+    "algorithm": "HMAC-SHA-256",
+    "signature": "EPO3OMaR5cZLMX9Lqga0KceQGHbCI_G271aj1nXMe7E"
+  }
+}

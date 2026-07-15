@@ -1,0 +1,60 @@
+{
+  "id": "Interaction.Event.Notification.Diagnostic.CollisionSensorTest",
+  "inherits_from": "Interaction.Event.Notification",
+  "since_version": "0.4.0",
+  "direction": "system_to_occupant",
+  "target_role": "driver",
+  "temporal_type": "discrete",
+  "priority": "normal",
+  "interruptibility": "deferable",
+  "semantic_validity_ms": 60000,
+  "payload_schema_ref": "sia:payload:collision-sensor-test:1",
+  "payload_schema_sha256": "6c27272f1a9fe2dc07d3add83d7a3fe329f24efcfce587c0905b055b9a0624c6",
+  "trust_requirements": {
+    "signed_origin_required": true,
+    "permitted_actor_classes": [
+      "adas",
+      "service"
+    ],
+    "max_ingress_age_ms": 5000,
+    "replay_protection": "required",
+    "session_revocation_required": true
+  },
+  "attention_metrics": {
+    "glance_time_estimated_ms": 1200,
+    "mean_single_glance_ms": 500,
+    "task_steps": 2,
+    "voice_alt_available": false,
+    "cognitive_load": "moderate"
+  },
+  "context_policy": {
+    "applicability": "always",
+    "unknown_context": "safe_worst_case",
+    "on_blocked": {
+      "disposition": "defer",
+      "ttl_ms": 60000,
+      "reevaluate_on": [
+        "driver_state_change",
+        "vehicle_state_change"
+      ],
+      "on_expiry": "drop",
+      "max_pending": 10
+    }
+  },
+  "presentation_contract": {
+    "preferred_renderers": [
+      "ivi"
+    ],
+    "required_renderers": [],
+    "delivery_success_policy": "primary_presented",
+    "delivery_timeout_ms": 1200,
+    "degradation_policy": "no_degradation"
+  },
+  "occupant_response": {
+    "kind": "none"
+  },
+  "pii_class": "none",
+  "accessibility_alternatives": [
+    "visual"
+  ]
+}

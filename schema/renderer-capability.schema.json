@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/renderer-capability.schema.json",
+  "title": "SIA Renderer Capability Declaration",
+  "type": "object",
+  "required": ["renderer_id", "kind", "capability_version", "safety_assurance", "capabilities", "attestation"],
+  "properties": {
+    "renderer_id": { "type": "string", "pattern": "^Renderer\\.[A-Z][A-Za-z0-9_.-]+$" },
+    "kind": { "enum": ["cluster", "ivi", "voice"] },
+    "capability_version": { "$ref": "#/$defs/semver" },
+    "safety_assurance": {
+      "type": "object",
+      "required": ["level", "evidence_ref"],
+      "properties": {
+        "level": { "enum": ["general", "safety_relevant"] },
+        "evidence_ref": { "type": ["string", "null"], "maxLength": 500 }
+      },
+      "additionalProperties": false
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["max_simultaneous_elements", "supports_animation", "glance_optimized"],
+      "properties": {
+        "max_simultaneous_elements": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "text_max_chars": { "type": ["integer", "null"], "minimum": 1, "maximum": 10000 },
+        "max_glance_budget_ms": { "type": ["integer", "null"], "minimum": 1, "maximum": 60000 },
+        "supports_animation": { "type": "boolean" },
+        "glance_optimized": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "attestation": { "$ref": "#/$defs/integrity" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "safety_assurance": {
+            "type": "object",
+            "properties": { "level": { "const": "safety_relevant" } },
+            "required": ["level"]
+          }
+        },
+        "required": ["safety_assurance"]
+      },
+      "then": {
+        "properties": {
+          "safety_assurance": {
+            "type": "object",
+            "properties": { "evidence_ref": { "type": "string", "minLength": 1 } }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+    "integrity": {
+      "type": "object",
+      "required": ["issuer", "key_id", "algorithm", "signature"],
+      "properties": {
+        "issuer": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "key_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256"] },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "minLength": 8, "maxLength": 4096 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

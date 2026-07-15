@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/audit-record.schema.json",
+  "title": "SIA Audit Record",
+  "type": "object",
+  "required": [
+    "event_id",
+    "sequence",
+    "previous_record_sha256",
+    "record_sha256",
+    "timestamp_ms",
+    "instance_id",
+    "phase",
+    "outcome_code",
+    "spec_version",
+    "profile_version",
+    "catalog_version",
+    "policy_version",
+    "details"
+  ],
+  "properties": {
+    "event_id": { "$ref": "#/$defs/uuid" },
+    "sequence": { "type": "integer", "minimum": 0 },
+    "previous_record_sha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+    "record_sha256": { "$ref": "#/$defs/sha256" },
+    "timestamp_ms": { "type": "integer", "minimum": 0 },
+    "instance_id": { "$ref": "#/$defs/uuid" },
+    "phase": { "enum": ["trust", "context", "retention", "translation", "delivery", "occupant_response", "closed"] },
+    "outcome_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" },
+    "spec_version": { "const": "0.4.0" },
+    "profile_version": { "$ref": "#/$defs/semver" },
+    "catalog_version": { "$ref": "#/$defs/semver" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "details": { "type": "object" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

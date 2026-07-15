@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/retention-record.schema.json",
+  "title": "SIA Retention Record",
+  "type": "object",
+  "required": [
+    "retention_id",
+    "instance_id",
+    "disposition",
+    "state",
+    "retained_at_ms",
+    "expires_at_ms",
+    "coalescing_key_sha256",
+    "reevaluate_on",
+    "policy_version",
+    "reason_code"
+  ],
+  "properties": {
+    "retention_id": { "$ref": "#/$defs/uuid" },
+    "instance_id": { "$ref": "#/$defs/uuid" },
+    "disposition": { "enum": ["drop", "defer", "coalesce"] },
+    "state": { "enum": ["dropped", "held", "superseded", "expired", "released"] },
+    "retained_at_ms": { "type": "integer", "minimum": 0 },
+    "expires_at_ms": { "type": ["integer", "null"], "minimum": 1 },
+    "coalescing_key_sha256": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+    "reevaluate_on": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["vehicle_state_change", "road_type_change", "driver_state_change", "policy_change"] }
+    },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "reason_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "disposition": { "const": "drop" } }, "required": ["disposition"] },
+      "then": {
+        "properties": {
+          "state": { "const": "dropped" },
+          "expires_at_ms": { "const": null },
+          "coalescing_key_sha256": { "const": null },
+          "reevaluate_on": { "type": "array", "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "disposition": { "const": "defer" } }, "required": ["disposition"] },
+      "then": {
+        "properties": {
+          "expires_at_ms": { "type": "integer" },
+          "coalescing_key_sha256": { "const": null },
+          "reevaluate_on": { "type": "array", "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "disposition": { "const": "coalesce" } }, "required": ["disposition"] },
+      "then": {
+        "properties": {
+          "expires_at_ms": { "type": "integer" },
+          "coalescing_key_sha256": { "$ref": "#/$defs/sha256" },
+          "reevaluate_on": { "type": "array", "minItems": 1 }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

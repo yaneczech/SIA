@@ -1,0 +1,17 @@
+{
+  "decision_id": "d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22",
+  "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
+  "context_id": "1a2b3c4d-1111-4aaa-8bbb-1234567890ab",
+  "policy_version": "0.4.0",
+  "created_at_ms": 1784116800060,
+  "selected": [
+    { "renderer_id": "Renderer.Cluster.Primary", "role": "primary" },
+    { "renderer_id": "Renderer.Voice.Primary", "role": "concurrent" }
+  ],
+  "rejected": [
+    { "renderer_id": "Renderer.IVI.Primary", "reason_code": "SAFETY_PROFILE_INELIGIBLE" }
+  ],
+  "delivery_success_policy": "any_selected_presented",
+  "delivery_timeout_ms": 300,
+  "reason_code": "PRIMARY_AND_CONCURRENT_SELECTED"
+}

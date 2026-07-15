@@ -1,0 +1,30 @@
+{
+  "spec_version": "0.4.0",
+  "profile_id": "sia-minimal",
+  "profile_version": "0.4.0",
+  "catalog_version": "0.4.0",
+  "node_id": "Interaction.Event.Alert.Collision.Warning",
+  "node_schema_sha256": "99e1cbd0d84c315c0dfd511b3fa5bb5274a30941e151d3a8b1ba05638b8c3a0f",
+  "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
+  "occurred_at_ms": 1784116800000,
+  "valid_until_ms": 1784116800500,
+  "target_role": "driver",
+  "payload": {
+    "time_to_collision_s": 1.4,
+    "threat_bearing_deg": 12,
+    "threat_range_m": 18,
+    "relative_speed_kmh": 42
+  },
+  "attestation": {
+    "actor_class": "adas",
+    "actor_id": "ADAS_v2.3.1",
+    "key_id": "vehicle-hsm:adas:7",
+    "algorithm": "ES256",
+    "timestamp_ms": 1784116800000,
+    "nonce": "cmFuZG9tLW5vbmNlLTE",
+    "provenance_chain": [
+      "ADAS_v2.3.1"
+    ],
+    "signature": "QgW-tPJdszA0s7lvcLrr7_fgyYzoB_FJW9TX9c-mipLtDuCg8hWEJ90ZOS2304G-l7wLk_ZTCFaJD-gYe6EiFA"
+  }
+}

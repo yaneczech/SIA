@@ -1,0 +1,22 @@
+{
+  "renderer_id": "Renderer.Cluster.Primary",
+  "kind": "cluster",
+  "capability_version": "0.4.0",
+  "safety_assurance": {
+    "level": "safety_relevant",
+    "evidence_ref": "urn:oem:assurance:cluster-primary:2026-07"
+  },
+  "capabilities": {
+    "max_simultaneous_elements": 6,
+    "text_max_chars": 48,
+    "max_glance_budget_ms": 1000,
+    "supports_animation": true,
+    "glance_optimized": true
+  },
+  "attestation": {
+    "issuer": "OEM.RendererRegistry",
+    "key_id": "vehicle-hsm:renderer-registry:2",
+    "algorithm": "ES256",
+    "signature": "QFStYNVeZ2rXonMEsRVCIDBhTA0cdsalwg-NiXS20KW6umc4mAAJBcenWavMnztWMSnXFluDgg8IPZeXHw4Tfw"
+  }
+}
