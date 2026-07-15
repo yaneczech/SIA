@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Full test suite (engine, schema contracts, documentation)
+        run: npm test
+      - name: Validate every published example artifact
+        run: node tools/validate.mjs examples/v0.4/*.json
+      - name: Run conformance vectors
+        run: node tools/conformance.mjs
