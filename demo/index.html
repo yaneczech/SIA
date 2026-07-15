@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090a12">
+  <title>SIA — Interactive Demo</title>
+  <link rel="stylesheet" href="https://use.typekit.net/cyy0vwc.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#demo">Skip to the demo</a>
+  <header class="site-header">
+    <a class="brand" href="../README.md" aria-label="SIA — home">
+      <img src="../figures/sia-logo.svg" alt="SIA">
+      <span>INTERACTION LAB</span>
+    </a>
+    <div class="header-meta">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span>Minimal Profile 0.4</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <p class="eyebrow">ONE MESSAGE. ONE SAFE DECISION.</p>
+      <h1 id="hero-title">Who gets to speak<br><span>to people in the car?</span></h1>
+      <p class="hero-copy">SIA is a safety-aware translator between vehicle systems and their screens or voice channels. It does not decide whether an obstacle is real. It checks whether a warning is trusted, fresh, and delivered in the right place.</p>
+      <a class="hero-action" href="#demo">Start the story <i data-lucide="arrow-down" aria-hidden="true"></i></a>
+    </section>
+
+    <section class="explainer" id="demo" aria-labelledby="demo-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">INTERACTIVE WALKTHROUGH</p>
+          <h2 id="demo-title">Follow the warning</h2>
+        </div>
+        <p>Choose a situation and run it. Every step explains the decision in plain language.</p>
+      </div>
+
+      <div class="scenario-bar" role="group" aria-label="Test scenarios">
+        <button class="scenario-chip is-active" data-scenario="valid" aria-pressed="true">
+          <span class="chip-icon"><i data-lucide="shield-check" aria-hidden="true"></i></span><span><b>Genuine warning</b><small>ADAS · fresh · signed</small></span>
+        </button>
+        <button class="scenario-chip" data-scenario="spoof" aria-pressed="false">
+          <span class="chip-icon"><i data-lucide="shield-alert" aria-hidden="true"></i></span><span><b>Spoofed warning</b><small>an app impersonates ADAS</small></span>
+        </button>
+        <button class="scenario-chip" data-scenario="stale" aria-pressed="false">
+          <span class="chip-icon"><i data-lucide="history" aria-hidden="true"></i></span><span><b>Stale message</b><small>arrives 1.1 s late</small></span>
+        </button>
+        <button class="scenario-chip" data-scenario="replay" aria-pressed="false">
+          <span class="chip-icon"><i data-lucide="copy" aria-hidden="true"></i></span><span><b>Replay attack</b><small>the same fresh message twice</small></span>
+        </button>
+        <button class="scenario-chip" data-scenario="fallback" aria-pressed="false">
+          <span class="chip-icon"><i data-lucide="monitor-x" aria-hidden="true"></i></span><span><b>Delivery failure</b><small>cluster fails after dispatch</small></span>
+        </button>
+        <button class="scenario-chip" data-scenario="distracted" aria-pressed="false">
+          <span class="chip-icon"><i data-lucide="eye-off" aria-hidden="true"></i></span><span><b>Distracted driver</b><small>latest state is retained until safe</small></span>
+        </button>
+      </div>
+
+      <div class="demo-shell">
+        <div class="pipeline" aria-label="Warning path through SIA">
+          <div class="stage ontology" data-stage="ontology">
+            <div class="stage-index">01</div>
+            <div class="stage-symbol ontology-symbol" aria-hidden="true"><i data-lucide="book-open"></i></div>
+            <div><p class="stage-kicker">ONTOLOGY</p><h3>Declared once</h3><p id="ontology-detail">The interaction's meaning, trust rule, attention cost, and fallback chain are authored before any vehicle ships.</p></div>
+          </div>
+
+          <div class="flow-link" aria-hidden="true"><span class="packet"></span><span class="link-line"></span></div>
+
+          <div class="stage emitter" data-stage="emitter">
+            <div class="stage-index">02</div>
+            <div class="stage-symbol" aria-hidden="true"><i data-lucide="radar"></i></div>
+            <div><p class="stage-kicker">EMITTER</p><h3>Vehicle system</h3><p id="emitter-detail">Detects a collision risk and emits the meaning “critical warning”.</p></div>
+          </div>
+
+          <div class="flow-link" aria-hidden="true"><span class="packet"></span><span class="link-line"></span></div>
+
+          <div class="sia-boundary">
+            <div class="boundary-label">SIA — SINGLE MEDIATION BOUNDARY</div>
+            <div class="stage policy" data-stage="trust">
+              <div class="stage-index">03</div>
+              <div class="stage-symbol shield" aria-hidden="true"><i data-lucide="shield-check"></i></div>
+              <div><p class="stage-kicker">TRUST POLICY</p><h3>Who is speaking?</h3><p id="trust-detail">Checks the signature, authority, freshness, and replay protection.</p></div>
+              <div class="stage-result" id="trust-result">waiting</div>
+            </div>
+
+            <div class="flow-link" aria-hidden="true"><span class="packet"></span><span class="link-line"></span></div>
+
+            <div class="stage translation" data-stage="translation">
+              <div class="stage-index">04</div>
+              <div class="stage-symbol" aria-hidden="true"><i data-lucide="route"></i></div>
+              <div><p class="stage-kicker">TRANSLATION + CONTEXT</p><h3>Where should it go?</h3><p id="translation-detail">Matches the driving situation with the capabilities of available devices.</p></div>
+              <div class="stage-result" id="translation-result">waiting</div>
+            </div>
+
+            <div class="flow-link" aria-hidden="true"><span class="packet"></span><span class="link-line"></span></div>
+
+            <div class="stage runtime" data-stage="runtime">
+              <div class="stage-index">05</div>
+              <div class="stage-symbol" aria-hidden="true"><i data-lucide="reply"></i></div>
+              <div><p class="stage-kicker">COORDINATION RUNTIME</p><h3>Did it arrive—and was it acknowledged?</h3><p id="runtime-detail">First verifies renderer presentation, then tracks the separate occupant response.</p></div>
+              <div class="stage-result" id="runtime-result">waiting</div>
+            </div>
+          </div>
+
+          <div class="flow-link" aria-hidden="true"><span class="packet"></span><span class="link-line"></span></div>
+
+          <div class="stage renderers" data-stage="renderers">
+            <div class="stage-index">06</div>
+            <div class="renderer-grid" aria-label="Output devices">
+              <div class="renderer" data-renderer="cluster"><span class="renderer-screen"><i data-lucide="triangle-alert" aria-hidden="true"></i></span><b>Cluster</b><small>in the driver's view</small><em class="renderer-receipt">not dispatched</em></div>
+              <div class="renderer" data-renderer="voice"><span class="voice-waves"><i data-lucide="volume-2" aria-hidden="true"></i></span><b>Voice</b><small>eyes-free</small><em class="renderer-receipt">not dispatched</em></div>
+              <div class="renderer" data-renderer="ivi"><span class="ivi-screen"><i data-lucide="panel-top" aria-hidden="true"></i></span><b>Center display</b><small>more attention</small><em class="renderer-receipt">not dispatched</em></div>
+            </div>
+            <button class="ack-button" id="ack-button" hidden><span>Acknowledge warning</span><small id="ack-countdown">2.0 s</small></button>
+          </div>
+          <div class="feedback-flows" aria-label="Feedback from renderers and occupant">
+            <div class="ack-flow delivery-flow" id="delivery-flow"><span id="delivery-flow-label">DELIVERY RECEIPT</span><i aria-hidden="true">←</i></div>
+            <div class="ack-flow occupant-flow" id="occupant-ack-flow"><span>OCCUPANT ACK / RESPONSE TIMEOUT</span><i aria-hidden="true">←</i></div>
+          </div>
+        </div>
+
+        <aside class="decision-panel" aria-live="polite">
+          <div class="decision-topline"><span>DECISION</span><span id="runtime-time">0 ms</span></div>
+          <div class="decision-state waiting" id="decision-state">
+            <span class="decision-icon" id="decision-icon"><i data-lucide="arrow-right" aria-hidden="true"></i></span>
+            <h3 id="decision-title">Ready</h3>
+            <p id="decision-copy">Run a scenario to see why the warning passes—or where it safely stops.</p>
+          </div>
+          <div class="check-list" id="check-list" aria-label="Scenario checks"></div>
+          <button class="run-button" id="run-button"><span>Run scenario</span><i data-lucide="play" aria-hidden="true"></i></button>
+          <button class="run-button ack-action" id="panel-ack-button" hidden><span>Acknowledge as driver</span><i data-lucide="reply" aria-hidden="true"></i></button>
+          <button class="run-button resume-action" id="resume-button" hidden><span>Driver attentive — re-evaluate</span><i data-lucide="refresh-cw" aria-hidden="true"></i></button>
+          <button class="replay-button" id="replay-button" hidden><i data-lucide="rotate-ccw" aria-hidden="true"></i> Replay animation</button>
+        </aside>
+      </div>
+
+      <section class="phase-inspector" aria-labelledby="phase-inspector-title">
+        <div class="inspector-heading">
+          <div>
+            <p class="eyebrow">INSIDE THE PIPELINE</p>
+            <h3 id="phase-inspector-title">What happens in each phase?</h3>
+          </div>
+          <p>The short answer is always visible. Open the technical trace for exact fields, rules, and machine-readable output.</p>
+        </div>
+        <div class="phase-tabs" role="tablist" aria-label="Pipeline phases">
+          <button role="tab" aria-selected="true" data-phase="ontology"><span>01</span>Ontology</button>
+          <button role="tab" aria-selected="false" data-phase="emitter"><span>02</span>Emitter</button>
+          <button role="tab" aria-selected="false" data-phase="trust"><span>03</span>Trust</button>
+          <button role="tab" aria-selected="false" data-phase="translation"><span>04</span>Translation</button>
+          <button role="tab" aria-selected="false" data-phase="runtime"><span>05</span>Runtime</button>
+          <button role="tab" aria-selected="false" data-phase="renderers"><span>06</span>Renderers</button>
+        </div>
+        <div class="inspector-content" role="tabpanel" aria-live="polite">
+          <div class="inspector-summary">
+            <span class="inspector-icon" id="inspector-icon"><i data-lucide="book-open" aria-hidden="true"></i></span>
+            <div><p id="inspector-question">What was declared, once, in the vocabulary?</p><h3 id="inspector-answer">The interaction is defined a single time in the ontology.</h3><p id="inspector-explanation">Trust, attention and fallback are properties of the declaration, not of any single emission.</p></div>
+          </div>
+          <div class="operation-flow" aria-label="Phase operation">
+            <div><small>INPUT</small><strong id="inspector-input-title">Sensor decision</strong><ul id="inspector-input"></ul></div>
+            <i data-lucide="arrow-right" aria-hidden="true"></i>
+            <div><small>RULE / OPERATION</small><strong id="inspector-rule-title">Create typed instance</strong><ul id="inspector-rules"></ul></div>
+            <i data-lucide="arrow-right" aria-hidden="true"></i>
+            <div><small>OUTPUT</small><strong id="inspector-output-title">Semantic node</strong><ul id="inspector-output"></ul></div>
+          </div>
+          <details class="technical-trace">
+            <summary><span><i data-lucide="code-2" aria-hidden="true"></i> Technical trace</span><span>Fields · policy · result</span></summary>
+            <div class="trace-grid">
+              <div><small>WHY THIS DECISION</small><p id="trace-rationale"></p></div>
+              <pre id="phase-trace"></pre>
+            </div>
+          </details>
+        </div>
+      </section>
+    </section>
+
+    <section class="matrix-section" aria-labelledby="matrix-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">WHO GETS TO SPEAK</p><h2 id="matrix-title">Trust matrix</h2></div>
+        <p>Every cell below is read directly from the same node catalog the engine evaluates — not asserted separately. Blocked here means blocked before any renderer ever sees the message.</p>
+      </div>
+      <div class="matrix-wrap">
+        <table class="trust-matrix" id="trust-matrix" aria-label="Which actor may emit which interaction"></table>
+      </div>
+    </section>
+
+    <section class="lab" aria-labelledby="lab-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">TEST LAB</p><h2 id="lab-title">Try to break SIA</h2></div>
+        <p>Change the inputs. Test renderer delivery independently from the occupant response; the result and audit record update instantly.</p>
+      </div>
+      <div class="lab-grid">
+        <form class="control-panel" id="lab-form">
+          <fieldset>
+            <legend><span class="legend-index">01</span><span>Interaction</span></legend>
+            <div class="field">
+              <label for="node">Semantic node</label>
+              <select id="node" name="node"></select>
+            </div>
+            <label class="switch-row"><span><b>Attacker injects priority: critical</b><small>closed runtime envelope must reject it</small></span><input id="inject-priority" type="checkbox"><span class="switch" aria-hidden="true"></span></label>
+          </fieldset>
+          <fieldset>
+            <legend><span class="legend-index">02</span><span>Emitter &amp; trust</span></legend>
+            <div class="field">
+              <label for="actor">Actor class</label>
+              <select id="actor" name="actor">
+                <option value="adas">ADAS — driving safety system</option>
+                <option value="service">Vehicle service — climate, media, nav</option>
+                <option value="third_party_app">Third-party app</option>
+                <option value="agent_local">In-vehicle AI assistant</option>
+                <option value="agent_cloud">Cloud AI assistant</option>
+              </select>
+            </div>
+            <label class="switch-row"><span><b>Valid digital signature</b><small>confirms the emitter's identity</small></span><input id="signature" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+          </fieldset>
+          <fieldset>
+            <legend><span class="legend-index">03</span><span>Freshness</span></legend>
+            <label for="age">Message age <output id="age-output" for="age">80 ms</output></label>
+            <input id="age" type="range" min="0" max="6000" value="80" step="10">
+            <div class="range-labels"><span>now</span><span id="age-limit-label">200 ms limit</span><span>6 s</span></div>
+            <label class="switch-row"><span><b>Replay detected</b><small>the same message has already arrived</small></span><input id="replay" type="checkbox"><span class="switch" aria-hidden="true"></span></label>
+          </fieldset>
+          <fieldset>
+            <legend><span class="legend-index">04</span><span>Live context</span></legend>
+            <div class="field-grid">
+              <div class="field">
+                <label for="vehicle-state">Vehicle</label>
+                <select id="vehicle-state">
+                  <option value="moving">Moving</option><option value="charging">Charging</option><option value="unknown">Unknown</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="road-type">Road</label>
+                <select id="road-type">
+                  <option value="urban">Urban</option><option value="rural">Rural</option><option value="highway" selected>Highway</option><option value="off_road">Off-road</option>
+                </select>
+              </div>
+              <div class="field field-wide">
+                <label for="driver-state">Driver state</label>
+                <select id="driver-state">
+                  <option value="attentive" selected>Attentive</option><option value="drowsy">Drowsy</option><option value="distracted">Distracted</option><option value="not_monitoring">Not monitoring</option><option value="unknown">Unknown</option>
+                </select>
+              </div>
+            </div>
+            <p class="control-group-label">Available outputs</p>
+            <div class="surface-switches">
+              <label class="switch-row"><span><b>Cluster</b><small>directly in the driver's view</small></span><input id="cluster-online" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+              <label class="switch-row"><span><b>Voice</b><small>short eyes-free message</small></span><input id="voice-online" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+              <label class="switch-row"><span><b>Center display</b><small>higher capacity and attention</small></span><input id="ivi-online" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+            </div>
+          </fieldset>
+          <fieldset class="feedback-fieldset">
+            <legend><span class="legend-index">05</span><span>Feedback</span></legend>
+            <div class="feedback-contracts">
+              <div class="field">
+                <label for="delivery-mode"><span>Renderer receipt</span><small>machine confirmation</small></label>
+                <select id="delivery-mode">
+                  <option value="presented">Presented — renderer confirms output</option>
+                  <option value="received">Received — presentation still pending</option>
+                  <option value="fallback">Primary fails — backup presents</option>
+                  <option value="timeout">No presentation receipt — timeout</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="ack-mode"><span>Occupant response</span><small>starts only after presentation</small></label>
+                <select id="ack-mode">
+                  <option value="explicit">Driver presses acknowledge</option>
+                  <option value="timeout">No occupant response — timeout</option>
+                  <option value="pending">Still waiting for occupant</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+        <div class="lab-output" id="lab-output" aria-live="polite">
+          <div class="lab-output-inner">
+            <div class="lab-status"><span id="lab-status-icon"><i data-lucide="check" aria-hidden="true"></i></span><div><small>SIA DECISION</small><h3 id="lab-status-title">Warning allowed</h3></div></div>
+            <p id="lab-status-copy"></p>
+            <div class="mini-flow" aria-label="Check results">
+              <div data-mini="trust"><span>1</span><b>Trust</b><small id="mini-trust">verified</small></div><i>→</i>
+              <div data-mini="context"><span>2</span><b>Context</b><small id="mini-context">moving</small></div><i>→</i>
+              <div data-mini="output"><span>3</span><b>Render plan</b><small id="mini-output">cluster + voice</small></div><i>→</i>
+              <div data-mini="delivery"><span>4</span><b>Delivery</b><small id="mini-delivery">presented</small></div><i>→</i>
+              <div data-mini="ack"><span>5</span><b>Occupant</b><small id="mini-ack">acknowledged</small></div>
+            </div>
+            <div class="attention-readout" id="attention-readout">
+              <div class="attention-sum"><small>ATTENTION BUDGET</small><p id="attention-formula">—</p></div>
+              <div class="attention-budgets" id="attention-budgets"></div>
+            </div>
+            <details>
+              <summary>Technical audit log</summary>
+              <pre id="audit-log"></pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="takeaway" aria-label="Key takeaway">
+      <img class="takeaway-logo" src="../figures/sia-logo.svg" alt="SIA">
+      <p><b>Meaning and rules are defined once.</b><br>Every screen, voice channel, or future device can then apply them safely.</p>
+    </section>
+  </main>
+
+  <footer><span>SIA · Semantic Interaction Architecture</span><a href="../01_Semantic-Interaction-Architecture-sdv.md">Read the architecture proposal →</a></footer>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
