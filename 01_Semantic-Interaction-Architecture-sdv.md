@@ -8,8 +8,8 @@
 
 **Author:** Jan Janeček  
 **Affiliation:** Cars Making Sense  
-**Version:** 0.3.1 — Edited draft  
-**Date:** May 2026
+**Version:** 0.4.0 — Pre-standard draft<br>
+**Date:** July 2026
 
 ---
 
@@ -17,7 +17,9 @@
 
 As vehicles become multimodal, AI-augmented, software-defined platforms, the interaction layer has become one of the most volatile and least consistently abstracted parts of the in-vehicle stack. Abstraction has scaled below interaction — hardware, signals, middleware and services — but only narrowly within interaction itself. A long tradition of automotive ontology and HMI research has produced valuable component contributions, yet we found no public, vendor-neutral framework that treats the vehicle’s interaction surface as a typed, measurable, trust-aware semantic vocabulary.
 
-We propose a **Semantic Interaction Architecture** (SIA): a narrow mediation layer in which interactions are described by their meaning, attention demand, contextual fitness and authority of origin, rather than by buttons, screens or widgets. SIA sits above existing SDV data and service abstractions — such as COVESA VSS, Eclipse Kuksa, Eclipse uProtocol and AUTOSAR Adaptive — and below concrete renderers, which remain external consumers of a verified semantic stream. Its contribution is second-wave integration, not first-wave invention: it combines four design moves not previously brought together in the public work we surveyed — renderers as external consumers, actor-class trust with requirement-vs-attestation separation, attention metrics aligned with distraction-guideline axes, and measurable capability predicates for deterministic translation. We describe the architecture, the minimal semantic contract, and a deliberately small v1 profile suitable for reference implementation and standardisation discussion.
+We propose a **Semantic Interaction Architecture** (SIA): a narrow mediation layer in which interactions are described by their meaning, attention demand, contextual fitness and authority of origin, rather than by buttons, screens or widgets. SIA sits above existing SDV data and service abstractions — such as COVESA VSS, Eclipse Kuksa, Eclipse uProtocol and AUTOSAR Adaptive — and below concrete renderers, which remain external consumers of a verified semantic stream. Its contribution is second-wave integration, not first-wave invention: it combines renderers as external consumers, actor-class trust with requirement-vs-attestation separation, attention metrics aligned with distraction-guideline axes, deterministic capability negotiation, bounded context retention, authenticated delivery receipts and a separate occupant-response contract. We describe the architecture and a deliberately small 0.4 profile suitable for reference implementation and standardisation discussion.
+
+This position paper is explanatory. The normative implementer contract, lifecycle and conformance requirements are defined in [`03_Core-Specification.md`](./03_Core-Specification.md); machine-readable contracts and executable examples are published in [`schema/`](./schema/) and [`examples/v0.4/`](./examples/v0.4/).
 
 ---
 
@@ -37,7 +39,7 @@ A natural objection is that any additional boundary creates additional complexit
 
 *Figure 1. Without SIA, cross-cutting interaction logic is duplicated across emitter–renderer pairs. With SIA, this logic is consolidated at a mediation boundary; renderers become thinner consumers and adding new emitters or renderers becomes linear rather than multiplicative.*
 
-The first version of such a boundary should be deliberately narrow. We scope SIA v1 to three cores:
+The first version of such a boundary should be deliberately narrow. We scope SIA 0.4 to three cores:
 
 1. **Interaction meaning** for high-value commands, alerts and notifications.
 2. **Attention policy** for priority, interruptibility and driving context.
@@ -57,7 +59,7 @@ A single example makes the boundary tangible. Consider a forward-collision warni
 2. **Trust Policy** checks the attestation against the node’s declared requirements: signed origin, permitted actor class, freshness and replay protection. A third-party application or cloud agent attempting to emit the same node would be rejected here.
 3. **Context Policy** supplies the current vector: `vehicle_state: moving`, `road_type: highway`, `driver_state: attentive`.
 4. The **Translation Layer** filters available renderers by capability and policy. A safety-certified cluster may qualify; a centre IVI touchscreen may be dropped if it exceeds the active attention budget.
-5. The **Coordination Runtime** dispatches the selected modality, tracks acknowledgement or timeout, and preserves cross-renderer consistency.
+5. The **Coordination Runtime** dispatches the selected modality, consumes authenticated renderer delivery receipts, and only then opens any separately declared occupant-response wait.
 
 The same semantic node may translate differently when parked, charging, or in a higher automation context. The declaration, trust contract and attention estimate are written once; the delivery decision changes with capabilities and context.
 
@@ -140,9 +142,9 @@ A common failure mode in interaction schemas is treating all interactions as gen
 
 ![Figure 4 — Node taxonomy](./figures/fig4-node-taxonomy.png)
 
-*Figure 4. Four primary semantic types. In v1, only `Action` and two concrete `Event` subtypes — `Alert` and `Notification` — are emitted.*
+*Figure 4. Four architectural semantic types. In the 0.4 minimal profile, only two concrete `Event` subtypes — `Alert` and `Notification` — are emitted.*
 
-**Action.** Occupant-initiated. May be discrete (`Action.Navigate.Back`), sustained (`Action.Media.Volume.Increase`) or continuous (`Action.Map.Zoom`). Carries modality preference, temporal type and attention estimates.
+**Action.** Occupant-initiated. May be discrete (`Action.Navigate.Back`), sustained (`Action.Media.Volume.Increase`) or continuous (`Action.Map.Zoom`). A complete input authentication, execution-result and cancellation contract is deferred from 0.4; the output-renderer delivery contract must not be reused as a shortcut.
 
 **Alert.** System-initiated and safety-relevant. May be non-suppressible and may require acknowledgement. Carries priority, interruptibility, trust requirements, regulatory basis and attention metrics.
 
@@ -150,7 +152,7 @@ A common failure mode in interaction schemas is treating all interactions as gen
 
 **State.** Runtime-internal focus, mode or context transition. Usually not user-facing on its own.
 
-**Task.** A composed multi-step flow over actions and states. Deferred from the minimal v1 profile.
+**Task.** A composed multi-step flow over actions and states. Deferred from the minimal 0.4 profile.
 
 Each node declaration carries an `inherits_from` reference to its parent in the hierarchy. Subclasses may strengthen, but not weaken, safety, attention or trust requirements. Unknown subclasses must resolve to their known parent where safe or fail closed where critical.
 
@@ -161,10 +163,10 @@ A useful node should answer a small set of human-readable questions:
 | What is being requested, asserted or coordinated? | node identity, type, inheritance |
 | Who is speaking or acting? | actor class, actor id, attestation |
 | Who is the intended recipient? | target role, scope |
-| How urgent or interruptive is it? | priority, interruptibility, suppression class |
-| What response is expected? | acknowledgement kind, timeout, authority |
-| What context changes delivery? | context vector and predicates |
-| What happens if the preferred renderer fails? | fallback chain, degradation policy |
+| How urgent or interruptive is it? | priority, interruptibility |
+| What response is expected? | occupant-response kind, timeout, authority |
+| What context changes delivery? | applicability, unknown-context policy, blocked disposition |
+| What happens if the preferred renderer fails? | presentation contract and delivery policy |
 
 This is an ergonomics requirement as much as a technical one. A schema that is technically valid but unreadable by HMI engineers, UX researchers and safety engineers will not scale socially. Conversely, a readable vocabulary that cannot be validated, diffed, tested, versioned or safely degraded is not usable in an SDV stack.
 
@@ -172,41 +174,26 @@ This is an ergonomics requirement as much as a technical one. A schema that is t
 
 ## 5. Metadata Contracts
 
-Every node carries a typed metadata block. Fields are divided into **declarative fields**, defined in the schema and stable across deployments, and **runtime fields**, attached by the emitter at emission time.
+Every emitted node carries a typed declarative contract. Runtime instances carry identity, payload, timing and attestation only; they cannot override declaration-owned policy. The 0.4 profile emits only `Alert` and `Notification`.
 
-| Field | Action | Alert | Notification | State | Task |
-| --- | --- | --- | --- | --- | --- |
-| `since_version` | ● | ● | ● | ● | ● |
-| `deprecated_since` | ○ | ○ | ○ | ○ | ○ |
-| `replaced_by` | ○ | ○ | ○ | ○ | ○ |
-| `inherits_from` | ● | ● | ● | ● | ● |
-| `direction` | ● | ● | ● | ● | ● |
-| `temporal_type` | ● | ● | ● | — | — |
-| `recommended_modality` | ● | ○ | ○ | — | ○ |
-| `attention_metrics` | ● | ● | ● | — | ● |
-| `priority` | — | ● | ● | — | ○ |
-| `interruptibility` | — | ● | ● | — | ● |
-| `requires_ack` | — | ● | ○ | — | ○ |
-| `ack_kind` | — | ● | ○ | — | ○ |
-| `ack_timeout_ms` | — | ● | ○ | — | ○ |
-| `trust_requirements` | ○ | ● | ○ | ○ | ○ |
-| `target_role` | ● | ● | ● | ● | ● |
-| `scope` | — | — | — | ● | ○ |
-| `consistency_class` | — | — | — | ● | — |
-| `accessibility_alt` | ● | ● | ● | — | ● |
-| `regulatory_basis` | — | ○ | ○ | — | ○ |
-| `assessment_basis` | — | ○ | ○ | — | ○ |
-| `pii_class` | ○ | ● | ● | — | ○ |
-| `temporal_freshness_ms` | — | ● | ● | ● | — |
-| `suppression_class` | — | ● | ● | — | — |
-| `merges_with` | — | ○ | ○ | — | — |
-| `fallback_chain` | ● | ● | ● | — | ● |
-| `degradation_policy` | ● | ● | ● | — | ● |
-| `step_count` | — | — | — | — | ● |
-| `interruptible_at` | — | — | — | — | ● |
-| `resumable_across_contexts` | — | — | — | — | ● |
+| Contract family | Alert | Notification |
+| --- | --- | --- |
+| Identity, inheritance and version | ● | ● |
+| Direction, target and temporal type | ● | ● |
+| Payload schema reference and digest | ● | ● |
+| Semantic validity | ● | ● |
+| Trust requirements | ● | ● |
+| Attention metrics | ● | ● |
+| Priority and interruptibility | ● | ● |
+| Context policy | ● | ● |
+| Presentation and delivery policy | ● | ● |
+| Occupant-response contract | ● | ● |
+| PII class and accessibility alternatives | ● | ● |
+| Regulatory or assessment basis | ○ | ○ |
 
 ● mandatory · ○ optional · — not applicable
+
+Context retention is nested under `context_policy.on_blocked`. A declaration chooses exactly one disposition: `never_block`, `drop`, `defer`, or `coalesce`. Deferred and coalesced items have a bounded TTL, deterministic expiry behaviour and explicit queue limits; coalescing also declares the canonical key fields. Renderer delivery is governed by `presentation_contract`, while a human response is governed independently by `occupant_response`. This prevents “message accepted by a renderer” from being confused with “person acknowledged the interaction.”
 
 Two design decisions are load-bearing.
 
@@ -235,11 +222,11 @@ Alert.Collision.Warning:
   trust_requirements:
     signed_origin_required: true
     permitted_actor_classes: [adas]
-    max_age_ms: 200
+    max_ingress_age_ms: 200
     replay_protection: required
 ```
 
-This example reflects the Minimal SIA Profile v1, which includes only `adas` as a permitted class for collision warnings. In the full architecture, `vsc` (vehicle-state-critical) may also appear here once that class is added in the first extension profile (see §11.1).
+This example reflects the Minimal SIA Profile 0.4, which includes only `adas` as a permitted class for collision warnings.
 
 Authority is expressed through `permitted_actor_classes`. A generic scalar such as `min_trust_level` is intentionally avoided because it duplicates and obscures the actor taxonomy.
 
@@ -251,7 +238,9 @@ Trust attestation is attached to the emitted instance:
 attestation:
   actor_class: adas
   actor_id: ADAS_v2.3.1
-  signature: <JWS or COSE over canonical node form>
+  key_id: vehicle-hsm:adas:7
+  algorithm: ES256
+  signature: <signature over the canonical runtime envelope>
   timestamp_ms: 1778803920123
   nonce: <random-per-emission>
   provenance_chain: [adas]
@@ -261,7 +250,7 @@ Trust Policy verifies that the attestation satisfies the declared requirements b
 
 ### 6.3 Actor classes
 
-The full architecture can use the following actor taxonomy. The Minimal SIA Profile v1 uses only the subset defined in §11.1 (`human_direct`, `adas`, `service`, `third_party_app`); the remaining classes are deferred to the first extension profile.
+The Minimal SIA Profile 0.4 uses six actor classes. A future profile may add more, but an unknown class cannot inherit authority from a superficially similar known class.
 
 | Class | Description | Example |
 | --- | --- | --- |
@@ -269,7 +258,6 @@ The full architecture can use the following actor taxonomy. The Minimal SIA Prof
 | `agent_local` | On-device assistant | Local LLM or rules agent |
 | `agent_cloud` | Cloud-hosted assistant | Cloud LLM assistant |
 | `adas` | Driver assistance subsystem | AEB, lane keeping |
-| `vsc` | Vehicle-state-critical system | Tyre pressure, powertrain fault |
 | `service` | Internal vehicle service | Climate, media, navigation |
 | `third_party_app` | App-store or external application | Music or messaging app |
 
@@ -336,11 +324,11 @@ Automotive HMI systems often collapse context into broad labels such as city, hi
 | `weather` | Extended | `clear`, `rain`, `snow`, `fog` |
 | `time_of_day` | Extended | `day`, `dusk`, `night` |
 
-Translation and suppression policies become predicates over the vector:
+Translation and context policies become predicates over the vector. Applicability is evaluated first; only an applicable interaction can then be blocked:
 
 ```text
-vehicle_state = moving ∧ driver_state = distracted
-    ⇒ suppress non-critical Notification.*
+applicable(node, context) ∧ driver_state = distracted ∧ priority ≠ critical
+    ⇒ apply node.context_policy.on_blocked.disposition
 ```
 
 ```text
@@ -348,7 +336,9 @@ autonomy_engaged = true ∧ sae_level ≥ 3
     ⇒ permit selected Task.* flows otherwise locked while driving
 ```
 
-Context Policy may scale a defined whitelist of numeric node fields, currently `attention_metrics.*` and selected acknowledgement timeouts. It should not mutate the semantic identity of the node. Priority, actor permissions, suppression class and fallback chains remain declarative properties of the node.
+The declared disposition is one of `never_block`, `drop`, `defer`, or `coalesce`. `drop` terminates with an audit record. `defer` retains each instance within declared TTL and queue bounds. `coalesce` retains only the newest semantically equivalent instance for a canonical key and releases that latest state for full re-evaluation when context becomes eligible. `never_block` continues to capability negotiation and the declared safety fallback.
+
+Context Policy must not mutate semantic identity. For example, a collision warning emitted while charging is `not_applicable`; SIA must not silently convert it into diagnostics. Diagnostics are a separate typed instance. Priority, actor permissions, applicability, disposition and presentation remain declaration-owned properties.
 
 If a core context axis cannot be determined, Context Policy must degrade to the safest applicable fallback rather than relax constraints. For example, an unknown `vehicle_state` should be treated as `moving` for attention budgeting unless a lower-level safety-certified source proves otherwise.
 
@@ -356,7 +346,7 @@ If a core context axis cannot be determined, Context Policy must degrade to the 
 
 ## 9. Capability Negotiation
 
-Renderers and input devices declare measurable capabilities rather than informal labels. The examples below illustrate the broader architecture; the Minimal SIA Profile v1 restricts the active renderer set to cluster, IVI and voice, and defers HUD, haptic, AR and steering-wheel surfaces.
+Renderers and input devices declare measurable capabilities rather than informal labels. The examples below illustrate the broader architecture; the Minimal SIA Profile 0.4 restricts the active output-renderer set to cluster, IVI and voice, and defers HUD, haptic and AR surfaces. Steering-wheel input may provide an authenticated occupant response without becoming an output renderer.
 
 ```yaml
 Renderer.Cluster:
@@ -401,72 +391,56 @@ The output should be explainable in logs: for example, “cluster selected becau
 
 ## 10. Versioning and Evolution
 
-A vehicle may remain in service for 15 years while its software and interaction vocabulary evolve. Versioning is therefore part of the semantic contract, not an implementation detail.
+A vehicle may remain in service for 15 years while its software and interaction vocabulary evolve. SIA therefore separates three version axes: `spec_version` for wire contracts and lifecycle, `profile_id` plus `profile_version` for a negotiated conformance subset, and `catalog_version` for the installed semantic vocabulary. Every runtime instance carries all three.
 
-```yaml
-since_version: 1.4.0
-deprecated_since: 2.0.0
-replaced_by: Interaction.Action.Navigate.Hierarchical.Back
-compatible_with_min_version: 1.2.0
-```
+Normative runtime envelopes are closed. An unknown field is not presumed harmless, because it may attempt to change priority, rendering, retention or acknowledgement policy. Additive evolution therefore occurs through a compatible profile revision or an explicitly negotiated feature. Breaking required fields or changed semantics require a major profile version. Unknown critical nodes fail closed or enter the deployment's documented safety fallback; non-critical nodes may be rejected or handled only through an explicitly compatible known parent.
 
-`compatible_with_min_version` is a schema-level versioning annotation that declares the oldest consumer version that can safely process the node. It is not a runtime metadata field and does not appear in the §5 metadata table; it is resolved at authoring time and baked into compiled runtime contracts.
-
-The following rules should govern evolution:
-
-1. New optional fields are additive and must be safely ignored by older consumers.
-2. New subclasses inherit parent contracts and may strengthen, but not weaken, safety, attention or trust requirements.
-3. Required-field additions require a major version or explicit feature flag.
-4. Deprecated nodes remain resolvable for a defined support window.
-5. Unknown critical nodes must fail closed or degrade through policy.
-6. Unknown non-critical nodes may be suppressed, deferred or mapped to a known parent class.
-
-This allows the vocabulary to grow without forcing every renderer, vehicle generation or supplier stack to update at the same pace.
+Catalog evolution remains independently versioned. New subclasses may strengthen but never weaken inherited safety, attention or trust requirements. Deprecated declarations remain resolvable for a published support window. The full compatibility contract is normative in the Core Specification.
 
 ---
 
-## 11. Minimal SIA Profile v1
+## 11. Minimal SIA Profile 0.4
 
 The full architecture is intentionally broader than the first implementation target. A first conformance profile should be small enough to implement, test and discuss in a standards forum, while still exercising every load-bearing mechanism.
 
 ### 11.1 Fixed scope
 
-**Node types.** v1 includes `Action` and two concrete `Event` subtypes: `Alert` and `Notification`. `State` and `Task` are schema parents or future extensions, not emitted v1 nodes.
+**Node types.** The profile includes two concrete `Event` subtypes: `Alert` and `Notification`. `Action`, `State` and `Task` remain architectural types for future profiles and are not emitted.
 
-| Type | Example v1 nodes | Typical emitter | Default modality |
+| Type | Example nodes | Typical emitter | Default modality |
 | --- | --- | --- | --- |
 | `Alert` | `Alert.Collision.Warning`, `Alert.Lane.Departure`, `Alert.Driver.Drowsiness`, `Alert.TirePressure.Low`, `Alert.Powertrain.Fault` | `adas`, `service` | cluster + audio |
 | `Notification` | `Notification.Navigation.Maneuver`, `Notification.Call.Incoming`, `Notification.Message.Received`, `Notification.Media.NowPlaying`, `Notification.Charging.Status` | `service`, `third_party_app` | IVI or voice |
-| `Action` | `Action.Media.Control`, `Action.Navigation.Destination.Set`, `Action.Climate.Temperature.Set`, `Action.Phone.Call.Initiate`, `Action.Voice.Command.Submit` | `human_direct` | context-dependent |
 
-**Renderers.** v1 uses three surfaces: instrument cluster, centre IVI and voice. HUD, haptic, AR and steering-wheel surfaces are deferred.
+**Renderers.** The profile uses three output surfaces: instrument cluster, centre IVI and voice. HUD, haptic and AR surfaces are deferred.
 
-**Actor classes.** v1 uses four classes: `human_direct`, `adas`, `service`, `third_party_app`. `agent_local`, `agent_cloud` and `vsc` may be added in the first extension profile.
+**Actor classes.** The profile uses six classes: `human_direct`, `adas`, `service`, `third_party_app`, `agent_local` and `agent_cloud`.
 
-**Context axes.** v1 uses `vehicle_state`, `road_type` and `driver_state`. Additional axes are optional and ignored safely by v1 policies.
+**Context axes.** The profile uses `vehicle_state`, `road_type` and `driver_state`. Additional axes require a negotiated extension and cannot silently relax a decision.
 
 ### 11.2 Example node declaration
 
-A minimal v1 declaration for a collision warning might look like this:
+A 0.4 declaration for a collision warning looks like this (the JSON source in `examples/v0.4/` is executable conformance material):
 
 ```yaml
 id: Interaction.Event.Alert.Collision.Warning
 inherits_from: Interaction.Event.Alert
-since_version: 1.0.0
+since_version: 0.4.0
 direction: system_to_occupant
+target_role: driver
 temporal_type: discrete
 priority: critical
 interruptibility: non_interruptible
-requires_ack: true
-ack_kind: explicit_or_timeout
-ack_timeout_ms: 2000
-target_role: driver
+semantic_validity_ms: 500
+payload_schema_ref: sia:payload:collision-warning:1
+payload_schema_sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 trust_requirements:
   signed_origin_required: true
   permitted_actor_classes: [adas]
-  max_age_ms: 200
+  max_ingress_age_ms: 200
   replay_protection: required
+  session_revocation_required: true
 
 attention_metrics:
   glance_time_estimated_ms: 800
@@ -475,19 +449,44 @@ attention_metrics:
   voice_alt_available: true
   cognitive_load: minimal
 
-fallback_chain: [cluster, voice]
-degradation_policy: fail_to_cluster_plus_audio
-suppression_class: non_suppressible
+context_policy:
+  applicability: moving_only
+  unknown_context: safe_worst_case
+  on_blocked:
+    disposition: never_block
+
+presentation_contract:
+  preferred_renderers: [cluster, voice]
+  required_renderers: []
+  delivery_success_policy: any_selected_presented
+  delivery_timeout_ms: 300
+  degradation_policy: next_eligible
+
+occupant_response:
+  kind: explicit_or_timeout
+  authority: driver_only
+  timeout_ms: 2000
+
 pii_class: none
+accessibility_alternatives: [visual, auditory]
 regulatory_basis:
-  - ISO 15623
-  - UNECE R152
+  - ISO_15623
+  - UNECE_R152
 ```
 
 A matching runtime emission would carry the instance-specific payload and attestation (see Appendix A for a full end-to-end trace):
 
 ```yaml
 node_id: Interaction.Event.Alert.Collision.Warning
+spec_version: 0.4.0
+profile_id: sia-minimal
+profile_version: 0.4.0
+catalog_version: 0.4.0
+node_schema_sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+instance_id: c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21
+occurred_at_ms: 1784116800000
+valid_until_ms: 1784116800500
+target_role: driver
 payload:
   time_to_collision_s: 1.4
   threat_bearing_deg: 12
@@ -496,23 +495,26 @@ payload:
 attestation:
   actor_class: adas
   actor_id: ADAS_v2.3.1
-  timestamp_ms: 1778803920123
-  nonce: <random-per-emission>
-  provenance_chain: [adas]
+  key_id: vehicle-hsm:adas:7
+  algorithm: ES256
+  timestamp_ms: 1784116800000
+  nonce: cmFuZG9tLW5vbmNlLTE
+  provenance_chain: [ADAS_v2.3.1]
   signature: <signature-over-canonical-instance>
 ```
 
 ### 11.3 Why this profile is enough
 
-A profile of three node families, roughly fifteen core nodes, three renderers, four actor classes and three context axes is small enough for a reference implementation. It is also large enough to test the core claims:
+A profile of two emitted node families, three renderers, six actor classes and three context axes is small enough for a reference implementation. It is also large enough to test the core claims:
 
 - trust requirements can reject unauthorised emitters before rendering;
 - attention metrics can affect dispatch decisions;
 - renderer capabilities can drive deterministic translation;
-- fallback behaviour can be audited;
-- newer constructs can be ignored or degraded safely.
+- bounded drop, defer and coalescing behaviour can be tested;
+- renderer receipt and occupant response can be observed as separate feedback loops;
+- fallback behaviour and terminal outcomes can be audited.
 
-This makes v1 a practical falsification target. If the architecture cannot be made useful at this scale, it should not be expanded.
+This makes 0.4 a practical falsification target. If the architecture cannot be made useful at this scale, it should not be expanded.
 
 ---
 
@@ -542,17 +544,11 @@ This makes v1 a practical falsification target. If the architecture cannot be ma
 
 ## 13. Open Questions and Path Forward
 
-SIA remains a position paper, not a complete standard. The following questions are intentionally left open for specification and implementation work.
+SIA remains a pre-standard proposal. Version 0.4 resolves the minimum interoperable lifecycle and JSON contract; the following deployment and validation questions remain open.
 
-### 13.1 Schema formalism
+### 13.1 Runtime and authoring encodings
 
-A practical stack may use:
-
-- **SHACL** or a comparable shape language as authoring source-of-truth;
-- **JSON Schema, CBOR or Protobuf** as generated runtime contracts;
-- a **`.vspec`-style DSL** as an ergonomic authoring surface, following the COVESA VSS precedent.
-
-OWL may remain useful at authoring time for consistency checking, but runtime OWL-DL reasoning is not proposed for safety-relevant paths.
+JSON Schema 2020-12 is the normative 0.4 exchange and conformance contract. YAML or a `.vspec`-style DSL may be used as an authoring surface only when it compiles deterministically to the canonical JSON model. CBOR or Protobuf may become future transport profiles, but must preserve closed-envelope validation, canonical signing, reason codes and lifecycle semantics. OWL or SHACL may remain useful for authoring-time consistency checking; runtime open-world reasoning is not proposed for safety-relevant paths.
 
 ### 13.2 Trust substrate
 
@@ -569,11 +565,12 @@ The proposed attention metrics require empirical calibration. A staged path is a
 
 A useful next step is a reference implementation over Eclipse Kuksa or a comparable SDV substrate. The implementation should include:
 
-- the minimal v1 node set;
+- the minimal 0.4 node set and schema validator;
 - a trust gate with actor-class permissions;
 - a three-renderer arbitration matrix;
-- context-driven suppression and fallback;
-- audit logs explaining each dispatch decision.
+- bounded drop, defer and coalescing stores;
+- authenticated renderer receipts and separate occupant responses;
+- deterministic conformance vectors and hash-linked audit logs explaining each transition.
 
 ### 13.5 Standardisation and community path
 
@@ -598,7 +595,7 @@ SIA is not proposed as another large vehicle operating system, GUI toolkit or da
 
 The core claim is simple: software-defined vehicles need a stable layer where interaction meaning, attention demand, contextual fitness and semantic authority are explicit before rendering occurs. Without that layer, the same cross-cutting logic is repeatedly reimplemented across emitters and renderers. With it, interaction behaviour becomes more consistent, more auditable and easier to evolve.
 
-The proposal is intentionally modest in its first step. A minimal v1 profile with a small node set, three renderers, four actor classes and three context axes should be enough to test whether the architecture is useful. If it is, the vocabulary can grow. If it is not, the architecture should be narrowed or rejected. That falsifiability is a feature: SIA should earn its complexity by reducing duplicated complexity elsewhere.
+The proposal is intentionally modest in its first step. A minimal 0.4 profile with a small node set, three renderers, six actor classes and three context axes should be enough to test whether the architecture is useful. Its bounded retention and two distinct feedback loops also make the uncomfortable cases explicit: a message may be held without being lost, presented without being acknowledged, or rejected before rendering. If the architecture is useful, the vocabulary can grow. If it is not, it should be narrowed or rejected. That falsifiability is a feature: SIA should earn its complexity by reducing duplicated complexity elsewhere.
 
 ---
 

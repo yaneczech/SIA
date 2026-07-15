@@ -4,8 +4,8 @@ title: "Toward a Semantic Interaction Architecture for Software-Defined Vehicles
 authors:
   - family-names: "Janecek"
     given-names: "Jan"
-version: "0.1"
-date-released: "2026-05-01"
+version: "0.4.0"
+date-released: "2026-07-15"
 license: "CC0-1.0"
-repository-code: "https://github.com/janjanecek/SIA"
+repository-code: "https://github.com/yaneczech/SIA"
 abstract: "A position paper proposing a vendor-neutral semantic mediation layer for high-value interactions in software-defined vehicles."
