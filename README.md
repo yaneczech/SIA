@@ -2,7 +2,7 @@
 
 # Semantic Interaction Architecture (SIA)
 
-**A [Cars Making Sense](#about-cars-making-sense) initiative · v0.3.1 draft · May 2026**
+**A [Cars Making Sense](#about-cars-making-sense) initiative · v0.4.0 draft · July 2026**
 
 > **What if a collision warning could declare, in machine-readable terms, who is allowed to emit it, how fresh its attestation must be, what attention budget it consumes, and which renderer may present it — without that logic being duplicated inside every screen, widget, or assistant?**
 
@@ -34,8 +34,8 @@ SIA defines a typed semantic vocabulary for in-vehicle interactions. In the full
 
 - `Action` — occupant-initiated interaction
 - `Event` — system-initiated interaction
-  - `Alert` — safety-relevant, may require acknowledgement
-  - `Notification` — informational, suppressible or deferrable
+  - `Alert` — safety-relevant, may declare a separate occupant response
+  - `Notification` — informational, with explicit drop, defer, or coalesce behaviour when blocked
 - `State` — runtime coordination state
 - `Task` — composed multi-step flow
 
@@ -45,7 +45,7 @@ Each node carries machine-readable metadata for:
 - **Attention** — estimated glance time, task steps, cognitive load, and other audit-facing attention-demand proxies.
 - **Context** — multi-axis driving context such as vehicle state, road type, driver state, autonomy state, and jurisdiction.
 - **Capability negotiation** — renderer and input-device capabilities expressed as measurable constraints rather than informal labels.
-- **Fallback and degradation** — explicit rules for what happens when the preferred renderer is unavailable or context is uncertain.
+- **Lifecycle and feedback** — applicability, bounded retention, deterministic render plans, renderer delivery receipts, and separate occupant responses.
 
 The architecture consists of three functional components and two cross-cutting policies:
 
@@ -53,9 +53,9 @@ The architecture consists of three functional components and two cross-cutting p
 |---|---|
 | **Ontology Language + Schema Profile** | Defines the stable vocabulary, node types, metadata contracts, versioning, and compatibility rules. |
 | **Translation Layer** | Maps verified semantic nodes to concrete renderers and input devices based on capabilities, context, and accessibility profile. |
-| **Interaction Coordination Runtime** | Coordinates focus, acknowledgement, in-flight interaction state, and consistency across distributed renderers. |
+| **Interaction Coordination Runtime** | Coordinates bounded retention, renderer delivery, occupant response, in-flight state, and consistency across distributed renderers. |
 | **Trust Policy** | Verifies that an emitted node is authorised, fresh, attributable, and protected against replay before it can reach any renderer. |
-| **Context Policy** | Supplies the context vector and applies safe context-dependent modifiers to whitelisted numeric fields such as attention budgets. |
+| **Context Policy** | Supplies an authenticated context snapshot and decides applicability or the declaration's blocked disposition without changing semantic identity. |
 
 SIA sits **above** existing SDV data and service abstractions such as COVESA VSS, Eclipse Kuksa, uProtocol, and AUTOSAR Adaptive, and **below** concrete renderers such as cluster, IVI, HUD, voice, haptic, AR, and steering-wheel controls.
 
@@ -63,22 +63,22 @@ Renderers remain external to SIA. They declare capabilities into the Translation
 
 ---
 
-## Minimal SIA Profile v1
+## Minimal SIA Profile 0.4
 
 The paper deliberately separates the full architecture from the first implementable profile.
 
-The proposed **Minimal SIA Profile v1** is small enough to prototype and discuss concretely:
+The proposed **Minimal SIA Profile 0.4** is small enough to implement and test concretely:
 
-| Area | v1 scope |
+| Area | 0.4 scope |
 |---|---|
-| Node types | `Action`, `Alert`, `Notification` |
-| Core nodes | Approximately 15 high-value nodes |
+| Emitted node types | `Alert`, `Notification` (`Action` awaits a complete input/execution profile) |
+| Published reference nodes | Four executable declarations; the catalog remains extensible |
 | Renderers | Cluster, IVI, voice |
-| Actor classes | `human_direct`, `adas`, `service`, `third_party_app` |
+| Actor classes | `human_direct`, `adas`, `service`, `third_party_app`, `agent_local`, `agent_cloud` |
 | Context axes | `vehicle_state`, `road_type`, `driver_state` |
 | Worked example | `Alert.Collision.Warning` end-to-end |
 
-This keeps the first version narrow: it exercises trust verification, attention policy, context handling, capability negotiation, and runtime acknowledgement without trying to standardise the entire vehicle interaction surface at once.
+This keeps the first profile narrow while exercising trust verification, attention policy, explicit context outcomes, bounded retention, capability negotiation, renderer delivery, and separate occupant response.
 
 ---
 
@@ -113,9 +113,32 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 
 ## Read the paper
 
-- [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — the main proposal: motivation, related work, architecture, node taxonomy, metadata contracts, Trust Policy, Attention Policy, context model, capability negotiation, versioning, Minimal SIA Profile v1, and path forward.
-- [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a concrete `Alert.Collision.Warning` traced end-to-end through ontology declaration, trust verification, translation, context handling, acknowledgement, and adversarial scenarios.
-- [**Draft JSON Schema**](./schema/interaction-node.schema.json) — illustrative machine-readable encoding of the metadata contract. The paper treats schema formalism as an open design question: SHACL as authoring source of truth, JSON Schema / CBOR / Protobuf as possible runtime contracts, and a `.vspec`-style DSL as a candidate authoring surface.
+- [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — motivation, related work, architecture, node taxonomy, policy model, Minimal SIA Profile 0.4, and path forward.
+- [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a concrete `Alert.Collision.Warning` traced end-to-end through declaration, trust, context, translation, renderer delivery, occupant response, retention, and adversarial scenarios.
+- [**Core Specification**](./03_Core-Specification.md) — the normative 0.4 lifecycle, retention, delivery, security, compatibility, and conformance requirements.
+- [**JSON Schema contracts**](./schema/) — strict machine-readable contracts for declarations, instances, context, capabilities, retention, render plans, delivery, occupant response, and audit.
+- [**Validated examples**](./examples/v0.4/) — executable positive conformance material used by automated tests.
+- [**Interactive demo**](./demo/) — a dark-mode visual walkthrough and test lab using the same 0.4 outcomes and feedback loops as the engine tests.
+- [**Threat model**](./04_Threat-Model.md) — the consolidated threat-to-mitigation table, non-goals, and residual risks accepted in 0.4.
+- [**Reason-code registry**](./registry/reason-codes.json) — the normative machine-readable codes for trust, context, retention, translation, delivery, and occupant-response outcomes.
+- [**Conformance vectors**](./conformance/) — language-neutral positive and negative test vectors, tagged by conformance class (`emitter`, `renderer`, `runtime`) so a supplier tests only the side of the boundary it owns.
+- [**Cryptographic vectors**](./conformance/crypto/) — published test keys and really-signed examples, so implementers can verify both their signing and their verification code, including tamper and algorithm-confusion rejections.
+- [**Versioning policy**](./VERSIONING.md) — how the wire contract, the node catalog, registries, and vectors are allowed to evolve.
+- [**Node authoring guide**](./05_Node-Authoring-Guide.md) — the checklist for designing a new interaction node, from meaning to payload.
+- [**Glossary**](./GLOSSARY.md) — every normative term on one page.
+
+---
+
+## Validate your first artifact in two minutes
+
+```bash
+npm ci
+npm test                                                    # full conformance suite
+npm run validate -- examples/v0.4/collision-warning.instance.json
+npm run conformance -- emitter                              # vectors for your conformance class
+```
+
+The validator auto-detects the contract, validates it in JSON Schema 2020-12 strict mode, explains failures in plain language, and verifies canonical payload-schema digests for node declarations. `npm run digest -- <file.json>` prints the RFC 8785 canonical SHA-256 used by `payload_schema_sha256` and `node_schema_sha256`. The same suite runs in CI on every push.
 
 ---
 
@@ -131,17 +154,17 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 
 ## Current status
 
-This is **v0.3.1 — a draft for circulation, critique, and falsification**.
+This is **v0.4.0 — a pre-standard draft for implementation, critique, and falsification**.
 
 The document is not yet a standard and does not claim that no OEM-internal equivalent exists. Its absence claim is limited to publicly documented standards, open-source SDV projects, published automotive ontology work, and production-facing HMI frameworks available at the time of writing.
 
-The immediate goal is to gather feedback before committing to:
+Version 0.4 makes the previously illustrative runtime contract executable. The immediate goal is to validate:
 
-- a schema formalism,
-- a cryptographic substrate,
-- a renderer capability vocabulary,
+- the lifecycle and reason-code vocabulary,
+- the production cryptographic and canonical-encoding profile,
+- renderer capability attestations and delivery semantics,
 - attention-metric calibration constants,
-- a reference implementation target.
+- safety fallback behaviour and a reference implementation target.
 
 ---
 
@@ -149,11 +172,11 @@ The immediate goal is to gather feedback before committing to:
 
 The paper intentionally leaves several questions open:
 
-1. **Schema formalism** — SHACL, JSON Schema, CBOR, Protobuf, OWL at authoring time, or a custom `.vspec`-style DSL.
-2. **Trust substrate** — JWS, COSE, Verifiable Credentials, HMAC session tickets, HSM integration, and revocation policy.
-3. **Attention validation** — how declared attention proxies should be calibrated against occlusion testing, eye-glance measurement, and simulator studies.
-4. **Renderer arbitration** — how to ground deterministic selection among multiple valid renderer candidates.
-5. **Reference implementation** — likely prototype path on top of Eclipse Kuksa or adjacent SDV infrastructure.
+1. **Production encoding** — canonical JSON, deterministic CBOR/COSE, or generated Protobuf for constrained paths.
+2. **Trust binding** — key provisioning, HSM integration, clock tolerance, revocation, and algorithm agility.
+3. **Attention validation** — calibration against occlusion testing, eye-glance measurement, and simulator studies.
+4. **Safety case** — bounded latency, fail-operational fallback, and coexistence with certified legacy alert paths.
+5. **Reference implementation** — likely prototype path on Eclipse Kuksa or adjacent SDV infrastructure.
 6. **Comparison with adjacent work** — especially VSS/VSSo, Android Automotive Car App Library, W3C MMI/EMMA, Onto-CMS, and AXIL.
 
 ---
@@ -165,9 +188,9 @@ Feedback is especially useful in the following forms:
 - counterexamples from existing standards or production HMI frameworks,
 - safety or cybersecurity objections,
 - attention-model critique,
-- schema formalism recommendations,
+- schema and interoperability counterexamples,
 - minimal implementation proposals,
-- candidate nodes for Minimal SIA Profile v1.
+- candidate nodes and conformance vectors for Minimal SIA Profile 0.4.
 
 Feedback, counter-positions, and collaboration offers are welcome: **dizencz@gmail.com**
 
@@ -179,4 +202,4 @@ Cars Making Sense is a research initiative focused on usability, UX, and interac
 
 SIA is our first concrete technical proposal: a formal answer to a recurring problem in current in-vehicle interaction design.
 
-*Cars Making Sense — May 2026*
+*Cars Making Sense — July 2026*
