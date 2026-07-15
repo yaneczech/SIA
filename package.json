@@ -1,0 +1,16 @@
+{
+  "name": "sia",
+  "private": true,
+  "type": "module",
+  "description": "Semantic Interaction Architecture — schemas, conformance examples, tools, and interactive demo",
+  "scripts": {
+    "test": "node --test demo/*.test.mjs",
+    "validate": "node tools/validate.mjs",
+    "conformance": "node tools/conformance.mjs",
+    "digest": "node tools/digest.mjs",
+    "start": "python3 -m http.server 4173"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1"
+  }
+}
