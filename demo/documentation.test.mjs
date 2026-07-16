@@ -58,3 +58,21 @@ test('normative documentation names both feedback loops and bounded retention', 
   assert.match(core, /not_applicable/);
   assert.match(core, /coalesce/);
 });
+
+test('draft 0.4 documents orthogonal context and the causally bound lifecycle', () => {
+  const core = textByFile['03_Core-Specification.md'];
+  for (const axis of ['motion_state', 'operating_mode', 'energy_state', 'road_type', 'driver_state', 'occupancy']) assert.match(core, new RegExp(`\\b${axis}\\b`));
+  assert.match(core, /Collision\.Warning` is `always`/);
+  assert.match(core, /Lane\.Departure\.Warning` is `moving_only`/);
+  assert.match(core, /dispatch-attempt/);
+  assert.match(core, /presented` receipt IDs/);
+  assert.doesNotMatch(core, /`vehicle_state`/);
+});
+
+test('walkthrough keeps six core scenarios and points advanced cases to the Test Lab', async () => {
+  const html = await readFile(path.join(root, 'demo/index.html'), 'utf8');
+  assert.equal([...html.matchAll(/data-scenario=/g)].length, 6);
+  assert.match(html, /exposes all eight trust checks/);
+  assert.match(html, /href="#lab">Test Lab below<\/a>/);
+  assert.match(html, /<section class="lab" id="lab"/);
+});

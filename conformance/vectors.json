@@ -7,7 +7,48 @@
       "classes": ["emitter", "runtime"],
       "expect": "valid",
       "base": "collision-warning.instance.json",
+      "semantic": true,
       "reason": "A correctly attested collision-warning instance validates."
+    },
+    {
+      "name": "emitter-actor-class-not-permitted",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.instance.json",
+      "patch": { "attestation": { "actor_class": "third_party_app" } },
+      "semantic": true,
+      "reason": "A valid envelope cannot use an actor class outside the declaration's semantic authority set."
+    },
+    {
+      "name": "emitter-target-role-escalation-rejected",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.instance.json",
+      "patch": { "target_role": "rear_passenger" },
+      "semantic": true,
+      "reason": "An emission cannot retarget a driver-only declaration to a different occupant."
+    },
+    {
+      "name": "emitter-validity-extension-rejected",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.instance.json",
+      "patch": { "valid_until_ms": 1784116800600 },
+      "semantic": true,
+      "reason": "Runtime validity cannot exceed the declaration-owned semantic window."
+    },
+    {
+      "name": "emitter-invalid-node-payload-rejected",
+      "contract": "runtime-instance.schema.json",
+      "classes": ["emitter", "runtime"],
+      "expect": "invalid",
+      "base": "collision-warning.instance.json",
+      "patch": { "payload": { "threat_range_m": -1 } },
+      "semantic": true,
+      "reason": "A structurally valid runtime envelope still has to satisfy its digest-bound node payload schema."
     },
     {
       "name": "emitter-priority-injection-rejected",
@@ -60,7 +101,18 @@
       "classes": ["renderer", "runtime"],
       "expect": "valid",
       "base": "collision.delivery-receipt.json",
+      "semantic": true,
       "reason": "An authenticated presented receipt validates."
+    },
+    {
+      "name": "renderer-receipt-before-dispatch-rejected",
+      "contract": "delivery-receipt.schema.json",
+      "classes": ["renderer", "runtime"],
+      "expect": "invalid",
+      "base": "collision.delivery-receipt.json",
+      "patch": { "observed_at_ms": 1784116800059, "elapsed_ms": 0 },
+      "semantic": true,
+      "reason": "A receipt cannot causally precede the bound dispatch attempt."
     },
     {
       "name": "renderer-cannot-issue-timeout",
@@ -98,6 +150,63 @@
       "reason": "A renderer must not self-promote to safety_relevant without accepted evidence."
     },
     {
+      "name": "runtime-valid-actor-registry",
+      "contract": "actor-registry.schema.json",
+      "classes": ["runtime"],
+      "expect": "valid",
+      "base": "actor-registry.json",
+      "semantic": true,
+      "reason": "The signed authority registry and the instance credential binding agree."
+    },
+    {
+      "name": "runtime-revoked-credential-rejected",
+      "contract": "actor-registry.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "actor-registry.json",
+      "operations": [{ "op": "replace", "path": "/credentials/0/status", "value": "revoked" }],
+      "semantic": true,
+      "reason": "An otherwise valid signature cannot authorize an actor whose credential is revoked."
+    },
+    {
+      "name": "runtime-valid-context-policy",
+      "contract": "context-policy.schema.json",
+      "classes": ["runtime"],
+      "expect": "valid",
+      "base": "core.context-policy.json",
+      "semantic": true,
+      "reason": "The signed policy is bound consistently through declarations and lifecycle artifacts."
+    },
+    {
+      "name": "runtime-unknown-context-must-be-worst-case",
+      "contract": "context-policy.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "core.context-policy.json",
+      "operations": [{ "op": "replace", "path": "/attention_modifiers/driver_state/unknown", "value": 0.5 }],
+      "semantic": true,
+      "reason": "Unknown context must not reduce protection below a known risky state."
+    },
+    {
+      "name": "runtime-valid-signed-catalog",
+      "contract": "catalog.schema.json",
+      "classes": ["runtime"],
+      "expect": "valid",
+      "base": "catalog.json",
+      "semantic": true,
+      "reason": "The published catalog has unique nodes and consistent policy bindings."
+    },
+    {
+      "name": "runtime-duplicate-catalog-node-rejected",
+      "contract": "catalog.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "catalog.json",
+      "operations": [{ "op": "copy", "from": "/nodes/0", "path": "/nodes/-" }],
+      "semantic": true,
+      "reason": "A signed catalog cannot contain two declarations with the same canonical node ID."
+    },
+    {
       "name": "runtime-valid-alert-declaration",
       "contract": "interaction-node.schema.json",
       "classes": ["runtime"],
@@ -133,6 +242,25 @@
       "reason": "A declaration without trust requirements must not enter a catalog."
     },
     {
+      "name": "runtime-valid-dispatch-attempt",
+      "contract": "dispatch-attempt.schema.json",
+      "classes": ["renderer", "runtime"],
+      "expect": "valid",
+      "base": "collision.dispatch-attempt.json",
+      "semantic": true,
+      "reason": "The attempt binds an eligible selected renderer and a bounded deadline."
+    },
+    {
+      "name": "runtime-dispatch-to-unselected-renderer-rejected",
+      "contract": "dispatch-attempt.schema.json",
+      "classes": ["renderer", "runtime"],
+      "expect": "invalid",
+      "base": "collision.dispatch-attempt.json",
+      "patch": { "renderer_id": "Renderer.IVI.Primary" },
+      "semantic": true,
+      "reason": "Coordination cannot dispatch to a renderer that Translation did not select."
+    },
+    {
       "name": "runtime-timeout-is-not-an-occupant-action",
       "contract": "occupant-response.schema.json",
       "classes": ["runtime"],
@@ -140,6 +268,26 @@
       "base": "collision.occupant-response.json",
       "patch": { "state": "timed_out" },
       "reason": "A response timeout must carry runtime evidence, never verified-input evidence."
+    },
+    {
+      "name": "runtime-response-before-presentation-rejected",
+      "contract": "occupant-response.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "collision.occupant-response.json",
+      "patch": { "opened_at_ms": 1784116800131, "deadline_at_ms": 1784116802131 },
+      "semantic": true,
+      "reason": "The occupant response window cannot open before a presented delivery receipt exists."
+    },
+    {
+      "name": "runtime-response-authority-override-rejected",
+      "contract": "occupant-response.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "collision.occupant-response.json",
+      "patch": { "authority": "any_occupant" },
+      "semantic": true,
+      "reason": "A response artifact cannot widen the declaration-owned driver-only authority."
     },
     {
       "name": "runtime-context-requires-all-core-axes",
@@ -151,11 +299,42 @@
       "reason": "A decision snapshot missing a core axis is not a valid basis for policy."
     },
     {
+      "name": "runtime-stale-context-observation-rejected",
+      "contract": "context-snapshot.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "context-attentive.json",
+      "operations": [{ "op": "replace", "path": "/axes/driver_state/observed_at_ms", "value": 1784116799000 }],
+      "semantic": true,
+      "reason": "Each context axis has a policy-owned freshness window."
+    },
+    {
+      "name": "runtime-unoccupied-target-rejected",
+      "contract": "context-snapshot.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "context-attentive.json",
+      "operations": [{ "op": "replace", "path": "/axes/occupancy/occupied_roles", "value": ["front_passenger"] }],
+      "semantic": true,
+      "reason": "A driver-targeted render plan cannot bind a snapshot in which no driver is present."
+    },
+    {
+      "name": "runtime-retention-past-semantic-validity-rejected",
+      "contract": "retention-record.schema.json",
+      "classes": ["runtime"],
+      "expect": "invalid",
+      "base": "now-playing.retention-record.json",
+      "patch": { "expires_at_ms": 1784116830001 },
+      "semantic": true,
+      "reason": "Retention TTL never extends the interaction's semantic validity."
+    },
+    {
       "name": "runtime-audit-chain-needs-predecessor",
       "contract": "audit-record.schema.json",
       "classes": ["runtime"],
       "expect": "valid",
       "base": "collision.audit-record.json",
+      "semantic": true,
       "reason": "A hash-linked audit record validates; chain-position invariants are covered by the invariant tests."
     }
   ]

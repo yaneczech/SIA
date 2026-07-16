@@ -35,6 +35,18 @@ test('every cryptographic conformance vector produces its required outcome', asy
 });
 
 test('deterministic algorithms are byte-stable so vectors are reproducible', async () => {
+  for (const [file, container] of [
+    ['core.context-policy.json', 'integrity'],
+    ['actor-registry.json', 'integrity'],
+    ['catalog.json', 'integrity'],
+    ['collision.dispatch-attempt.json', 'integrity'],
+  ]) {
+    const artifact = await loadJson('examples', 'v0.4', file);
+    const key = keys[artifact[container].key_id];
+    assert.equal(signArtifact(artifact, container, key), artifact[container].signature, `${file}: deterministic signature changed`);
+    assert.ok(verifyArtifact(artifact, container, key), `${file}: signature does not verify`);
+  }
+
   const snapshot = await loadJson('examples', 'v0.4', 'context-attentive.json');
   const contextKey = keys['vehicle-hsm:context:3'];
   assert.equal(signArtifact(snapshot, 'integrity', contextKey), snapshot.integrity.signature, 'EdDSA re-signing must reproduce the published signature');

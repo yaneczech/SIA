@@ -1,0 +1,23 @@
+{
+  "spec_version": "0.4.0",
+  "profile_id": "sia-minimal",
+  "registry_version": "0.4.0",
+  "generated_at_ms": 1784116800000,
+  "credentials": [
+    {
+      "credential_id": "11111111-1111-4111-8111-111111111111",
+      "actor_id": "ADAS_v2.3.1",
+      "actor_class": "adas",
+      "key_id": "vehicle-hsm:adas:7",
+      "valid_from_ms": 1700000000000,
+      "valid_until_ms": 1900000000000,
+      "status": "active"
+    }
+  ],
+  "integrity": {
+    "issuer": "SIA Test Actor Authority",
+    "key_id": "vehicle-hsm:actor-registry:1",
+    "algorithm": "EdDSA",
+    "signature": "F_wF-Wl7Yg3t7DZsU6hb8a1SB8FfsHoTotDOO5Me1NO7Ou-iB5bI-njGnxlLQKFw5SjkOAIo6fYm95uE2_L_BA"
+  }
+}

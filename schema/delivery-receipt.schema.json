@@ -5,6 +5,8 @@
   "type": "object",
   "required": [
     "receipt_id",
+    "attempt_id",
+    "receipt_sequence",
     "decision_id",
     "instance_id",
     "renderer_id",
@@ -17,6 +19,8 @@
   ],
   "properties": {
     "receipt_id": { "$ref": "#/$defs/uuid" },
+    "attempt_id": { "$ref": "#/$defs/uuid" },
+    "receipt_sequence": { "type": "integer", "minimum": 0, "maximum": 100 },
     "decision_id": { "$ref": "#/$defs/uuid" },
     "instance_id": { "$ref": "#/$defs/uuid" },
     "renderer_id": { "type": "string", "pattern": "^Renderer\\.[A-Z][A-Za-z0-9_.-]+$" },

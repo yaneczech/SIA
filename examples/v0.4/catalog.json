@@ -1,0 +1,329 @@
+{
+  "spec_version": "0.4.0",
+  "profile_id": "sia-minimal",
+  "profile_version": "0.4.0",
+  "catalog_version": "0.4.0",
+  "generated_at_ms": 1784116800000,
+  "nodes": [
+    {
+      "id": "Interaction.Event.Alert.Collision.Warning",
+      "inherits_from": "Interaction.Event.Alert",
+      "since_version": "0.4.0",
+      "direction": "system_to_occupant",
+      "target_role": "driver",
+      "temporal_type": "discrete",
+      "priority": "critical",
+      "interruptibility": "non_interruptible",
+      "semantic_validity_ms": 500,
+      "payload_schema_ref": "sia:payload:collision-warning:1",
+      "payload_schema_sha256": "27fe606fa64047675b649d8d0d71565e99174382e35540304897b8ed55de086f",
+      "trust_requirements": {
+        "signed_origin_required": true,
+        "permitted_actor_classes": [
+          "adas"
+        ],
+        "max_ingress_age_ms": 200,
+        "replay_protection": "required",
+        "session_revocation_required": true
+      },
+      "attention_metrics": {
+        "glance_time_estimated_ms": 800,
+        "mean_single_glance_ms": 300,
+        "task_steps": 0,
+        "voice_alt_available": true,
+        "cognitive_load": "minimal"
+      },
+      "context_policy": {
+        "policy_ref": "sia:policy:core-context:1",
+        "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
+        "applicability": "always",
+        "unknown_context": "safe_worst_case",
+        "on_blocked": {
+          "disposition": "never_block"
+        }
+      },
+      "presentation_contract": {
+        "preferred_renderers": [
+          "cluster",
+          "voice"
+        ],
+        "required_renderers": [],
+        "delivery_success_policy": "any_selected_presented",
+        "delivery_timeout_ms": 300,
+        "degradation_policy": "next_eligible"
+      },
+      "occupant_response": {
+        "kind": "explicit_or_timeout",
+        "authority": "driver_only",
+        "timeout_ms": 2000
+      },
+      "pii_class": "none",
+      "accessibility_alternatives": [
+        "visual",
+        "auditory"
+      ],
+      "regulatory_basis": [
+        "ISO_15623",
+        "UNECE_R152"
+      ]
+    },
+    {
+      "id": "Interaction.Event.Alert.Lane.Departure.Warning",
+      "inherits_from": "Interaction.Event.Alert",
+      "since_version": "0.4.0",
+      "direction": "system_to_occupant",
+      "target_role": "driver",
+      "temporal_type": "discrete",
+      "priority": "high",
+      "interruptibility": "non_interruptible",
+      "semantic_validity_ms": 1000,
+      "payload_schema_ref": "sia:payload:lane-departure-warning:1",
+      "payload_schema_sha256": "6adfd61b92638e9ed6d661dea883f32dc04da5d15d6f7e9fe703c6174f053096",
+      "trust_requirements": {
+        "signed_origin_required": true,
+        "permitted_actor_classes": [
+          "adas"
+        ],
+        "max_ingress_age_ms": 300,
+        "replay_protection": "required",
+        "session_revocation_required": true
+      },
+      "attention_metrics": {
+        "glance_time_estimated_ms": 600,
+        "mean_single_glance_ms": 250,
+        "task_steps": 0,
+        "voice_alt_available": true,
+        "cognitive_load": "minimal"
+      },
+      "context_policy": {
+        "policy_ref": "sia:policy:core-context:1",
+        "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
+        "applicability": "moving_only",
+        "unknown_context": "safe_worst_case",
+        "on_blocked": {
+          "disposition": "never_block"
+        }
+      },
+      "presentation_contract": {
+        "preferred_renderers": [
+          "cluster",
+          "voice"
+        ],
+        "required_renderers": [],
+        "delivery_success_policy": "any_selected_presented",
+        "delivery_timeout_ms": 400,
+        "degradation_policy": "next_eligible"
+      },
+      "occupant_response": {
+        "kind": "none"
+      },
+      "pii_class": "none",
+      "accessibility_alternatives": [
+        "visual",
+        "auditory"
+      ],
+      "regulatory_basis": [
+        "UNECE_R79"
+      ]
+    },
+    {
+      "id": "Interaction.Event.Notification.Diagnostic.CollisionSensorTest",
+      "inherits_from": "Interaction.Event.Notification",
+      "since_version": "0.4.0",
+      "direction": "system_to_occupant",
+      "target_role": "driver",
+      "temporal_type": "discrete",
+      "priority": "normal",
+      "interruptibility": "deferable",
+      "semantic_validity_ms": 60000,
+      "payload_schema_ref": "sia:payload:collision-sensor-test:1",
+      "payload_schema_sha256": "6c27272f1a9fe2dc07d3add83d7a3fe329f24efcfce587c0905b055b9a0624c6",
+      "trust_requirements": {
+        "signed_origin_required": true,
+        "permitted_actor_classes": [
+          "adas",
+          "service"
+        ],
+        "max_ingress_age_ms": 5000,
+        "replay_protection": "required",
+        "session_revocation_required": true
+      },
+      "attention_metrics": {
+        "glance_time_estimated_ms": 1200,
+        "mean_single_glance_ms": 500,
+        "task_steps": 2,
+        "voice_alt_available": false,
+        "cognitive_load": "moderate"
+      },
+      "context_policy": {
+        "policy_ref": "sia:policy:core-context:1",
+        "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
+        "applicability": "always",
+        "unknown_context": "safe_worst_case",
+        "on_blocked": {
+          "disposition": "defer",
+          "ttl_ms": 60000,
+          "reevaluate_on": [
+            "driver_state_change",
+            "motion_state_change",
+            "operating_mode_change"
+          ],
+          "on_expiry": "drop",
+          "max_pending": 10
+        }
+      },
+      "presentation_contract": {
+        "preferred_renderers": [
+          "ivi"
+        ],
+        "required_renderers": [],
+        "delivery_success_policy": "primary_presented",
+        "delivery_timeout_ms": 1200,
+        "degradation_policy": "no_degradation"
+      },
+      "occupant_response": {
+        "kind": "none"
+      },
+      "pii_class": "none",
+      "accessibility_alternatives": [
+        "visual"
+      ]
+    },
+    {
+      "id": "Interaction.Event.Notification.Media.NowPlaying",
+      "inherits_from": "Interaction.Event.Notification",
+      "since_version": "0.4.0",
+      "direction": "system_to_occupant",
+      "target_role": "any_occupant",
+      "temporal_type": "discrete",
+      "priority": "low",
+      "interruptibility": "deferable",
+      "semantic_validity_ms": 30000,
+      "payload_schema_ref": "sia:payload:now-playing:1",
+      "payload_schema_sha256": "4e8fabb69523d3b7d5e22196c52d1ad5bad1a5996f961551dc0842587893876a",
+      "trust_requirements": {
+        "signed_origin_required": true,
+        "permitted_actor_classes": [
+          "service",
+          "third_party_app"
+        ],
+        "max_ingress_age_ms": 5000,
+        "replay_protection": "required",
+        "session_revocation_required": true
+      },
+      "attention_metrics": {
+        "glance_time_estimated_ms": 1500,
+        "mean_single_glance_ms": 450,
+        "task_steps": 1,
+        "voice_alt_available": true,
+        "cognitive_load": "minimal"
+      },
+      "context_policy": {
+        "policy_ref": "sia:policy:core-context:1",
+        "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
+        "applicability": "always",
+        "unknown_context": "safe_worst_case",
+        "on_blocked": {
+          "disposition": "coalesce",
+          "ttl_ms": 30000,
+          "coalescing_key_fields": [
+            "node_id",
+            "target_role",
+            "actor_id",
+            "payload.session_id"
+          ],
+          "reevaluate_on": [
+            "driver_state_change",
+            "motion_state_change",
+            "operating_mode_change"
+          ],
+          "on_expiry": "drop",
+          "max_pending_per_key": 1
+        }
+      },
+      "presentation_contract": {
+        "preferred_renderers": [
+          "ivi",
+          "voice"
+        ],
+        "required_renderers": [],
+        "delivery_success_policy": "any_selected_presented",
+        "delivery_timeout_ms": 1200,
+        "degradation_policy": "next_eligible"
+      },
+      "occupant_response": {
+        "kind": "none"
+      },
+      "pii_class": "personal",
+      "accessibility_alternatives": [
+        "visual",
+        "auditory"
+      ]
+    },
+    {
+      "id": "Interaction.Event.Notification.Assistant.Suggestion",
+      "inherits_from": "Interaction.Event.Notification",
+      "since_version": "0.4.0",
+      "direction": "system_to_occupant",
+      "target_role": "driver",
+      "temporal_type": "discrete",
+      "priority": "low",
+      "interruptibility": "deferable",
+      "semantic_validity_ms": 5000,
+      "payload_schema_ref": "sia:payload:assistant-suggestion:1",
+      "payload_schema_sha256": "c8e05f29474ff6b4b829f80c66eba9150891e1cf5376cee2495002b9766a7c6a",
+      "trust_requirements": {
+        "signed_origin_required": true,
+        "permitted_actor_classes": [
+          "agent_local",
+          "agent_cloud",
+          "service"
+        ],
+        "max_ingress_age_ms": 2000,
+        "replay_protection": "required",
+        "session_revocation_required": true
+      },
+      "attention_metrics": {
+        "glance_time_estimated_ms": 1000,
+        "mean_single_glance_ms": 400,
+        "task_steps": 1,
+        "voice_alt_available": true,
+        "cognitive_load": "minimal"
+      },
+      "context_policy": {
+        "policy_ref": "sia:policy:core-context:1",
+        "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
+        "applicability": "always",
+        "unknown_context": "safe_worst_case",
+        "on_blocked": {
+          "disposition": "drop",
+          "audit_required": true
+        }
+      },
+      "presentation_contract": {
+        "preferred_renderers": [
+          "ivi",
+          "voice"
+        ],
+        "required_renderers": [],
+        "delivery_success_policy": "any_selected_presented",
+        "delivery_timeout_ms": 1200,
+        "degradation_policy": "drop_with_audit"
+      },
+      "occupant_response": {
+        "kind": "none"
+      },
+      "pii_class": "personal",
+      "accessibility_alternatives": [
+        "visual",
+        "auditory"
+      ]
+    }
+  ],
+  "integrity": {
+    "issuer": "SIA Test Catalog Authority",
+    "key_id": "vehicle-hsm:catalog:1",
+    "algorithm": "EdDSA",
+    "signature": "FfuqHjs9VF98kRrUCJhl99e_5DHRjclD-u_E8KnW14T11PnbqXZQmOGf41rik3Z75eaBWh3Fi80UZ8vDKJlgDA"
+  }
+}

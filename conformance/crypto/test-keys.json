@@ -55,6 +55,62 @@
     "vehicle-hsm:input:5": {
       "algorithm": "HMAC-SHA-256",
       "secret_b64url": "jMS5bZryw7KliwaqNtdTUec4O0osp1naGCNqJZpSBAs"
+    },
+    "vehicle-hsm:catalog:1": {
+      "algorithm": "EdDSA",
+      "private_jwk": {
+        "crv": "Ed25519",
+        "d": "dleUMG1_cSNEm4_SM-qtBusoA6eWt_N477u5sW5qeGw",
+        "x": "FStW4BnMVPoNc_vVePmvX2Kjq4J5LqG5y1Fgp5AMhQ8",
+        "kty": "OKP"
+      },
+      "public_jwk": {
+        "crv": "Ed25519",
+        "x": "FStW4BnMVPoNc_vVePmvX2Kjq4J5LqG5y1Fgp5AMhQ8",
+        "kty": "OKP"
+      }
+    },
+    "vehicle-hsm:policy:1": {
+      "algorithm": "EdDSA",
+      "private_jwk": {
+        "crv": "Ed25519",
+        "d": "mgynuVi11-SOH2Ub-l-UZhVbv1Vkdb0dz6J2g-VNTxk",
+        "x": "WBlDgnBQXyuYmBeNGI53aiNRkIXsPzI2O88t7y6zHdY",
+        "kty": "OKP"
+      },
+      "public_jwk": {
+        "crv": "Ed25519",
+        "x": "WBlDgnBQXyuYmBeNGI53aiNRkIXsPzI2O88t7y6zHdY",
+        "kty": "OKP"
+      }
+    },
+    "vehicle-hsm:actor-registry:1": {
+      "algorithm": "EdDSA",
+      "private_jwk": {
+        "crv": "Ed25519",
+        "d": "2kSAcNGBtgi0cCs4-7BdNCXScVG_mXSIhsZfI5qtbjc",
+        "x": "8IMxfIv2MO_iOr7ZzGaig5WZPLDNAMwYkX_5XuF8-ug",
+        "kty": "OKP"
+      },
+      "public_jwk": {
+        "crv": "Ed25519",
+        "x": "8IMxfIv2MO_iOr7ZzGaig5WZPLDNAMwYkX_5XuF8-ug",
+        "kty": "OKP"
+      }
+    },
+    "vehicle-hsm:runtime:1": {
+      "algorithm": "EdDSA",
+      "private_jwk": {
+        "crv": "Ed25519",
+        "d": "_Ov_hDDLJea35iAZUDfeNTkOlrplEdO9PVDiL8bncrE",
+        "x": "LLbhjYr9J3YW3h4zTZUXucVmQimFCjI0KbhpsMzHxm8",
+        "kty": "OKP"
+      },
+      "public_jwk": {
+        "crv": "Ed25519",
+        "x": "LLbhjYr9J3YW3h4zTZUXucVmQimFCjI0KbhpsMzHxm8",
+        "kty": "OKP"
+      }
     }
   }
 }

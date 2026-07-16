@@ -19,7 +19,7 @@ Follows the evolution rules of the position paper (§10):
 1. New nodes and new optional declaration fields are additive.
 2. A subclass may strengthen, never weaken, safety, attention, or trust requirements.
 3. Deprecated nodes remain resolvable for a declared support window (`deprecated_since`, `replaced_by`).
-4. Unknown critical nodes fail closed; unknown non-critical nodes degrade to their known parent or are suppressed.
+4. Every unknown node fails closed in the Minimal 0.4 profile. Parent fallback requires a future negotiated profile with an explicit, signed compatibility mapping; a runtime never infers it from an ID prefix.
 5. A profile accepts an older catalog only when its compatibility table proves every referenced node is understood.
 
 ## Registries

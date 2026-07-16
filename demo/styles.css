@@ -46,7 +46,7 @@ h1 span { color: var(--indigo); }
 .section-heading { display: grid; grid-template-columns: 1.4fr 1fr; align-items: end; gap: 40px; margin-bottom: 28px; }
 .section-heading h2 { margin: 0; font-size: clamp(36px, 5vw, 70px); letter-spacing: 0; line-height: 1; }
 .section-heading > p { margin: 0; max-width: 510px; color: var(--muted); line-height: 1.55; }
-.scenario-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
+.scenario-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 8px; }
 .scenario-chip { min-height: 60px; padding: 9px 11px; display: flex; align-items: center; gap: 10px; text-align: left; background: transparent; border: 1px solid var(--line); border-radius: 14px; cursor: pointer; transition: .2s ease; }
 .scenario-chip:hover { background: var(--surface); border-color: #4a4d60; }
 .scenario-chip.is-active { background: #1c1f3a; border-color: var(--indigo); box-shadow: inset 0 -2px 0 var(--indigo); }
@@ -54,6 +54,8 @@ h1 span { color: var(--indigo); }
 .scenario-chip b, .scenario-chip small { display: block; }
 .scenario-chip b { margin-bottom: 2px; font-size: 12.5px; }
 .scenario-chip small { color: var(--muted); font-size: 10px; line-height: 1.25; }
+.scenario-more { margin: 0 0 14px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.scenario-more a { color: var(--text); text-underline-offset: 3px; }
 .demo-shell { display: grid; grid-template-columns: minmax(0, 1fr) 330px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #0c0e17; }
 .pipeline { min-width: 0; padding: 18px; background-image: linear-gradient(#20233333 1px, transparent 1px), linear-gradient(90deg, #20233333 1px, transparent 1px); background-size: 32px 32px; }
 .stage { position: relative; display: grid; grid-template-columns: 26px 42px minmax(0, 1fr) auto; align-items: center; gap: 11px; min-height: 62px; padding: 9px 13px; border: 1px solid var(--line); background: var(--surface); opacity: .5; transition: opacity .3s, border-color .3s, transform .3s, background .3s; }
@@ -178,6 +180,7 @@ h1 span { color: var(--indigo); }
 .matrix-wrap { width: 100%; max-width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .trust-matrix { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
 .trust-matrix th, .trust-matrix td { padding: 14px 18px; border-bottom: 1px solid var(--line); text-align: left; }
+.trust-matrix th:not(:first-child), .trust-matrix td:not(:first-child) { text-align: right; }
 .trust-matrix thead th { color: var(--indigo-soft); font: 700 11px "akagi-pro", sans-serif; letter-spacing: .06em; border-bottom: 1px solid #4a4d60; }
 .trust-matrix thead th small { display: block; margin-top: 3px; color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
 .trust-matrix tbody th { color: var(--text); font-weight: 700; }
@@ -238,6 +241,13 @@ input[type="range"]:focus-visible { outline: 2px solid var(--indigo-soft); outli
 .switch-row input:checked + .switch { background: var(--indigo); }
 .switch-row input:checked + .switch::after { transform: translateX(16px); background: #fff; }
 .switch-row input:focus-visible + .switch { outline: 2px solid var(--yellow); outline-offset: 3px; }
+.compact-switches { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; margin-top: 4px; }
+.compact-switches .switch-row { min-width: 0; }
+.compact-switches .switch-row b { font-size: 12px; }
+.compact-switches .switch-row small { font-size: 10px; }
+.compact-switches .switch { width: 34px; height: 20px; }
+.compact-switches .switch::after { width: 14px; height: 14px; }
+.compact-switches .switch-row input:checked + .switch::after { transform: translateX(14px); }
 .feedback-contracts .field + .field { margin-top: 12px; padding-top: 12px; border-top: 1px solid #242735; }
 .lab-output { min-width: 0; min-height: 500px; padding: clamp(32px, 4.5vw, 56px); background: radial-gradient(circle at 50% 22%, #2931714a, transparent 42%); }
 .lab-output-inner { position: sticky; top: 82px; }

@@ -3,18 +3,23 @@
   "$id": "https://github.com/yaneczech/SIA/schema/v0.4/context-snapshot.schema.json",
   "title": "SIA Context Snapshot",
   "type": "object",
-  "required": ["context_id", "captured_at_ms", "policy_version", "axes", "integrity"],
+  "required": ["context_id", "captured_at_ms", "policy_ref", "policy_version", "policy_sha256", "axes", "integrity"],
   "properties": {
     "context_id": { "$ref": "#/$defs/uuid" },
     "captured_at_ms": { "type": "integer", "minimum": 0 },
+    "policy_ref": { "type": "string", "pattern": "^sia:policy:[a-z0-9_.-]+:[0-9]+$" },
     "policy_version": { "$ref": "#/$defs/semver" },
+    "policy_sha256": { "$ref": "#/$defs/sha256" },
     "axes": {
       "type": "object",
-      "required": ["vehicle_state", "road_type", "driver_state"],
+      "required": ["motion_state", "operating_mode", "energy_state", "road_type", "driver_state", "occupancy"],
       "properties": {
-        "vehicle_state": { "$ref": "#/$defs/vehicleAxis" },
+        "motion_state": { "$ref": "#/$defs/motionAxis" },
+        "operating_mode": { "$ref": "#/$defs/operatingAxis" },
+        "energy_state": { "$ref": "#/$defs/energyAxis" },
         "road_type": { "$ref": "#/$defs/roadAxis" },
-        "driver_state": { "$ref": "#/$defs/driverAxis" }
+        "driver_state": { "$ref": "#/$defs/driverAxis" },
+        "occupancy": { "$ref": "#/$defs/occupancyAxis" }
       },
       "additionalProperties": false
     },
@@ -24,6 +29,7 @@
   "$defs": {
     "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
     "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "baseAxis": {
       "type": "object",
       "required": ["source_id", "observed_at_ms", "confidence"],
@@ -33,11 +39,27 @@
         "confidence": { "type": "integer", "minimum": 0, "maximum": 100 }
       }
     },
-    "vehicleAxis": {
+    "motionAxis": {
       "type": "object",
       "allOf": [
         { "$ref": "#/$defs/baseAxis" },
-        { "type": "object", "required": ["value"], "properties": { "value": { "enum": ["moving", "parked", "charging", "service", "unknown"] } } }
+        { "type": "object", "required": ["value"], "properties": { "value": { "enum": ["moving", "stationary", "unknown"] } } }
+      ],
+      "unevaluatedProperties": false
+    },
+    "operatingAxis": {
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/baseAxis" },
+        { "type": "object", "required": ["value"], "properties": { "value": { "enum": ["driving", "parked", "service", "unknown"] } } }
+      ],
+      "unevaluatedProperties": false
+    },
+    "energyAxis": {
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/baseAxis" },
+        { "type": "object", "required": ["value"], "properties": { "value": { "enum": ["charging", "not_charging", "unknown"] } } }
       ],
       "unevaluatedProperties": false
     },
@@ -57,10 +79,29 @@
       ],
       "unevaluatedProperties": false
     },
+    "occupancyAxis": {
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/baseAxis" },
+        {
+          "type": "object",
+          "required": ["occupied_roles"],
+          "properties": {
+            "occupied_roles": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "enum": ["driver", "front_passenger", "rear_passenger"] }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
     "integrity": {
       "type": "object",
-      "required": ["key_id", "algorithm", "signature"],
+      "required": ["issuer", "key_id", "algorithm", "signature"],
       "properties": {
+        "issuer": { "type": "string", "minLength": 1, "maxLength": 200 },
         "key_id": { "type": "string", "minLength": 1, "maxLength": 200 },
         "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256"] },
         "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "minLength": 8, "maxLength": 4096 }

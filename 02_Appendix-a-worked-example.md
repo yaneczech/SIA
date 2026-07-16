@@ -3,7 +3,7 @@
 *Companion to “Toward a Semantic Interaction Architecture for Software-Defined Vehicles” (v0.4.0).*<br>
 *The normative lifecycle and requirements are defined in [`03_Core-Specification.md`](./03_Core-Specification.md). The JSON files in [`examples/v0.4/`](./examples/v0.4/) are executable conformance material.*
 
-This appendix follows one safety-critical interaction from declaration through trust, context, translation, renderer delivery and occupant response. The example uses the Minimal SIA Profile 0.4: `Alert` and `Notification`; cluster, IVI and voice output; six actor classes; and the core vehicle-state, road-type and driver-state axes. `Action` awaits a future input/execution profile.
+This appendix follows one safety-critical interaction from declaration through trust, context, translation, renderer delivery and occupant response. The example uses the Minimal SIA Profile 0.4: `Alert` and `Notification`; cluster, IVI and voice output; six actor classes; and six orthogonal context axes. `Action` awaits a future input/execution profile.
 
 ---
 
@@ -39,7 +39,9 @@ attention_metrics:
   cognitive_load: minimal
 
 context_policy:
-  applicability: moving_only
+  policy_ref: sia:policy:core-context:1
+  policy_sha256: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  applicability: always
   unknown_context: safe_worst_case
   on_blocked:
     disposition: never_block
@@ -61,7 +63,7 @@ accessibility_alternatives: [visual, auditory]
 regulatory_basis: [ISO_15623, UNECE_R152]
 ```
 
-The alert is meaningful only while moving. If it is applicable, context cannot silently drop or retain it: `never_block` sends it to capability negotiation and the documented safety fallback. Delivery succeeds when any selected renderer proves presentation. Only then does the independent two-second occupant-response wait begin.
+The alert remains meaningful while stationary or charging because another vehicle may still strike the car. Context cannot silently drop or retain it: `never_block` sends it to capability negotiation and the documented safety fallback. Delivery succeeds when a primary or explicitly attempted fallback renderer proves presentation. Only then does the independent two-second occupant-response wait begin.
 
 ---
 
@@ -72,6 +74,7 @@ spec_version: 0.4.0
 profile_id: sia-minimal
 profile_version: 0.4.0
 catalog_version: 0.4.0
+catalog_sha256: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 node_id: Interaction.Event.Alert.Collision.Warning
 node_schema_sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 instance_id: c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21
@@ -88,6 +91,10 @@ payload:
 attestation:
   actor_class: adas
   actor_id: ADAS_v2.3.1
+  actor_registry_version: 0.4.0
+  actor_registry_sha256: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+  actor_credential_id: 11111111-1111-4111-8111-111111111111
+  actor_credential_sha256: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
   key_id: vehicle-hsm:adas:7
   algorithm: ES256
   timestamp_ms: 1784116800000
@@ -96,7 +103,7 @@ attestation:
   signature: ZXhhbXBsZS1zaWduYXR1cmU
 ```
 
-The three version axes are explicit. `node_schema_sha256` binds the instance to the reviewed declaration. `occurred_at_ms` and `valid_until_ms` define semantic validity, while the attestation timestamp is evaluated against the separate 200 ms ingress-freshness limit.
+The three version axes are explicit. `catalog_sha256` and `node_schema_sha256` bind the instance to the signed catalog and reviewed declaration; the registry and credential digests bind its claimed identity to current authority and revocation state. `valid_until_ms` may not exceed `occurred_at_ms + semantic_validity_ms`. The attestation timestamp is evaluated against the separate 200 ms ingress-freshness limit.
 
 ---
 
@@ -112,8 +119,11 @@ Trust Policy performs these checks before context or rendering:
 2. resolve the catalog declaration and verify its digest;
 3. verify that `adas` is an authorised actor class;
 4. verify signature or negotiated session authenticator and algorithm;
-5. check ingress freshness, semantic validity, nonce replay and revocation status;
-6. record a stable pass or rejection reason.
+5. check ingress freshness;
+6. check nonce replay protection;
+7. check current credential and session revocation;
+8. verify declaration-bounded semantic validity at acceptance;
+9. record a stable pass or rejection reason.
 
 SIA does not determine whether a physical collision is real. It determines whether the interaction claim crossing the HMI boundary is authorised, fresh, attributable and structurally valid.
 
@@ -126,12 +136,24 @@ SIA does not determine whether a physical collision is real. It determines wheth
 ```yaml
 context_id: 1a2b3c4d-1111-4aaa-8bbb-1234567890ab
 captured_at_ms: 1784116800040
+policy_ref: sia:policy:core-context:1
 policy_version: 0.4.0
+policy_sha256: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 axes:
-  vehicle_state:
+  motion_state:
     value: moving
     source_id: Vehicle.SpeedState
     observed_at_ms: 1784116800036
+    confidence: 100
+  operating_mode:
+    value: driving
+    source_id: Vehicle.OperatingMode
+    observed_at_ms: 1784116800036
+    confidence: 100
+  energy_state:
+    value: not_charging
+    source_id: Vehicle.ChargeState
+    observed_at_ms: 1784116800030
     confidence: 100
   road_type:
     value: highway
@@ -143,30 +165,41 @@ axes:
     source_id: DMS.AttentionState
     observed_at_ms: 1784116800028
     confidence: 92
+  occupancy:
+    occupied_roles: [driver]
+    source_id: Cabin.Occupancy
+    observed_at_ms: 1784116800030
+    confidence: 98
 integrity:
+  issuer: Vehicle Context Authority
   key_id: vehicle-hsm:context:3
   algorithm: HMAC-SHA-256
   signature: Y29udGV4dC1zaWduYXR1cmU
 ```
 
-The alert is applicable because the vehicle is moving. It proceeds directly to renderer capability negotiation. Context inputs are immutable, sourced, timed and authenticated; the audit record binds the decision to this exact `context_id`.
+The alert is applicable because its declared applicability is `always`, not merely because the vehicle is moving. It proceeds directly to renderer capability negotiation. Context inputs are immutable, sourced, timed, confidence-scored and authenticated; the decision binds this exact `context_id` and signed policy digest.
 
 ### A.4.2 Charging
 
 ```yaml
 axes:
-  vehicle_state: {value: charging, source_id: Vehicle.SpeedState, observed_at_ms: 1784116800036, confidence: 100}
+  motion_state: {value: stationary, source_id: Vehicle.SpeedState, observed_at_ms: 1784116800036, confidence: 100}
+  operating_mode: {value: parked, source_id: Vehicle.OperatingMode, observed_at_ms: 1784116800036, confidence: 100}
+  energy_state: {value: charging, source_id: Vehicle.ChargeState, observed_at_ms: 1784116800030, confidence: 100}
   road_type: {value: urban, source_id: Navigation.RoadClass, observed_at_ms: 1784116799800, confidence: 96}
   driver_state: {value: unknown, source_id: DMS.AttentionState, observed_at_ms: 1784116800028, confidence: 70}
+  occupancy: {occupied_roles: [driver], source_id: Cabin.Occupancy, observed_at_ms: 1784116800030, confidence: 98}
 ```
 
-`moving_only` evaluates false. The instance transitions to `not_applicable`, emits a `CONTEXT_NOT_APPLICABLE` audit record and closes without a render plan, renderer receipt or occupant response.
+The collision warning remains applicable. Charging describes energy state; it does not prove that an external vehicle cannot reverse into the car. SIA continues to a safe renderer while recording that motion is stationary and operating mode is parked.
 
-The live alert is not “suppressed for later,” and it is not transformed. If diagnostics are needed, the producer emits a separate typed instance such as `Notification.Diagnostic.CollisionSensorTest`. This separation prevents a safety alert from becoming a semantic shape-shifter.
+### A.4.3 A genuinely non-applicable stationary interaction
 
-### A.4.3 Unknown vehicle state
+`Alert.Lane.Departure.Warning` declares `moving_only`. With the same charging snapshot it transitions to `not_applicable`, emits `CONTEXT_NOT_APPLICABLE`, and closes without a render plan, dispatch attempt, receipt, or occupant response. It is not retained or transformed. A sensor diagnostic is a separate `Notification.Diagnostic.CollisionSensorTest` instance.
 
-An unknown or stale core axis cannot make the system more permissive. The declaration uses `safe_worst_case`, so an unknown vehicle state is evaluated as the stricter applicable case for safety and attention. Capability negotiation continues; the uncertainty and source evidence remain visible in the audit trail.
+### A.4.4 Unknown motion state
+
+An unknown, stale, or low-confidence core axis cannot make the system more permissive. The signed policy defines the threshold and `safe_worst_case` behaviour, so unknown motion is evaluated as the stricter moving case for safety and attention. Capability negotiation continues for the non-suppressible collision alert; the uncertainty and source evidence remain visible in the audit trail.
 
 ---
 
@@ -176,28 +209,53 @@ An unknown or stale core axis cannot make the system more permissive. The declar
 decision_id: d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22
 instance_id: c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21
 context_id: 1a2b3c4d-1111-4aaa-8bbb-1234567890ab
+spec_version: 0.4.0
+profile_version: 0.4.0
+catalog_version: 0.4.0
+catalog_sha256: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+node_schema_sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+policy_ref: sia:policy:core-context:1
 policy_version: 0.4.0
+policy_sha256: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 created_at_ms: 1784116800060
 selected:
   - {renderer_id: Renderer.Cluster.Primary, role: primary}
-  - {renderer_id: Renderer.Voice.Primary, role: concurrent}
+  - {renderer_id: Renderer.Voice.Primary, role: fallback}
 rejected:
   - {renderer_id: Renderer.IVI.Primary, reason_code: SAFETY_PROFILE_INELIGIBLE}
 delivery_success_policy: any_selected_presented
 delivery_timeout_ms: 300
-reason_code: PRIMARY_AND_CONCURRENT_SELECTED
+reason_code: PRIMARY_WITH_FALLBACK_STANDBY
 ```
 
-Cluster is selected as the safety-relevant visual surface and voice as a concurrent low-glance path. IVI is explicitly rejected. Repeating the decision with the same declaration, context, capabilities and policy version must produce the same plan.
+Cluster is selected for immediate dispatch and voice remains an eligible ordered fallback on standby. IVI is explicitly rejected. Voice is not concurrent and must not be dispatched unless a preceding attempt fails or times out. Repeating the decision with the same declaration, context, capabilities and policy version must produce the same plan.
 
 ---
 
 ## A.6 Renderer delivery feedback
 
-Dispatch is not proof of delivery. The selected renderer sends authenticated, idempotent feedback:
+Dispatch is not proof of delivery. Runtime first records the ordered attempt:
+
+```yaml
+attempt_id: a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20
+decision_id: d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22
+instance_id: c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21
+renderer_id: Renderer.Cluster.Primary
+role: primary
+sequence: 0
+previous_attempt_id: null
+dispatched_at_ms: 1784116800060
+deadline_at_ms: 1784116800360
+state: dispatched
+integrity: {issuer: coordination_runtime, key_id: vehicle-hsm:runtime:1, algorithm: EdDSA, signature: <signature>}
+```
+
+The selected renderer then sends authenticated, idempotent feedback bound to that attempt:
 
 ```yaml
 receipt_id: e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23
+attempt_id: a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20
+receipt_sequence: 0
 decision_id: d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22
 instance_id: c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21
 renderer_id: Renderer.Cluster.Primary
@@ -212,7 +270,7 @@ attestation:
   signature: ZGVsaXZlcnktcmVjZWlwdA
 ```
 
-`received` would prove only that the renderer accepted the request. `presented` proves occupant-facing output. `failed` is renderer-originated; `timed_out` is emitted only by Coordination Runtime after the 300 ms deadline. Because the success policy is `any_selected_presented`, the cluster receipt satisfies delivery even if voice later fails. The alternative policies `primary_presented` and `all_required_presented` are stricter.
+`received` would prove only that the renderer accepted the request. `presented` proves occupant-facing output. `failed` is renderer-originated; `timed_out` is emitted only by Coordination Runtime at the 300 ms deadline. A receipt cannot predate or outlive its bound attempt. Because the success policy is `any_selected_presented`, the cluster receipt satisfies delivery and voice is never dispatched. If cluster failed, a new voice attempt would use `sequence: 1` and `previous_attempt_id` equal to the cluster attempt.
 
 SIA assumes at-least-once transport. Duplicate receipts are ignored by `receipt_id`; the architecture does not claim distributed exactly-once delivery.
 
@@ -226,8 +284,13 @@ Only after delivery succeeds does the response wait begin. An explicit driver re
 response_id: f8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b24
 decision_id: d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22
 instance_id: c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21
+context_id: 1a2b3c4d-1111-4aaa-8bbb-1234567890ab
+delivery_receipt_ids: [e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23]
 state: acknowledged
 authority: driver_only
+subject_role: driver
+opened_at_ms: 1784116800132
+deadline_at_ms: 1784116802132
 occurred_at_ms: 1784116800552
 input_channel: InputDevice.SteeringWheel.Right.Press
 evidence:
@@ -237,7 +300,7 @@ evidence:
   signature: b2NjdXBhbnQtcmVzcG9uc2U
 ```
 
-If no valid response arrives within 2000 ms, Coordination Runtime emits `response_timed_out`; it must not forge a human action. Presented, noticed, understood and acknowledged are four different claims. Version 0.4 encodes only what can be evidenced.
+The response window opens exactly from the presented receipt. Its subject must be an occupied driver in the bound context. If no valid response arrives within 2000 ms, Coordination Runtime emits `response_timed_out` exactly at the deadline; it must not forge a human action. Presented, noticed, understood and acknowledged are four different claims. Version 0.4 encodes only what can be evidenced.
 
 ---
 
@@ -278,7 +341,7 @@ A valid symmetric session ticket does not grant new semantic authority. Individu
 
 ### A.9.5 Renderer failure
 
-If no selected renderer meets `any_selected_presented` within 300 ms, delivery closes through the declared failure policy. The occupant-response wait remains `not_started`. A deployment must document its fail-operational safety path, watchdog behaviour and duplicate-prevention strategy; SIA must not become an undocumented single point of failure.
+If the primary attempt fails, Runtime may dispatch the plan's standby fallback as the next ordered attempt. If no attempted renderer meets `any_selected_presented` within the remaining semantic-validity window, delivery closes through the declared failure policy. The occupant-response wait remains `not_started`. A deployment must document its fail-operational safety path, watchdog behaviour and duplicate-prevention strategy; SIA must not become an undocumented single point of failure.
 
 ---
 
@@ -291,18 +354,18 @@ If no selected renderer meets `any_selected_presented` within 300 ms, delivery c
 5. Renderer delivery and occupant acknowledgement are independent feedback loops.
 6. Failure and timeout issuers are explicit, so audit evidence cannot overclaim.
 7. Closed envelopes reject policy injection.
-8. Stable reason codes and machine-readable records make the lifecycle testable.
+8. Stable reason codes and machine-readable, causally bound records make the lifecycle testable.
 
 ---
 
 ## A.11 Remaining production work
 
-- Standardise canonical signing representations and algorithm profiles.
-- Publish payload schemas instead of illustrative digest placeholders.
+- Evaluate a production binary encoding alongside the normative JCS representation.
+- Replace illustrative digest placeholders in prose automatically from executable examples.
 - Define deployment latency budgets and certified safety fallbacks.
 - Calibrate attention estimates with simulator and in-vehicle evidence.
 - Specify privacy policy for retained personal notifications and audit redaction.
-- Add interoperability vectors for duplicate, out-of-order and missing receipts.
+- Expand interoperability vectors from single-attempt examples to multi-interaction and transport-loss sequences.
 - Validate context and renderer attestation chains against the vehicle trust architecture.
 
 These are explicit profile and deployment tasks, not reasons to leave lifecycle semantics ambiguous.

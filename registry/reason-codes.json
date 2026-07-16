@@ -5,6 +5,7 @@
   "phases": {
     "trust": [
       { "code": "TRUST_VERIFIED", "meaning": "All trust checks passed; the instance enters the semantic pipeline." },
+      { "code": "TRUST_REJECTED_UNKNOWN_NODE", "meaning": "The referenced node is absent from the installed signed catalog." },
       { "code": "TRUST_REJECTED_ENVELOPE", "meaning": "Closed-envelope or payload schema validation failed, including reserved-field injection." },
       { "code": "TRUST_REJECTED_DECLARATION_DIGEST", "meaning": "The declaration digest referenced by the instance does not match the installed catalog." },
       { "code": "TRUST_REJECTED_ACTOR", "meaning": "Actor class or actor identity is not permitted to emit this node." },
@@ -32,6 +33,7 @@
     "translation": [
       { "code": "PRIMARY_AND_CONCURRENT_SELECTED", "meaning": "A primary renderer and at least one concurrent renderer were selected." },
       { "code": "PRIMARY_SELECTED", "meaning": "Only a primary renderer was selected." },
+      { "code": "PRIMARY_WITH_FALLBACK_STANDBY", "meaning": "A primary renderer was selected for immediate dispatch and at least one eligible fallback remains on standby." },
       { "code": "FALLBACK_SELECTED", "meaning": "The preferred renderer was unavailable; a declared fallback was selected." },
       { "code": "NO_ELIGIBLE_RENDERER", "meaning": "No renderer satisfied capability, safety, and attention constraints." },
       { "code": "SAFETY_PROFILE_INELIGIBLE", "meaning": "Renderer rejected: its safety assurance level does not satisfy the node." },

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/actor-registry.schema.json",
+  "title": "SIA Actor Credential Registry",
+  "type": "object",
+  "required": ["spec_version", "profile_id", "registry_version", "generated_at_ms", "credentials", "integrity"],
+  "properties": {
+    "spec_version": { "const": "0.4.0" },
+    "profile_id": { "const": "sia-minimal" },
+    "registry_version": { "$ref": "#/$defs/semver" },
+    "generated_at_ms": { "type": "integer", "minimum": 0 },
+    "credentials": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/credential" }
+    },
+    "integrity": { "$ref": "#/$defs/integrity" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "credential": {
+      "type": "object",
+      "required": ["credential_id", "actor_id", "actor_class", "key_id", "valid_from_ms", "valid_until_ms", "status"],
+      "properties": {
+        "credential_id": { "$ref": "#/$defs/uuid" },
+        "actor_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "actor_class": { "enum": ["human_direct", "adas", "service", "third_party_app", "agent_local", "agent_cloud"] },
+        "key_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "valid_from_ms": { "type": "integer", "minimum": 0 },
+        "valid_until_ms": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["active", "revoked"] }
+      },
+      "additionalProperties": false
+    },
+    "integrity": {
+      "type": "object",
+      "required": ["issuer", "key_id", "algorithm", "signature"],
+      "properties": {
+        "issuer": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "key_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256"] },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "minLength": 8, "maxLength": 4096 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

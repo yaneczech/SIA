@@ -56,12 +56,12 @@ The claim of absence in this paper is limited to publicly documented standards, 
 A single example makes the boundary tangible. Consider a forward-collision warning during manual highway driving:
 
 1. The **ADAS** subsystem emits `Alert.Collision.Warning` with an attestation declaring `actor_class: adas`.
-2. **Trust Policy** checks the attestation against the node’s declared requirements: signed origin, permitted actor class, freshness and replay protection. A third-party application or cloud agent attempting to emit the same node would be rejected here.
-3. **Context Policy** supplies the current vector: `vehicle_state: moving`, `road_type: highway`, `driver_state: attentive`.
+2. **Trust Policy** resolves the signed catalog and actor credential, binds the instance to the exact declaration digest, and checks the closed envelope, semantic authority, signature, freshness, replay, revocation, and semantic validity. A third-party application or cloud agent attempting to emit the same node would be rejected here.
+3. **Context Policy** supplies the signed current vector: `motion_state: moving`, `operating_mode: driving`, `energy_state: not_charging`, `road_type: highway`, `driver_state: attentive`, and `occupancy: [driver]`, with a source, observation time, and confidence for each axis.
 4. The **Translation Layer** filters available renderers by capability and policy. A safety-certified cluster may qualify; a centre IVI touchscreen may be dropped if it exceeds the active attention budget.
 5. The **Coordination Runtime** dispatches the selected modality, consumes authenticated renderer delivery receipts, and only then opens any separately declared occupant-response wait.
 
-The same semantic node may translate differently when parked, charging, or in a higher automation context. The declaration, trust contract and attention estimate are written once; the delivery decision changes with capabilities and context.
+The same semantic node may translate differently when parked, charging, or in a higher automation context. These are orthogonal observations, not one mutually exclusive vehicle label: a collision warning remains applicable while charging because another vehicle may strike the stationary car. The declaration, trust contract and attention estimate are written once; the delivery decision changes with capabilities and context.
 
 ---
 
@@ -124,7 +124,7 @@ The architecture has three functional components and two cross-cutting policies.
 
 **Interaction Coordination Runtime.** A coordination function handles focus, acknowledgements, suppression, fallback and cross-renderer consistency. It does not replace a GUI framework; it coordinates semantic state that multiple renderers need to handle consistently.
 
-**Trust Policy.** A gate at the entry point of SIA. All nodes emitted by agents, services, applications or ADAS pass through trust verification before entering the semantic pipeline.
+**Trust Policy.** A gate at the entry point of SIA. Signed catalogs and actor credentials define current authority. All nodes emitted by agents, services, applications or ADAS are digest-bound to that state and pass eight verification checks before entering the semantic pipeline.
 
 **Context Policy.** A continuously updated policy function that supplies the current driving and occupant context. It modulates translation and runtime decisions, especially attention budgets and suppression behaviour.
 
@@ -246,7 +246,7 @@ attestation:
   provenance_chain: [adas]
 ```
 
-Trust Policy verifies that the attestation satisfies the declared requirements before the node enters the semantic pipeline. Failure is fail-closed: the node is rejected, logged as a security event and never reaches Translation or any renderer.
+Trust Policy verifies that the attestation satisfies the declared requirements and the authority-issued actor credential before the node enters the semantic pipeline. The instance also binds the signed catalog, declaration, registry, and credential digests. A valid cryptographic signature from an expired or revoked credential is rejected. Failure is fail-closed: the node is logged and never reaches Translation or any renderer.
 
 ### 6.3 Actor classes
 
@@ -314,9 +314,12 @@ Automotive HMI systems often collapse context into broad labels such as city, hi
 
 | Axis | Class | Example values |
 | --- | --- | --- |
-| `vehicle_state` | Core | `moving`, `parked`, `charging`, `service` |
+| `motion_state` | Core | `stationary`, `moving`, `unknown` |
+| `operating_mode` | Core | `driving`, `parked`, `service`, `unknown` |
+| `energy_state` | Core | `charging`, `not_charging`, `unknown` |
 | `road_type` | Core | `urban`, `rural`, `highway`, `off_road` |
 | `driver_state` | Core | `attentive`, `drowsy`, `distracted`, `not_monitoring`, `unknown` |
+| `occupancy` | Core | verified set of `driver`, `front_passenger`, `rear_passenger` roles |
 | `sae_level` | Extended | `0`, `1`, `2`, `3`, `4`, `5` |
 | `autonomy_engaged` | Extended | boolean |
 | `market_jurisdiction` | Extended | `US`, `EU`, `JP`, `CN`, `GB`, … |
@@ -338,9 +341,9 @@ autonomy_engaged = true ∧ sae_level ≥ 3
 
 The declared disposition is one of `never_block`, `drop`, `defer`, or `coalesce`. `drop` terminates with an audit record. `defer` retains each instance within declared TTL and queue bounds. `coalesce` retains only the newest semantically equivalent instance for a canonical key and releases that latest state for full re-evaluation when context becomes eligible. `never_block` continues to capability negotiation and the declared safety fallback.
 
-Context Policy must not mutate semantic identity. For example, a collision warning emitted while charging is `not_applicable`; SIA must not silently convert it into diagnostics. Diagnostics are a separate typed instance. Priority, actor permissions, applicability, disposition and presentation remain declaration-owned properties.
+Context Policy must not mutate semantic identity. `Alert.Collision.Warning` remains applicable while charging because threats may be external; `Alert.Lane.Departure.Warning` is a genuine `moving_only` example and becomes `not_applicable` while stationary. Neither may be silently converted into diagnostics. Priority, actor permissions, applicability, disposition and presentation remain declaration-owned properties.
 
-If a core context axis cannot be determined, Context Policy must degrade to the safest applicable fallback rather than relax constraints. For example, an unknown `vehicle_state` should be treated as `moving` for attention budgeting unless a lower-level safety-certified source proves otherwise.
+Each core observation carries source, observation time, and confidence and binds a signed context policy with per-axis freshness, confidence, and unknown-handling requirements. If an axis cannot be determined, Context Policy must use the declared safest applicable fallback rather than relax constraints. An unknown motion state is treated as the stricter moving case for attention budgeting unless a lower-level safety-certified source proves otherwise.
 
 ---
 
@@ -416,7 +419,7 @@ The full architecture is intentionally broader than the first implementation tar
 
 **Actor classes.** The profile uses six classes: `human_direct`, `adas`, `service`, `third_party_app`, `agent_local` and `agent_cloud`.
 
-**Context axes.** The profile uses `vehicle_state`, `road_type` and `driver_state`. Additional axes require a negotiated extension and cannot silently relax a decision.
+**Context axes.** The profile uses `motion_state`, `operating_mode`, `energy_state`, `road_type`, `driver_state`, and `occupancy`. Additional axes require a negotiated extension and cannot silently relax a decision.
 
 ### 11.2 Example node declaration
 
@@ -450,7 +453,9 @@ attention_metrics:
   cognitive_load: minimal
 
 context_policy:
-  applicability: moving_only
+  policy_ref: sia:policy:core-context:1
+  policy_sha256: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  applicability: always
   unknown_context: safe_worst_case
   on_blocked:
     disposition: never_block
@@ -482,6 +487,7 @@ spec_version: 0.4.0
 profile_id: sia-minimal
 profile_version: 0.4.0
 catalog_version: 0.4.0
+catalog_sha256: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 node_schema_sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 instance_id: c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21
 occurred_at_ms: 1784116800000
@@ -495,6 +501,10 @@ payload:
 attestation:
   actor_class: adas
   actor_id: ADAS_v2.3.1
+  actor_registry_version: 0.4.0
+  actor_registry_sha256: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+  actor_credential_id: 11111111-1111-4111-8111-111111111111
+  actor_credential_sha256: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
   key_id: vehicle-hsm:adas:7
   algorithm: ES256
   timestamp_ms: 1784116800000
@@ -505,13 +515,14 @@ attestation:
 
 ### 11.3 Why this profile is enough
 
-A profile of two emitted node families, three renderers, six actor classes and three context axes is small enough for a reference implementation. It is also large enough to test the core claims:
+A profile of two emitted node families, five reference nodes, three renderers, six actor classes and six orthogonal context axes is small enough for a reference implementation. It is also large enough to test the core claims:
 
 - trust requirements can reject unauthorised emitters before rendering;
 - attention metrics can affect dispatch decisions;
 - renderer capabilities can drive deterministic translation;
 - bounded drop, defer and coalescing behaviour can be tested;
 - renderer receipt and occupant response can be observed as separate feedback loops;
+- catalog, declaration, policy, registry, dispatch, receipt, and response bindings can be tested as one causal chain;
 - fallback behaviour and terminal outcomes can be audited.
 
 This makes 0.4 a practical falsification target. If the architecture cannot be made useful at this scale, it should not be expanded.
@@ -595,7 +606,7 @@ SIA is not proposed as another large vehicle operating system, GUI toolkit or da
 
 The core claim is simple: software-defined vehicles need a stable layer where interaction meaning, attention demand, contextual fitness and semantic authority are explicit before rendering occurs. Without that layer, the same cross-cutting logic is repeatedly reimplemented across emitters and renderers. With it, interaction behaviour becomes more consistent, more auditable and easier to evolve.
 
-The proposal is intentionally modest in its first step. A minimal 0.4 profile with a small node set, three renderers, six actor classes and three context axes should be enough to test whether the architecture is useful. Its bounded retention and two distinct feedback loops also make the uncomfortable cases explicit: a message may be held without being lost, presented without being acknowledged, or rejected before rendering. If the architecture is useful, the vocabulary can grow. If it is not, it should be narrowed or rejected. That falsifiability is a feature: SIA should earn its complexity by reducing duplicated complexity elsewhere.
+The proposal is intentionally modest in its first step. A minimal 0.4 profile with five reference nodes, three renderers, six actor classes and six orthogonal context axes should be enough to test whether the architecture is useful. Its bounded retention and two distinct feedback loops also make the uncomfortable cases explicit: a message may be held without being lost, presented without being acknowledged, or rejected before rendering. If the architecture is useful, the vocabulary can grow. If it is not, it should be narrowed or rejected. That falsifiability is a feature: SIA should earn its complexity by reducing duplicated complexity elsewhere.
 
 ---
 

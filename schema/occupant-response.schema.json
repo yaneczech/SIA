@@ -3,13 +3,23 @@
   "$id": "https://github.com/yaneczech/SIA/schema/v0.4/occupant-response.schema.json",
   "title": "SIA Occupant Response",
   "type": "object",
-  "required": ["response_id", "decision_id", "instance_id", "state", "authority", "occurred_at_ms", "input_channel", "evidence"],
+  "required": ["response_id", "decision_id", "instance_id", "context_id", "delivery_receipt_ids", "state", "authority", "subject_role", "opened_at_ms", "deadline_at_ms", "occurred_at_ms", "input_channel", "evidence"],
   "properties": {
     "response_id": { "$ref": "#/$defs/uuid" },
     "decision_id": { "$ref": "#/$defs/uuid" },
     "instance_id": { "$ref": "#/$defs/uuid" },
+    "context_id": { "$ref": "#/$defs/uuid" },
+    "delivery_receipt_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/uuid" }
+    },
     "state": { "enum": ["acknowledged", "timed_out"] },
     "authority": { "enum": ["driver_only", "any_occupant", "coordination_runtime"] },
+    "subject_role": { "enum": ["driver", "front_passenger", "rear_passenger", "coordination_runtime"] },
+    "opened_at_ms": { "type": "integer", "minimum": 0 },
+    "deadline_at_ms": { "type": "integer", "minimum": 1 },
     "occurred_at_ms": { "type": "integer", "minimum": 0 },
     "input_channel": { "type": ["string", "null"], "maxLength": 200 },
     "evidence": {
@@ -30,6 +40,7 @@
       "then": {
         "properties": {
           "authority": { "const": "coordination_runtime" },
+          "subject_role": { "const": "coordination_runtime" },
           "input_channel": { "const": null },
           "evidence": {
             "type": "object",
@@ -43,6 +54,7 @@
       "then": {
         "properties": {
           "authority": { "enum": ["driver_only", "any_occupant"] },
+          "subject_role": { "enum": ["driver", "front_passenger", "rear_passenger"] },
           "input_channel": { "type": "string", "minLength": 1 },
           "evidence": {
             "type": "object",
@@ -50,6 +62,10 @@
           }
         }
       }
+    },
+    {
+      "if": { "properties": { "authority": { "const": "driver_only" } }, "required": ["authority"] },
+      "then": { "properties": { "subject_role": { "const": "driver" } } }
     }
   ],
   "additionalProperties": false,

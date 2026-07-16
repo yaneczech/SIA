@@ -1,27 +1,27 @@
 {
-  "id": "Interaction.Event.Alert.Collision.Warning",
+  "id": "Interaction.Event.Alert.Lane.Departure.Warning",
   "inherits_from": "Interaction.Event.Alert",
   "since_version": "0.4.0",
   "direction": "system_to_occupant",
   "target_role": "driver",
   "temporal_type": "discrete",
-  "priority": "critical",
+  "priority": "high",
   "interruptibility": "non_interruptible",
-  "semantic_validity_ms": 500,
-  "payload_schema_ref": "sia:payload:collision-warning:1",
-  "payload_schema_sha256": "27fe606fa64047675b649d8d0d71565e99174382e35540304897b8ed55de086f",
+  "semantic_validity_ms": 1000,
+  "payload_schema_ref": "sia:payload:lane-departure-warning:1",
+  "payload_schema_sha256": "6adfd61b92638e9ed6d661dea883f32dc04da5d15d6f7e9fe703c6174f053096",
   "trust_requirements": {
     "signed_origin_required": true,
     "permitted_actor_classes": [
       "adas"
     ],
-    "max_ingress_age_ms": 200,
+    "max_ingress_age_ms": 300,
     "replay_protection": "required",
     "session_revocation_required": true
   },
   "attention_metrics": {
-    "glance_time_estimated_ms": 800,
-    "mean_single_glance_ms": 300,
+    "glance_time_estimated_ms": 600,
+    "mean_single_glance_ms": 250,
     "task_steps": 0,
     "voice_alt_available": true,
     "cognitive_load": "minimal"
@@ -29,7 +29,7 @@
   "context_policy": {
     "policy_ref": "sia:policy:core-context:1",
     "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
-    "applicability": "always",
+    "applicability": "moving_only",
     "unknown_context": "safe_worst_case",
     "on_blocked": {
       "disposition": "never_block"
@@ -42,13 +42,11 @@
     ],
     "required_renderers": [],
     "delivery_success_policy": "any_selected_presented",
-    "delivery_timeout_ms": 300,
+    "delivery_timeout_ms": 400,
     "degradation_policy": "next_eligible"
   },
   "occupant_response": {
-    "kind": "explicit_or_timeout",
-    "authority": "driver_only",
-    "timeout_ms": 2000
+    "kind": "none"
   },
   "pii_class": "none",
   "accessibility_alternatives": [
@@ -56,7 +54,6 @@
     "auditory"
   ],
   "regulatory_basis": [
-    "ISO_15623",
-    "UNECE_R152"
+    "UNECE_R79"
   ]
 }

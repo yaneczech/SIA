@@ -2,16 +2,32 @@
   "decision_id": "d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22",
   "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
   "context_id": "1a2b3c4d-1111-4aaa-8bbb-1234567890ab",
+  "spec_version": "0.4.0",
+  "profile_version": "0.4.0",
+  "catalog_version": "0.4.0",
+  "catalog_sha256": "0f7c950f23c501258a7b21f8af5bcd58a0c7e4373592001918ed90615c655c0c",
+  "node_schema_sha256": "cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c",
+  "policy_ref": "sia:policy:core-context:1",
   "policy_version": "0.4.0",
+  "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
   "created_at_ms": 1784116800060,
   "selected": [
-    { "renderer_id": "Renderer.Cluster.Primary", "role": "primary" },
-    { "renderer_id": "Renderer.Voice.Primary", "role": "concurrent" }
+    {
+      "renderer_id": "Renderer.Cluster.Primary",
+      "role": "primary"
+    },
+    {
+      "renderer_id": "Renderer.Voice.Primary",
+      "role": "fallback"
+    }
   ],
   "rejected": [
-    { "renderer_id": "Renderer.IVI.Primary", "reason_code": "SAFETY_PROFILE_INELIGIBLE" }
+    {
+      "renderer_id": "Renderer.IVI.Primary",
+      "reason_code": "SAFETY_PROFILE_INELIGIBLE"
+    }
   ],
   "delivery_success_policy": "any_selected_presented",
   "delivery_timeout_ms": 300,
-  "reason_code": "PRIMARY_AND_CONCURRENT_SELECTED"
+  "reason_code": "PRIMARY_WITH_FALLBACK_STANDBY"
 }

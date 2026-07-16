@@ -88,7 +88,7 @@
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
-              "items": { "enum": ["vehicle_state_change", "road_type_change", "driver_state_change", "policy_change"] }
+              "items": { "enum": ["motion_state_change", "operating_mode_change", "energy_state_change", "road_type_change", "driver_state_change", "occupancy_change", "policy_change"] }
             },
             "on_expiry": { "const": "drop" },
             "max_pending": { "type": "integer", "minimum": 1, "maximum": 100 }
@@ -115,7 +115,7 @@
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
-              "items": { "enum": ["vehicle_state_change", "road_type_change", "driver_state_change", "policy_change"] }
+              "items": { "enum": ["motion_state_change", "operating_mode_change", "energy_state_change", "road_type_change", "driver_state_change", "occupancy_change", "policy_change"] }
             },
             "on_expiry": { "const": "drop" },
             "max_pending_per_key": { "const": 1 }
@@ -126,26 +126,14 @@
     },
     "contextPolicy": {
       "type": "object",
-      "required": ["applicability", "unknown_context", "on_blocked"],
+      "required": ["policy_ref", "policy_sha256", "applicability", "unknown_context", "on_blocked"],
       "properties": {
         "applicability": { "enum": ["always", "moving_only", "profile_defined"] },
         "policy_ref": { "type": "string", "pattern": "^sia:policy:[a-z0-9_.-]+:[0-9]+$" },
+        "policy_sha256": { "$ref": "#/$defs/sha256" },
         "unknown_context": { "enum": ["safe_worst_case", "fail_closed"] },
         "on_blocked": { "$ref": "#/$defs/blockedPolicy" }
       },
-      "allOf": [
-        {
-          "if": { "properties": { "applicability": { "const": "profile_defined" } }, "required": ["applicability"] },
-          "then": {
-            "properties": { "policy_ref": { "type": "string", "pattern": "^sia:policy:[a-z0-9_.-]+:[0-9]+$" } },
-            "required": ["policy_ref"]
-          }
-        },
-        {
-          "if": { "properties": { "applicability": { "enum": ["always", "moving_only"] } }, "required": ["applicability"] },
-          "then": { "not": { "required": ["policy_ref"] } }
-        }
-      ],
       "additionalProperties": false
     },
     "presentationContract": {

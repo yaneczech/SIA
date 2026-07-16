@@ -1,12 +1,26 @@
 {
   "retention_id": "a8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b25",
+  "spec_version": "0.4.0",
+  "profile_version": "0.4.0",
+  "catalog_version": "0.4.0",
+  "catalog_sha256": "0f7c950f23c501258a7b21f8af5bcd58a0c7e4373592001918ed90615c655c0c",
   "instance_id": "b8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b26",
+  "context_id": "2a2b3c4d-1111-4aaa-8bbb-1234567890ac",
+  "node_id": "Interaction.Event.Notification.Media.NowPlaying",
+  "node_schema_sha256": "f1cd4853e75a0724c039005a58a1a239d573f5d6e223f0cee0fd63c2b58f3c04",
+  "policy_ref": "sia:policy:core-context:1",
+  "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
   "disposition": "coalesce",
   "state": "held",
   "retained_at_ms": 1784116800100,
   "expires_at_ms": 1784116830000,
+  "valid_until_ms": 1784116830000,
   "coalescing_key_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-  "reevaluate_on": ["driver_state_change", "vehicle_state_change"],
+  "reevaluate_on": [
+    "driver_state_change",
+    "motion_state_change",
+    "operating_mode_change"
+  ],
   "policy_version": "0.4.0",
   "reason_code": "CONTEXT_COALESCED_DISTRACTED"
 }

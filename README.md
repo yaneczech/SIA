@@ -41,7 +41,7 @@ SIA defines a typed semantic vocabulary for in-vehicle interactions. In the full
 
 Each node carries machine-readable metadata for:
 
-- **Trust** — permitted actor classes, signed origin, freshness window, replay protection, and runtime attestation.
+- **Trust** — signed catalog and authority registry, declaration/credential binding, permitted actor classes, signed origin, freshness, semantic validity, revocation, and replay protection.
 - **Attention** — estimated glance time, task steps, cognitive load, and other audit-facing attention-demand proxies.
 - **Context** — multi-axis driving context such as vehicle state, road type, driver state, autonomy state, and jurisdiction.
 - **Capability negotiation** — renderer and input-device capabilities expressed as measurable constraints rather than informal labels.
@@ -54,8 +54,8 @@ The architecture consists of three functional components and two cross-cutting p
 | **Ontology Language + Schema Profile** | Defines the stable vocabulary, node types, metadata contracts, versioning, and compatibility rules. |
 | **Translation Layer** | Maps verified semantic nodes to concrete renderers and input devices based on capabilities, context, and accessibility profile. |
 | **Interaction Coordination Runtime** | Coordinates bounded retention, renderer delivery, occupant response, in-flight state, and consistency across distributed renderers. |
-| **Trust Policy** | Verifies that an emitted node is authorised, fresh, attributable, and protected against replay before it can reach any renderer. |
-| **Context Policy** | Supplies an authenticated context snapshot and decides applicability or the declaration's blocked disposition without changing semantic identity. |
+| **Trust Policy** | Verifies all eight requirements against the signed catalog and current actor credential before a node can reach any renderer. |
+| **Context Policy** | Supplies signed per-axis rules and an authenticated context snapshot; decides applicability or the declaration's blocked disposition without changing semantic identity. |
 
 SIA sits **above** existing SDV data and service abstractions such as COVESA VSS, Eclipse Kuksa, uProtocol, and AUTOSAR Adaptive, and **below** concrete renderers such as cluster, IVI, HUD, voice, haptic, AR, and steering-wheel controls.
 
@@ -72,10 +72,10 @@ The proposed **Minimal SIA Profile 0.4** is small enough to implement and test c
 | Area | 0.4 scope |
 |---|---|
 | Emitted node types | `Alert`, `Notification` (`Action` awaits a complete input/execution profile) |
-| Published reference nodes | Four executable declarations; the catalog remains extensible |
+| Published reference nodes | Five executable declarations (two Alerts, three Notifications); the catalog remains extensible |
 | Renderers | Cluster, IVI, voice |
 | Actor classes | `human_direct`, `adas`, `service`, `third_party_app`, `agent_local`, `agent_cloud` |
-| Context axes | `vehicle_state`, `road_type`, `driver_state` |
+| Context axes | `motion_state`, `operating_mode`, `energy_state`, `road_type`, `driver_state`, `occupancy` |
 | Worked example | `Alert.Collision.Warning` end-to-end |
 
 This keeps the first profile narrow while exercising trust verification, attention policy, explicit context outcomes, bounded retention, capability negotiation, renderer delivery, and separate occupant response.
@@ -116,7 +116,7 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 - [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — motivation, related work, architecture, node taxonomy, policy model, Minimal SIA Profile 0.4, and path forward.
 - [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a concrete `Alert.Collision.Warning` traced end-to-end through declaration, trust, context, translation, renderer delivery, occupant response, retention, and adversarial scenarios.
 - [**Core Specification**](./03_Core-Specification.md) — the normative 0.4 lifecycle, retention, delivery, security, compatibility, and conformance requirements.
-- [**JSON Schema contracts**](./schema/) — strict machine-readable contracts for declarations, instances, context, capabilities, retention, render plans, delivery, occupant response, and audit.
+- [**JSON Schema contracts**](./schema/) — strict contracts for signed catalogs, policies, actor credentials, declarations, instances, context, capabilities, retention, render plans, dispatch attempts, delivery, occupant response, and audit.
 - [**Validated examples**](./examples/v0.4/) — executable positive conformance material used by automated tests.
 - [**Interactive demo**](./demo/) — a dark-mode visual walkthrough and test lab using the same 0.4 outcomes and feedback loops as the engine tests.
 - [**Threat model**](./04_Threat-Model.md) — the consolidated threat-to-mitigation table, non-goals, and residual risks accepted in 0.4.
@@ -138,7 +138,7 @@ npm run validate -- examples/v0.4/collision-warning.instance.json
 npm run conformance -- emitter                              # vectors for your conformance class
 ```
 
-The validator auto-detects the contract, validates it in JSON Schema 2020-12 strict mode, explains failures in plain language, and verifies canonical payload-schema digests for node declarations. `npm run digest -- <file.json>` prints the RFC 8785 canonical SHA-256 used by `payload_schema_sha256` and `node_schema_sha256`. The same suite runs in CI on every push.
+The validator auto-detects the contract, validates it in JSON Schema 2020-12 strict mode, verifies payload digests and signatures made with published test keys, and evaluates cross-artifact authority, time, context, and lifecycle invariants against the published dependency set. Production trust anchors remain deployment-owned. `npm run digest -- <file.json>` prints the RFC 8785 canonical SHA-256 used by every digest binding. The same suite runs in CI on every push.
 
 ---
 
@@ -173,7 +173,7 @@ Version 0.4 makes the previously illustrative runtime contract executable. The i
 The paper intentionally leaves several questions open:
 
 1. **Production encoding** — canonical JSON, deterministic CBOR/COSE, or generated Protobuf for constrained paths.
-2. **Trust binding** — key provisioning, HSM integration, clock tolerance, revocation, and algorithm agility.
+2. **Trust-anchor operations** — production key provisioning, HSM integration, rollover, recovery, and algorithm agility; the artifact and revocation bindings are defined in 0.4.
 3. **Attention validation** — calibration against occlusion testing, eye-glance measurement, and simulator studies.
 4. **Safety case** — bounded latency, fail-operational fallback, and coexistence with certified legacy alert paths.
 5. **Reference implementation** — likely prototype path on Eclipse Kuksa or adjacent SDV infrastructure.

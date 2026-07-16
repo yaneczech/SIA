@@ -1,16 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildPhaseTrace, coordinateAcknowledgement, coordinateDelivery, evaluateInteraction, trustMatrix } from './sia-engine.js';
+import { buildPhaseTrace, coordinateAcknowledgement, coordinateDelivery, evaluateInteraction, nodeCatalog, trustMatrix } from './sia-engine.js';
 
 const valid = { actorClass: 'adas', signatureValid: true, ageMs: 80, replayed: false, vehicleState: 'moving', renderers: { cluster: true, voice: true, ivi: true } };
 const nowPlaying = { nodeId: 'Interaction.Event.Notification.Media.NowPlaying', actorClass: 'third_party_app', signatureValid: true, ageMs: 40, replayed: false, vehicleState: 'moving', renderers: { cluster: true, voice: true, ivi: true } };
 
-test('valid ADAS warning is dispatched to cluster and voice', () => {
+test('valid ADAS warning is dispatched to the primary cluster with voice on standby', () => {
   const result = evaluateInteraction(valid);
   assert.equal(result.outcome, 'dispatched');
   assert.equal(result.primary, 'cluster');
-  assert.deepEqual(result.concurrent, ['voice']);
+  assert.deepEqual(result.concurrent, []);
   assert.ok(result.rejectedRenderers.includes('ivi'));
+  assert.equal(result.checks.length, 8);
+  assert.equal(result.checks.find((check) => check.id === 'declaration_digest').passed, true);
+  assert.equal(result.checks.find((check) => check.id === 'revoked').passed, true);
+  assert.equal(result.checks.find((check) => check.id === 'semantic_validity').passed, true);
 });
 
 test('third-party app cannot emit collision warning even with valid signature', () => {
@@ -25,9 +29,58 @@ test('message older than the node freshness limit fails closed', () => {
   assert.equal(result.auditCode, 'TRUST_REJECTED_FRESHNESS');
 });
 
+test('a message timestamp outside permitted future skew fails closed', () => {
+  const result = evaluateInteraction({ ...valid, ageMs: -51 });
+  assert.equal(result.accepted, false);
+  assert.equal(result.auditCode, 'TRUST_REJECTED_FRESHNESS');
+});
+
+test('runtime validity cannot exceed the declaration-owned semantic window', () => {
+  const result = evaluateInteraction({ ...valid, occurredAtMs: 1000, acceptedAtMs: 1100, validUntilMs: 2000 });
+  assert.equal(result.accepted, false);
+  assert.equal(result.auditCode, 'TRUST_REJECTED_EXPIRED');
+});
+
+test('revoked authority fails closed', () => {
+  const result = evaluateInteraction({ ...valid, revoked: true });
+  assert.equal(result.accepted, false);
+  assert.equal(result.auditCode, 'TRUST_REJECTED_REVOKED');
+});
+
+test('unknown node IDs fail closed instead of becoming collision warnings', () => {
+  const result = evaluateInteraction({ ...valid, nodeId: 'Interaction.Event.Alert.Unknown.Warning' });
+  assert.equal(result.accepted, false);
+  assert.equal(result.node, null);
+  assert.equal(result.auditCode, 'TRUST_REJECTED_UNKNOWN_NODE');
+});
+
 test('replayed message is rejected', () => {
   const result = evaluateInteraction({ ...valid, replayed: true });
   assert.equal(result.auditCode, 'TRUST_REJECTED_REPLAY');
+});
+
+test('instance declaration digest must match the installed catalog', () => {
+  const result = evaluateInteraction({ ...valid, nodeSchemaDigest: 'f'.repeat(64) });
+  assert.equal(result.accepted, false);
+  assert.equal(result.auditCode, 'TRUST_REJECTED_DECLARATION_DIGEST');
+  assert.equal(result.checks.find((check) => check.id === 'declaration_digest').passed, false);
+});
+
+test('demo catalog uses the canonical digests of the published declarations', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { canonicalSha256 } = await import('../tools/canonical.mjs');
+  const declarations = await Promise.all([
+    'collision-warning.node.json',
+    'lane-departure-warning.node.json',
+    'diagnostic.node.json',
+    'now-playing.node.json',
+    'assistant-suggestion.node.json',
+  ].map(async (file) => JSON.parse(await readFile(new URL(`../examples/v0.4/${file}`, import.meta.url), 'utf8'))));
+  const catalogById = new Map(nodeCatalog().map((node) => [node.id, node]));
+
+  for (const declaration of declarations) {
+    assert.equal(catalogById.get(declaration.id)?.schemaDigest, canonicalSha256(declaration), declaration.id);
+  }
 });
 
 test('voice is used as fallback when cluster is offline', () => {
@@ -42,11 +95,19 @@ test('IVI is never selected for a critical alert while moving', () => {
   assert.equal(result.primary, null);
 });
 
-test('charging makes the moving-only collision warning not applicable', () => {
+test('collision warning remains applicable while charging because external threats still exist', () => {
   const result = evaluateInteraction({ ...valid, vehicleState: 'charging' });
-  assert.equal(result.outcome, 'not_applicable');
-  assert.equal(result.auditCode, 'CONTEXT_NOT_APPLICABLE');
-  assert.equal(result.primary, null);
+  assert.equal(result.outcome, 'dispatched');
+  assert.equal(result.primary, 'cluster');
+});
+
+test('lane departure warning is not applicable while stationary or charging', () => {
+  const lane = { ...valid, nodeId: 'Interaction.Event.Alert.Lane.Departure.Warning' };
+  for (const vehicleState of ['charging', 'parked', 'service']) {
+    const result = evaluateInteraction({ ...lane, vehicleState });
+    assert.equal(result.outcome, 'not_applicable', vehicleState);
+    assert.equal(result.auditCode, 'CONTEXT_NOT_APPLICABLE');
+  }
 });
 
 test('unknown vehicle context is treated as moving strict mode', () => {
@@ -170,8 +231,17 @@ test('phase trace exposes ontology, inputs, policy, decision, and acknowledgemen
   const ack = coordinateAcknowledgement(decision, { acknowledged: true, elapsedMs: 420 }, delivery);
   const trace = buildPhaseTrace(valid, decision, ack, delivery);
   assert.deepEqual(Object.keys(trace), ['ontology', 'emitter', 'trust', 'translation', 'runtime', 'renderers']);
-  assert.equal(trace.trust.trace.checks.actor, 'pass');
+  assert.equal(trace.trust.rule.items.length, 8);
+  assert.equal(trace.trust.trace.executable_checks.actor, 'pass');
+  assert.equal(trace.trust.trace.executable_checks.declaration_digest, 'pass');
+  assert.equal(trace.trust.trace.executable_checks.revoked, 'pass');
+  assert.equal(trace.trust.trace.executable_checks.semantic_validity, 'pass');
+  assert.equal(trace.trust.trace.observed.declaration_digest_matches, true);
   assert.equal(trace.translation.trace.render_plan.primary, 'cluster');
+  assert.equal(trace.translation.trace.time_semantics.ingress_freshness.ingress_age_ms, 80);
+  assert.equal(trace.translation.trace.time_semantics.semantic_validity.valid_until_ms, 1784116800520);
+  assert.equal(trace.translation.trace.time_semantics.semantic_validity.status, 'valid');
+  assert.equal(trace.runtime.trace.time_semantics.retention.active, false);
   assert.equal(trace.runtime.trace.delivery.state, 'presented');
   assert.equal(trace.runtime.trace.occupant_response.state, 'acknowledged');
   assert.equal(trace.renderers.trace.delivery_receipts.cluster.state, 'presented');
@@ -185,7 +255,8 @@ test('a notification without ack requirement closes immediately after dispatch',
 });
 
 test('distracted driver coalesces Now Playing to the latest retained state', () => {
-  const result = evaluateInteraction({ ...nowPlaying, roadType: 'urban', driverState: 'distracted' });
+  const input = { ...nowPlaying, ageMs: 200, roadType: 'urban', driverState: 'distracted' };
+  const result = evaluateInteraction(input);
   assert.equal(result.outcome, 'context_deferred');
   assert.equal(result.auditCode, 'CONTEXT_COALESCED_DISTRACTED');
   assert.equal(result.retention.disposition, 'coalesce');
@@ -193,6 +264,15 @@ test('distracted driver coalesces Now Playing to the latest retained state', () 
   assert.equal(result.retention.replaceExisting, true);
   assert.match(result.retention.key, new RegExp(`^${nowPlaying.nodeId}:driver:third_party_app:`));
   assert.deepEqual(result.retention.keyFields, ['node_id', 'target_role', 'actor_id', 'payload.session_id']);
+
+  const clocks = buildPhaseTrace(input, result).translation.trace.time_semantics;
+  assert.equal(clocks.ingress_freshness.ingress_age_ms, 200);
+  assert.equal(clocks.semantic_validity.remaining_at_accept_ms, 29800);
+  assert.equal(clocks.retention.active, true);
+  assert.equal(clocks.retention.retention_ttl_ms, 30000);
+  assert.equal(clocks.retention.effective_window_ms, 29800);
+  assert.equal(clocks.retention.expires_at_ms, clocks.semantic_validity.valid_until_ms);
+  assert.equal(clocks.retention.bounded_by, 'valid_until_ms');
 });
 
 test('a deferred Now Playing state is dispatched after the driver becomes attentive', () => {
@@ -284,12 +364,16 @@ test('every terminal audit code the engine emits is registered in registry/reaso
   const observed = new Set();
   const scenarios = [
     valid,
+    { ...valid, nodeId: 'Interaction.Event.Alert.Unknown.Warning' },
     { ...valid, actorClass: 'third_party_app' },
     { ...valid, ageMs: 999 },
     { ...valid, replayed: true },
     { ...valid, signatureValid: false },
+    { ...valid, revoked: true },
+    { ...valid, occurredAtMs: 1000, acceptedAtMs: 1100, validUntilMs: 2000 },
+    { ...valid, nodeSchemaDigest: 'f'.repeat(64) },
     { ...valid, injectedPriority: 'critical' },
-    { ...valid, vehicleState: 'charging' },
+    { ...valid, nodeId: 'Interaction.Event.Alert.Lane.Departure.Warning', vehicleState: 'charging' },
     { ...valid, renderers: { cluster: false, voice: true, ivi: true } },
     { ...valid, renderers: { cluster: false, voice: false, ivi: true } },
     { ...nowPlaying, roadType: 'urban', driverState: 'distracted' },

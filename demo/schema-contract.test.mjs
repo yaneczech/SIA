@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { canonicalSha256 } from '../tools/canonical.mjs';
+import { collectInvariantViolations } from '../tools/invariants.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
@@ -15,11 +16,14 @@ const loadJson = async (file) => JSON.parse(await readFile(file, 'utf8'));
 const schemaFiles = [
   'interaction-node.schema.json',
   'catalog.schema.json',
+  'actor-registry.schema.json',
+  'context-policy.schema.json',
   'runtime-instance.schema.json',
   'context-snapshot.schema.json',
   'renderer-capability.schema.json',
   'render-plan.schema.json',
   'delivery-receipt.schema.json',
+  'dispatch-attempt.schema.json',
   'occupant-response.schema.json',
   'retention-record.schema.json',
   'audit-record.schema.json',
@@ -29,7 +33,11 @@ const ajv = new Ajv2020({ allErrors: true, strict: true, allowUnionTypes: true }
 Object.values(schemas).forEach((schema) => ajv.addSchema(schema));
 
 const exampleContracts = {
+  'catalog.json': 'catalog.schema.json',
+  'actor-registry.json': 'actor-registry.schema.json',
+  'core.context-policy.json': 'context-policy.schema.json',
   'collision-warning.node.json': 'interaction-node.schema.json',
+  'lane-departure-warning.node.json': 'interaction-node.schema.json',
   'diagnostic.node.json': 'interaction-node.schema.json',
   'now-playing.node.json': 'interaction-node.schema.json',
   'assistant-suggestion.node.json': 'interaction-node.schema.json',
@@ -38,24 +46,13 @@ const exampleContracts = {
   'cluster.renderer.json': 'renderer-capability.schema.json',
   'collision.render-plan.json': 'render-plan.schema.json',
   'collision.delivery-receipt.json': 'delivery-receipt.schema.json',
+  'collision.dispatch-attempt.json': 'dispatch-attempt.schema.json',
   'collision.occupant-response.json': 'occupant-response.schema.json',
   'now-playing.retention-record.json': 'retention-record.schema.json',
   'collision.audit-record.json': 'audit-record.schema.json',
 };
 const examples = Object.fromEntries(await Promise.all(Object.keys(exampleContracts).map(async (file) => [file, await loadJson(path.join(examplesDir, file))])));
-const publishedCatalog = {
-  spec_version: '0.4.0',
-  profile_id: 'sia-minimal',
-  profile_version: '0.4.0',
-  catalog_version: '0.4.0',
-  generated_at_ms: 1784116800000,
-  nodes: [
-    examples['collision-warning.node.json'],
-    examples['diagnostic.node.json'],
-    examples['now-playing.node.json'],
-    examples['assistant-suggestion.node.json'],
-  ],
-};
+const publishedCatalog = examples['catalog.json'];
 
 function assertValid(schemaFile, value) {
   const validate = ajv.getSchema(schemas[schemaFile].$id);
@@ -95,8 +92,111 @@ test('every published v0.4 example validates against its declared contract', () 
   for (const [exampleFile, schemaFile] of Object.entries(exampleContracts)) assertValid(schemaFile, examples[exampleFile]);
 });
 
-test('node catalog manifest validates the four published nodes', () => {
+test('node catalog manifest validates the five published nodes', () => {
   assertValid('catalog.schema.json', publishedCatalog);
+  assert.deepEqual(publishedCatalog.nodes, [
+    examples['collision-warning.node.json'],
+    examples['lane-departure-warning.node.json'],
+    examples['diagnostic.node.json'],
+    examples['now-playing.node.json'],
+    examples['assistant-suggestion.node.json'],
+  ]);
+});
+
+test('published lifecycle artifacts satisfy cross-artifact authority and causality invariants', () => {
+  const violations = collectInvariantViolations({
+    catalog: publishedCatalog,
+    actorRegistry: examples['actor-registry.json'],
+    policy: examples['core.context-policy.json'],
+    instance: examples['collision-warning.instance.json'],
+    context: examples['context-attentive.json'],
+    plan: examples['collision.render-plan.json'],
+    attempts: [examples['collision.dispatch-attempt.json']],
+    receipts: [examples['collision.delivery-receipt.json']],
+    response: examples['collision.occupant-response.json'],
+    retention: examples['now-playing.retention-record.json'],
+    audit: examples['collision.audit-record.json'],
+  }, { acceptedAtMs: 1784116800050 });
+  assert.deepEqual(violations, []);
+});
+
+test('semantic validator rejects authority, time, context, lifecycle, and catalog contradictions', () => {
+  const base = {
+    catalog: publishedCatalog,
+    actorRegistry: examples['actor-registry.json'],
+    policy: examples['core.context-policy.json'],
+    instance: examples['collision-warning.instance.json'],
+    context: examples['context-attentive.json'],
+    plan: examples['collision.render-plan.json'],
+    attempts: [examples['collision.dispatch-attempt.json']],
+    receipts: [examples['collision.delivery-receipt.json']],
+    response: examples['collision.occupant-response.json'],
+    retention: examples['now-playing.retention-record.json'],
+  };
+  const has = (patch, code) => collectInvariantViolations({ ...base, ...patch }, { acceptedAtMs: 1784116800050 }).some((item) => item.code === code);
+
+  const targetOverride = structuredClone(base.instance);
+  targetOverride.target_role = 'rear_passenger';
+  assert.ok(has({ instance: targetOverride }, 'INSTANCE_TARGET_ROLE_ESCALATION'));
+
+  const actorOverride = structuredClone(base.instance);
+  actorOverride.attestation.actor_class = 'third_party_app';
+  assert.ok(has({ instance: actorOverride }, 'INSTANCE_ACTOR_CLASS_NOT_PERMITTED'));
+
+  const extendedValidity = structuredClone(base.instance);
+  extendedValidity.valid_until_ms = extendedValidity.occurred_at_ms + 86400000;
+  assert.ok(has({ instance: extendedValidity }, 'INSTANCE_VALIDITY_EXCEEDS_DECLARATION'));
+
+  const staleContext = structuredClone(base.context);
+  staleContext.axes.motion_state.observed_at_ms = 0;
+  staleContext.axes.motion_state.confidence = 0;
+  assert.ok(has({ context: staleContext }, 'CONTEXT_AXIS_STALE'));
+  assert.ok(has({ context: staleContext }, 'CONTEXT_AXIS_LOW_CONFIDENCE'));
+
+  const twoPrimaries = structuredClone(base.plan);
+  twoPrimaries.selected.push({ renderer_id: 'Renderer.IVI.Secondary', role: 'primary' });
+  assert.ok(has({ plan: twoPrimaries }, 'PLAN_PRIMARY_COUNT'));
+
+  const absentTarget = structuredClone(base.context);
+  absentTarget.axes.occupancy.occupied_roles = ['front_passenger'];
+  assert.ok(has({ context: absentTarget }, 'PLAN_TARGET_NOT_OCCUPIED'));
+
+  const earlyReceipt = structuredClone(base.receipts[0]);
+  earlyReceipt.observed_at_ms = 1;
+  earlyReceipt.elapsed_ms = 0;
+  assert.ok(has({ receipts: [earlyReceipt] }, 'RECEIPT_BEFORE_DISPATCH'));
+
+  const earlyResponse = structuredClone(base.response);
+  earlyResponse.opened_at_ms = 1;
+  earlyResponse.occurred_at_ms = 2;
+  earlyResponse.deadline_at_ms = 2001;
+  assert.ok(has({ response: earlyResponse }, 'RESPONSE_OPENED_BEFORE_PRESENTATION'));
+
+  const widenedResponse = structuredClone(base.response);
+  widenedResponse.authority = 'any_occupant';
+  assert.ok(has({ response: widenedResponse }, 'RESPONSE_AUTHORITY_OVERRIDE'));
+
+  const lateRetention = structuredClone(base.retention);
+  lateRetention.expires_at_ms = lateRetention.valid_until_ms + 1;
+  assert.ok(has({ retention: lateRetention }, 'RETENTION_EXCEEDS_VALIDITY'));
+
+  const detachedRetention = structuredClone(base.retention);
+  detachedRetention.catalog_sha256 = 'f'.repeat(64);
+  assert.ok(has({ retention: detachedRetention }, 'RETENTION_CATALOG_DIGEST_MISMATCH'));
+
+  const fallbackBeforeFailure = structuredClone(base.attempts[0]);
+  fallbackBeforeFailure.attempt_id = 'b0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20';
+  fallbackBeforeFailure.renderer_id = 'Renderer.Voice.Primary';
+  fallbackBeforeFailure.role = 'fallback';
+  fallbackBeforeFailure.sequence = 1;
+  fallbackBeforeFailure.previous_attempt_id = base.attempts[0].attempt_id;
+  fallbackBeforeFailure.dispatched_at_ms = 1784116800150;
+  fallbackBeforeFailure.deadline_at_ms = 1784116800450;
+  assert.ok(has({ attempts: [base.attempts[0], fallbackBeforeFailure] }, 'DISPATCH_FALLBACK_BEFORE_FAILURE'));
+
+  const duplicateCatalog = structuredClone(base.catalog);
+  duplicateCatalog.nodes.push(structuredClone(duplicateCatalog.nodes[0]));
+  assert.ok(has({ catalog: duplicateCatalog }, 'CATALOG_DUPLICATE_NODE_ID'));
 });
 
 test('published examples satisfy cross-field and collection invariants', () => {
@@ -194,6 +294,7 @@ test('safety-relevant renderer capability requires assurance evidence', () => {
 
 const payloadSchemaByRef = {
   'sia:payload:collision-warning:1': 'collision-warning.v1.schema.json',
+  'sia:payload:lane-departure-warning:1': 'lane-departure-warning.v1.schema.json',
   'sia:payload:collision-sensor-test:1': 'collision-sensor-test.v1.schema.json',
   'sia:payload:now-playing:1': 'now-playing.v1.schema.json',
   'sia:payload:assistant-suggestion:1': 'assistant-suggestion.v1.schema.json',

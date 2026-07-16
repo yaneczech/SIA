@@ -6,19 +6,22 @@ Terms as used normatively in the [Core Specification](./03_Core-Specification.md
 |---|---|
 | **Declaration** (interaction node) | The catalog entry defining what an interaction means and every policy it carries: trust, attention, context, presentation, occupant response. Authored once, versioned, authoritative. |
 | **Instance** (runtime instance) | One emission of a declared node: identity, payload, timing, attestation. Can never override declaration-owned policy. |
-| **Catalog** | The versioned collection of declarations installed in a vehicle. |
+| **Catalog** | The signed, versioned collection of unique declarations installed in a vehicle; instances bind its canonical digest. |
+| **Actor registry / credential** | Signed authority state mapping a credential and key to one actor identity/class, validity interval, and active or revoked status. |
 | **Actor class** | The semantic authority category of an emitter (`adas`, `service`, `third_party_app`, `agent_local`, `agent_cloud`, `human_direct`). Authentication proves identity; actor class bounds what identity may say. |
 | **Attestation** | The evidence block on an instance: actor identity, key, algorithm, timestamp, nonce, signature over the canonical form. |
 | **Ingress freshness** | Maximum transport age between attestation and Trust Policy acceptance (`max_ingress_age_ms`). One of three separate clocks. |
 | **Semantic validity** | The latest instant at which the interaction still represents useful current meaning (`valid_until_ms`). Second clock. |
 | **Retention TTL** | How long a context-blocked instance may stay held before deterministic expiry. Third clock. |
-| **Applicability** | Whether a node is meaningful in the current context at all (`moving_only` collision warning while charging → `not_applicable`). Not the same as blocking. |
+| **Applicability** | Whether a node is meaningful in the current context at all (`moving_only` lane-departure warning while charging → `not_applicable`; collision warning remains applicable). Not the same as blocking. |
 | **Blocking** | An applicable interaction that context does not allow to present right now. Resolved by exactly one declared disposition. |
 | **Disposition** | The declared answer to blocking: `never_block`, `drop`, `defer`, or `coalesce`. |
 | **Coalescing key** | Canonical identity of a retained value stream; only the newest instance per key is held. Stored as a keyed digest, never raw values. |
 | **Held / released / superseded / expired** | Retention states: waiting within TTL; re-entering translation after a context trigger; replaced by a newer coalesced instance; dropped at TTL. |
-| **Context snapshot** | The authenticated, immutable set of axis observations (`context_id`) a decision binds to. |
+| **Context policy** | Signed rules defining per-axis freshness, confidence, unknown handling, attention modifiers, and policy identity. |
+| **Context snapshot** | The authenticated, immutable set of orthogonal axis observations (`context_id`) and exact policy binding used by a decision. |
 | **Render plan** | The deterministic output of Translation: selected renderers with roles, rejected renderers with reason codes, delivery policy. |
+| **Dispatch attempt** | One ordered attempt to send a verified plan to a selected renderer, with predecessor, sequence, dispatch time, and bounded deadline. |
 | **Delivery receipt** | Machine evidence from a renderer: `received` (transport acceptance) or `presented` (occupant-facing output produced). `timed_out` comes only from Coordination Runtime. |
 | **Delivery success policy** | When delivery counts as done: `any_selected_presented`, `primary_presented`, or `all_required_presented`. |
 | **Occupant response** | The separate human feedback loop. Opens only after delivery success; a timeout is runtime evidence, never an occupant action. |

@@ -3,7 +3,7 @@
   "$id": "https://github.com/yaneczech/SIA/schema/v0.4/catalog.schema.json",
   "title": "SIA Catalog Manifest",
   "type": "object",
-  "required": ["spec_version", "profile_id", "profile_version", "catalog_version", "generated_at_ms", "nodes"],
+  "required": ["spec_version", "profile_id", "profile_version", "catalog_version", "generated_at_ms", "nodes", "integrity"],
   "properties": {
     "spec_version": { "const": "0.4.0" },
     "profile_id": { "const": "sia-minimal" },
@@ -14,10 +14,22 @@
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "https://github.com/yaneczech/SIA/schema/v0.4/interaction-node.schema.json" }
-    }
+    },
+    "integrity": { "$ref": "#/$defs/integrity" }
   },
   "additionalProperties": false,
   "$defs": {
-    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" }
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+    "integrity": {
+      "type": "object",
+      "required": ["issuer", "key_id", "algorithm", "signature"],
+      "properties": {
+        "issuer": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "key_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256"] },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "minLength": 8, "maxLength": 4096 }
+      },
+      "additionalProperties": false
+    }
   }
 }

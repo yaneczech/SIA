@@ -19,8 +19,9 @@ SIA 0.4 standardises a narrow mediation boundary for typed interactions. The `si
 - node families: `Event.Alert` and `Event.Notification`;
 - actor classes: `human_direct`, `adas`, `service`, `third_party_app`, `agent_local`, and `agent_cloud`;
 - output renderers: cluster, IVI, and voice;
-- core context axes: vehicle state, road type, and driver state;
-- renderer delivery receipts, retention records, occupant responses, and audit records.
+- core context axes: motion state, operating mode, energy state, road type, driver state, and occupancy;
+- signed catalogs, context policies, and actor-credential registries;
+- dispatch attempts, renderer delivery receipts, retention records, occupant responses, and audit records.
 
 `Action`, `State`, and `Task` remain architectural types for future profiles and MUST NOT be emitted by a `sia-minimal` 0.4 implementation. In particular, 0.4 does not reuse the output-renderer delivery contract as a substitute for an input/execution contract for `Action`.
 
@@ -45,19 +46,22 @@ SIA 0.4 defines the following machine-readable contracts:
 | Contract | Purpose |
 |---|---|
 | `catalog.schema.json` | Versioned collection of semantic declarations. |
+| `actor-registry.schema.json` | Signed actor credentials, authority classes, validity, and revocation state. |
+| `context-policy.schema.json` | Signed axis freshness, confidence, unknown-handling, and attention rules. |
 | `interaction-node.schema.json` | One declarative Alert or Notification node. |
 | `runtime-instance.schema.json` | Emitted payload plus immutable identity and attestation. |
 | `context-snapshot.schema.json` | Provenanced inputs used for one policy decision. |
 | `renderer-capability.schema.json` | Attested renderer capabilities and safety assurance. |
 | `retention-record.schema.json` | Drop, defer, coalesce, supersede, expiry, or release evidence. |
 | `render-plan.schema.json` | Deterministic renderer selection and rejection reasons. |
+| `dispatch-attempt.schema.json` | One ordered, authenticated attempt to dispatch a plan to a renderer. |
 | `delivery-receipt.schema.json` | Machine evidence for received, presented, failed, or timed-out output. |
 | `occupant-response.schema.json` | Separate human acknowledgement or runtime response timeout. |
 | `audit-record.schema.json` | Hash-linked decision evidence. |
 
 Payload schemas are node-specific. A declaration MUST bind its payload contract by both reference and SHA-256 digest. A runtime MUST validate the payload before Trust Policy accepts the instance.
 
-A payload reference uses the URI form `sia:payload:<name>:<major>` and resolves to `schema/payloads/<name>.v<major>.schema.json` in the catalog distribution. All contract digests in SIA — `payload_schema_sha256` in a declaration and `node_schema_sha256` in a runtime instance — are computed as SHA-256 over the RFC 8785 (JCS) canonical form of the referenced JSON document, encoded as lowercase hex. Digests over raw file bytes are non-conformant because formatting would change identity.
+A payload reference uses the URI form `sia:payload:<name>:<major>` and resolves to `schema/payloads/<name>.v<major>.schema.json` in the catalog distribution. Every SIA artifact digest, including payload, declaration, catalog, policy, registry, credential, and audit-record digests, is SHA-256 over the RFC 8785 (JCS) canonical form of the complete referenced JSON document, encoded as lowercase hex. Digests over raw file bytes are non-conformant because formatting would change identity.
 
 ## 5. Normative lifecycle
 
@@ -72,9 +76,9 @@ received
        ├─ held ─┬─ superseded
        │         ├─ expired
        │         └─ released → planned
-       └─ planned → dispatched
-                      ├─ delivery_failed
-                      └─ presented
+       └─ planned → dispatch_attempted ─┬─ fallback_attempted ─┐
+                                       ├─ delivery_failed     │
+                                       └─ presented ←─────────┘
                            ├─ closed
                            └─ awaiting_occupant
                                 ├─ acknowledged → closed
@@ -89,6 +93,8 @@ Implementations MUST use stable reason codes for state transitions. The normativ
 
 Node declarations, not runtime payloads, are authoritative for priority, actor permissions, context handling, presentation, and occupant-response policy.
 
+The installed catalog, actor registry, and context policy MUST each be authenticated from a deployment trust anchor before use. A runtime instance MUST bind the exact signed catalog and declaration digests plus the exact actor-registry and credential digests used at acceptance. A declaration and every derived lifecycle artifact MUST bind the signed context-policy identity, version, and digest. A signature from a known key is insufficient when its credential is expired or revoked.
+
 A runtime instance MUST NOT contain a top-level priority, renderer, suppression, retention, or acknowledgement override. Closed envelope validation MUST reject such fields before semantic processing. Rejection is preferred to silently ignoring a security-relevant override because it preserves attack evidence.
 
 Trust Policy MUST verify:
@@ -101,6 +107,8 @@ Trust Policy MUST verify:
 6. nonce replay protection;
 7. current key and session revocation status;
 8. semantic validity at the time of acceptance.
+
+An instance `target_role` MUST equal the declaration role, except that `any_occupant` MAY be narrowed to one currently occupied role. It MUST NOT be widened or retargeted. An unknown node ID, duplicate node ID in a catalog, unresolved policy reference, or any digest mismatch MUST fail closed before Translation; a runtime MUST NOT reinterpret an unknown node as a known parent.
 
 Replay protection is scoped: a nonce MUST be unique per `(actor_id, key_id)` within the node's `max_ingress_age_ms` window extended by the permitted clock skew. The replay cache MUST be bounded; on overflow the verifier MUST fail closed for new emissions from the affected identity and emit an audit record, rather than silently forgetting old nonces.
 
@@ -116,7 +124,7 @@ SIA separates three clocks:
 - **Semantic validity** defines the latest instant at which the interaction still represents useful current meaning.
 - **Retention TTL** limits how long a context-blocked instance may remain held.
 
-`valid_until_ms` MUST be later than `occurred_at_ms`. A retention expiry MUST NOT be later than `valid_until_ms`. Re-evaluation MUST check semantic validity, policy version, actor/session revocation, and the current context snapshot before release.
+`valid_until_ms` MUST be later than `occurred_at_ms` and MUST NOT exceed `occurred_at_ms + declaration.semantic_validity_ms`. The attestation timestamp MUST be between occurrence and semantic expiry. Acceptance MUST be no later than semantic expiry and MUST reject timestamps beyond the permitted future skew. A retention expiry and every dispatch-attempt deadline MUST NOT be later than `valid_until_ms`. Re-evaluation MUST check semantic validity, policy version and digest, actor/session revocation, and a fresh current context snapshot before release.
 
 Timeout arithmetic SHOULD use a monotonic local clock. Wall-clock timestamps remain REQUIRED for correlation and audit. The RECOMMENDED default permitted clock skew between attestor and verifier is ±50 ms for in-vehicle emitters; a deployment that overrides this value MUST document it, and off-board emitters MUST have an explicitly documented skew and freshness budget. Deployments MUST define behaviour when secure time is unavailable.
 
@@ -124,7 +132,7 @@ Timeout arithmetic SHOULD use a monotonic local clock. Wall-clock timestamps rem
 
 Applicability answers whether a semantic node is meaningful in the current context. Blocking answers whether an applicable interaction may be presented now. They are not interchangeable.
 
-For example, `Alert.Collision.Warning` is `moving_only`. If emitted while charging it transitions to `not_applicable`; it is not suppressed and MUST NOT be transformed into a diagnostic notification. A producer that needs diagnostics emits `Notification.Diagnostic.CollisionSensorTest` as a separate typed instance.
+Applicability MUST be written from the meaning of the hazard, not inferred from one convenient vehicle-state label. `Alert.Collision.Warning` is `always` in the reference catalog because an external vehicle can strike or reverse into a stationary or charging vehicle. `Alert.Lane.Departure.Warning` is `moving_only`; while parked, charging, or in service mode it transitions to `not_applicable`. Neither outcome may be transformed into `Notification.Diagnostic.CollisionSensorTest`; diagnostics remain a separate typed instance.
 
 An applicable interaction blocked by Context Policy uses exactly one declared disposition:
 
@@ -143,7 +151,9 @@ A newer coalesced instance transitions the older entry to `superseded`. A contex
 
 ## 9. Context integrity
 
-Every decision MUST bind to one immutable `context_id`. Each core axis carries a value, observation time, source identity, and confidence. The snapshot MUST be authenticated by a trusted vehicle context authority.
+Every decision MUST bind to one immutable `context_id` and the exact signed policy used to interpret it. The minimal profile keeps orthogonal axes for `motion_state`, `operating_mode`, `energy_state`, `road_type`, `driver_state`, and `occupancy`; a composite label such as `charging` MUST NOT erase motion or operating mode. Each axis carries a value, observation time, source identity, and confidence. The snapshot MUST be authenticated by a trusted vehicle context authority.
+
+The signed context policy defines `max_age_ms`, `min_confidence`, and `unknown_handling` per axis. A runtime MUST reject observations from the future, stale or under-confidence observations according to that policy, and impossible combinations such as `motion_state: moving` with `energy_state: charging` in the minimal profile. Occupancy is a set of verified roles, not a substitute for target authority.
 
 Unknown or stale core axes MUST NOT relax a restriction. `safe_worst_case` maps uncertainty to the stricter applicable policy. `fail_closed` stops non-critical processing and invokes the safety-profile fallback defined by the deployment.
 
@@ -157,11 +167,13 @@ Translation MUST produce a render plan containing:
 
 - selected renderer IDs and their roles;
 - rejected renderer IDs with stable reason codes;
-- context and policy versions;
+- specification, profile, catalog, declaration, context, and policy identities and digests;
 - delivery success policy and timeout;
 - a deterministic selection reason.
 
 Selection MUST use a stable tie-breaker. Identical declaration, context, capabilities, and policy versions MUST produce the same render plan.
+
+A render plan MUST contain exactly one `primary` renderer. A fallback renderer is standby until a prior dispatch attempt fails or times out; it MUST NOT be labeled `concurrent` merely because it is eligible. Selected and rejected renderer sets MUST be disjoint, and every declaration-required renderer MUST be selected.
 
 ## 11. Delivery contract
 
@@ -169,7 +181,9 @@ Renderer delivery and occupant response are separate feedback loops.
 
 `received` proves that a renderer accepted a request. Only `presented` proves successful occupant-facing output. `failed` is emitted by the renderer. `timed_out` is emitted only by Coordination Runtime after the declared delivery deadline.
 
-A renderer receipt MUST bind `receipt_id`, `decision_id`, `instance_id`, `renderer_id`, state, time, and authenticated evidence. Processing MUST be idempotent by receipt ID. SIA assumes at-least-once transport and does not claim distributed exactly-once delivery.
+Every dispatch MUST create an ordered `dispatch-attempt` binding the decision, instance, selected renderer and role, attempt sequence, predecessor, dispatch time, and deadline. The deadline is `min(dispatched_at_ms + delivery_timeout_ms, valid_until_ms)`; a non-positive remaining window forbids the attempt. A fallback attempt requires a terminal failed or timed-out predecessor and a still-valid instance.
+
+A renderer receipt MUST bind `receipt_id`, `attempt_id`, receipt sequence, `decision_id`, `instance_id`, `renderer_id`, state, observation time, elapsed time, and authenticated evidence. It MUST NOT predate dispatch or arrive after the attempt deadline; elapsed time MUST equal the interval from dispatch. Processing MUST be idempotent by receipt ID and monotonic by `(attempt_id, receipt_sequence)`. SIA assumes at-least-once transport and does not claim distributed exactly-once delivery.
 
 The render plan declares one success policy:
 
@@ -183,7 +197,7 @@ Occupant response MUST NOT start until the applicable delivery-success policy is
 
 `occupant_response.kind: none` closes the interaction after delivery succeeds. `explicit_or_timeout` opens a separate wait only after delivery success.
 
-An explicit response MUST bind to the interaction and decision, identify the input channel, satisfy the declared authority, and carry authenticated input evidence. A response timeout is a Coordination Runtime event; it MUST NOT be represented as an occupant action.
+An explicit response MUST bind to the interaction, decision, context, and the `presented` receipt IDs that opened the response window; identify subject role and input channel; satisfy the declared authority and bound occupancy snapshot; and carry authenticated input evidence. `opened_at_ms` MUST be no earlier than delivery success, and the deadline MUST equal the declaration-owned timeout. A response timeout occurs exactly at that deadline and is a Coordination Runtime event; it MUST NOT be represented as an occupant action.
 
 Presentation, awareness, comprehension, and acknowledgement are distinct claims. A renderer receipt MUST NOT imply that an occupant noticed or understood the interaction.
 
@@ -215,7 +229,9 @@ The 0.4 draft intentionally breaks the illustrative 0.3 schema:
 - ambiguous `suppression_class`, `merges_with`, `requires_ack`, and `ack_kind` fields are replaced by structured contracts;
 - ingress freshness, semantic validity, and retention TTL are distinct;
 - runtime envelopes are closed and priority injection is invalid;
-- delivery and occupant response have separate schemas.
+- catalogs, policies, registries, and derived decisions are digest-bound;
+- composite vehicle state is split into orthogonal context axes;
+- dispatch attempt, delivery receipt, and occupant response are causally bound separate schemas.
 
 No automatic migration may infer safety semantics. A migration tool MAY map syntactically unambiguous fields, but MUST require review for context policy, delivery success, coalescing keys, and occupant authority.
 
@@ -231,18 +247,18 @@ Conformance is claimed per class, so a supplier implements only the side of the 
 
 A conforming `runtime` implementation MUST:
 
-1. validate all declarations and runtime artifacts against their schemas;
+1. validate all declarations and runtime artifacts against their schemas and cross-artifact invariants;
 2. pass positive and negative conformance vectors;
 3. implement the complete lifecycle and stable reason codes;
 4. prove deterministic decisions for repeated identical inputs;
 5. reject reserved-field injection and unauthorised actors;
 6. bound retention and replay state;
-7. authenticate context, capabilities, receipts, and explicit occupant responses;
+7. authenticate catalogs, actor credentials, context policy and snapshots, capabilities, dispatch attempts, receipts, and explicit occupant responses;
 8. document safety fallback, clock, privacy, and audit policies.
 
 `emitter` and `renderer` implementations MUST pass every conformance vector tagged with their class in [`conformance/vectors.json`](./conformance/vectors.json); the vector format is language-neutral and documented in [`conformance/README.md`](./conformance/README.md).
 
-The reference examples in `examples/v0.4/` are executable conformance material. Continuous integration validates every schema and example in JSON Schema 2020-12 strict mode, recomputes all canonical digests, and checks that every reason code used on the wire is registered. The same checks are available locally: `npm test` for the full suite, `npm run validate -- <file>` for a single artifact.
+The reference examples in `examples/v0.4/` are executable conformance material. Continuous integration validates every schema and example in JSON Schema 2020-12 strict mode, evaluates cross-artifact authority, time, context, and lifecycle invariants, recomputes canonical digests, verifies example signatures, and checks that every reason code used on the wire is registered. The same checks are available locally: `npm test` for the full suite, `npm run validate -- <file>` for schema plus semantic validation of one artifact against the published dependency set, and `npm run conformance` for the language-neutral vectors.
 
 ---
 

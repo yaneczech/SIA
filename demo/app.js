@@ -392,7 +392,7 @@ function populateNodeSelect() {
   select.value = COLLISION_ID;
 }
 
-const labInputs = ['node', 'actor', 'signature', 'age', 'replay', 'vehicle-state', 'road-type', 'driver-state', 'cluster-online', 'voice-online', 'ivi-online', 'delivery-mode', 'ack-mode', 'inject-priority'];
+const labInputs = ['node', 'actor', 'signature', 'credential-active', 'declaration-bound', 'validity-bounded', 'age', 'replay', 'vehicle-state', 'road-type', 'driver-state', 'cluster-online', 'voice-online', 'ivi-online', 'delivery-mode', 'ack-mode', 'inject-priority'];
 labInputs.forEach((id) => $(`#${id}`).addEventListener('input', updateLab));
 
 function updateLab() {
@@ -406,6 +406,9 @@ function updateLab() {
     nodeId,
     actorClass: $('#actor').value,
     signatureValid: $('#signature').checked,
+    revoked: !$('#credential-active').checked,
+    nodeSchemaDigest: $('#declaration-bound').checked ? node.schemaDigest : 'f'.repeat(64),
+    validUntilMs: $('#validity-bounded').checked ? undefined : 1784116800100 + node.semanticValidityMs,
     ageMs,
     replayed: $('#replay').checked,
     vehicleState: $('#vehicle-state').value,
@@ -458,7 +461,7 @@ function updateLab() {
       : '';
   $('#lab-status-copy').textContent = result.reason + deliveryCopy + acknowledgementCopy + (result.priority.reservedFieldRejected ? ` The reserved runtime priority field “${result.priority.injected}” caused closed-envelope rejection; declared priority remains “${result.priority.declared}”.` : '');
   $('#mini-trust').textContent = result.accepted ? 'verified' : 'rejected';
-  $('#mini-context').textContent = contextDeferred ? result.retention.disposition : result.outcome === 'context_dropped' ? 'dropped' : result.outcome === 'not_applicable' ? 'not applicable' : result.contextMode === 'moving_strict' ? 'unknown → strict mode' : result.contextMode === 'not_moving' ? 'vehicle stationary' : 'moving';
+  $('#mini-context').textContent = contextDeferred ? result.retention.disposition : result.outcome === 'context_dropped' ? 'dropped' : result.outcome === 'not_applicable' ? 'not applicable' : contextSummary(result);
   $('#mini-output').textContent = result.primary ? [result.primary, ...result.concurrent].map(rendererLabel).join(' + ') : contextDeferred ? 'held semantic state' : 'none';
   $('#mini-delivery').textContent = contextDeferred ? 'not dispatched yet' : ({ presented: 'presented', fallback_presented: 'backup presented', received: 'received only', pending: 'waiting', failed: 'failed / timeout', not_dispatched: 'not dispatched' })[delivery.state];
   $('#mini-ack').textContent = ({ acknowledged: 'acknowledged', timed_out: 'response timeout', pending: 'waiting', not_required: 'not required', not_started: 'not started' })[ack.state];
@@ -517,6 +520,13 @@ function renderAttentionReadout(node, result) {
 }
 
 function rendererLabel(name) { return RENDERERS[name]?.label || name; }
+
+function contextSummary(result) {
+  if (result.contextMode === 'moving_strict') return 'unknown → strict mode';
+  if (!result.context) return result.contextMode;
+  const { motionState, operatingMode, energyState } = result.context;
+  return [motionState, operatingMode, energyState === 'charging' ? 'charging' : null].filter(Boolean).join(' · ');
+}
 
 populateNodeSelect();
 renderTrustMatrix();

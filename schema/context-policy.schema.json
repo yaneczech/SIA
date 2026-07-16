@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/context-policy.schema.json",
+  "title": "SIA Context Policy",
+  "type": "object",
+  "required": [
+    "spec_version",
+    "policy_id",
+    "policy_version",
+    "axis_requirements",
+    "attention_modifiers",
+    "integrity"
+  ],
+  "properties": {
+    "spec_version": { "const": "0.4.0" },
+    "policy_id": { "type": "string", "pattern": "^sia:policy:[a-z0-9_.-]+:[0-9]+$" },
+    "policy_version": { "$ref": "#/$defs/semver" },
+    "axis_requirements": {
+      "type": "object",
+      "required": ["motion_state", "operating_mode", "energy_state", "road_type", "driver_state", "occupancy"],
+      "properties": {
+        "motion_state": { "$ref": "#/$defs/axisRequirement" },
+        "operating_mode": { "$ref": "#/$defs/axisRequirement" },
+        "energy_state": { "$ref": "#/$defs/axisRequirement" },
+        "road_type": { "$ref": "#/$defs/axisRequirement" },
+        "driver_state": { "$ref": "#/$defs/axisRequirement" },
+        "occupancy": { "$ref": "#/$defs/axisRequirement" }
+      },
+      "additionalProperties": false
+    },
+    "attention_modifiers": {
+      "type": "object",
+      "required": ["road_type", "driver_state"],
+      "properties": {
+        "road_type": {
+          "type": "object",
+          "required": ["urban", "rural", "highway", "off_road", "unknown"],
+          "properties": {
+            "urban": { "$ref": "#/$defs/modifier" },
+            "rural": { "$ref": "#/$defs/modifier" },
+            "highway": { "$ref": "#/$defs/modifier" },
+            "off_road": { "$ref": "#/$defs/modifier" },
+            "unknown": { "$ref": "#/$defs/modifier" }
+          },
+          "additionalProperties": false
+        },
+        "driver_state": {
+          "type": "object",
+          "required": ["attentive", "drowsy", "distracted", "not_monitoring", "unknown"],
+          "properties": {
+            "attentive": { "$ref": "#/$defs/modifier" },
+            "drowsy": { "$ref": "#/$defs/modifier" },
+            "distracted": { "$ref": "#/$defs/modifier" },
+            "not_monitoring": { "$ref": "#/$defs/modifier" },
+            "unknown": { "$ref": "#/$defs/modifier" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "integrity": { "$ref": "#/$defs/integrity" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+    "modifier": { "type": "number", "minimum": 0.5, "maximum": 3 },
+    "axisRequirement": {
+      "type": "object",
+      "required": ["max_age_ms", "min_confidence", "unknown_handling"],
+      "properties": {
+        "max_age_ms": { "type": "integer", "minimum": 1, "maximum": 86400000 },
+        "min_confidence": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "unknown_handling": { "enum": ["safe_worst_case", "fail_closed"] }
+      },
+      "additionalProperties": false
+    },
+    "integrity": {
+      "type": "object",
+      "required": ["issuer", "key_id", "algorithm", "signature"],
+      "properties": {
+        "issuer": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "key_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256"] },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "minLength": 8, "maxLength": 4096 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

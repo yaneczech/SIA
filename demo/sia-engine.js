@@ -14,30 +14,48 @@ export const RENDERERS = Object.freeze({
 });
 
 export const CONTEXT_MODIFIERS = Object.freeze({
-  road_type: { urban: 1.0, rural: 0.9, highway: 1.2, off_road: 1.3 },
-  driver_state: { attentive: 1.0, drowsy: 1.3, distracted: 1.5, not_monitoring: 1.0, unknown: 1.2 },
+  road_type: { urban: 1.0, rural: 0.9, highway: 1.2, off_road: 1.3, unknown: 1.3 },
+  driver_state: { attentive: 1.0, drowsy: 1.3, distracted: 1.5, not_monitoring: 1.5, unknown: 1.5 },
 });
+
+const CONTEXT_POLICY_REF = 'sia:policy:core-context:1';
+const CONTEXT_POLICY_SHA256 = 'b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22';
 
 export const NODES = Object.freeze({
   'Interaction.Event.Alert.Collision.Warning': {
     type: 'Alert',
     label: 'Collision warning',
     priority: 'critical',
+    schemaDigest: 'cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c',
     semanticValidityMs: 500,
     trustRequirements: { permittedActorClasses: ['adas'], maxIngressAgeMs: 200 },
-    contextPolicy: { applicability: 'moving_only', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'never_block' } },
+    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'never_block' } },
     presentationContract: { preferredRenderers: ['cluster', 'voice'], requiredRenderers: [], deliverySuccessPolicy: 'any_selected_presented', deliveryTimeoutMs: 300, degradationPolicy: 'next_eligible' },
     occupantResponse: { kind: 'explicit_or_timeout', authority: 'driver_only', timeoutMs: 2000 },
     attention: { glanceTimeMs: 800, meanGlanceMs: 300, taskSteps: 0, voiceAlt: true, cognitiveLoad: 'minimal' },
     regulatoryBasis: ['ISO 15623', 'UNECE R152'],
   },
+  'Interaction.Event.Alert.Lane.Departure.Warning': {
+    type: 'Alert',
+    label: 'Lane departure warning',
+    priority: 'high',
+    schemaDigest: 'c8579003d085bb33b796f710bca05e1c5b0e6dfa2659b628118eb63b9f202555',
+    semanticValidityMs: 1000,
+    trustRequirements: { permittedActorClasses: ['adas'], maxIngressAgeMs: 300 },
+    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'moving_only', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'never_block' } },
+    presentationContract: { preferredRenderers: ['cluster', 'voice'], requiredRenderers: [], deliverySuccessPolicy: 'any_selected_presented', deliveryTimeoutMs: 400, degradationPolicy: 'next_eligible' },
+    occupantResponse: { kind: 'none' },
+    attention: { glanceTimeMs: 600, meanGlanceMs: 250, taskSteps: 0, voiceAlt: true, cognitiveLoad: 'minimal' },
+    regulatoryBasis: ['UNECE R79'],
+  },
   'Interaction.Event.Notification.Diagnostic.CollisionSensorTest': {
     type: 'Notification',
     label: 'Collision-sensor diagnostic',
     priority: 'normal',
+    schemaDigest: 'c8594ed293f7e78bdb6fb458a6dab23964911da5dceadeaffe96472abe68e689',
     semanticValidityMs: 60000,
     trustRequirements: { permittedActorClasses: ['adas', 'service'], maxIngressAgeMs: 5000 },
-    contextPolicy: { applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'defer', ttlMs: 60000, reevaluateOn: ['driver_state_change', 'vehicle_state_change'], onExpiry: 'drop', maxPending: 10 } },
+    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'defer', ttlMs: 60000, reevaluateOn: ['driver_state_change', 'motion_state_change', 'operating_mode_change'], onExpiry: 'drop', maxPending: 10 } },
     presentationContract: { preferredRenderers: ['ivi'], requiredRenderers: [], deliverySuccessPolicy: 'primary_presented', deliveryTimeoutMs: 1200, degradationPolicy: 'no_degradation' },
     occupantResponse: { kind: 'none' },
     attention: { glanceTimeMs: 1200, meanGlanceMs: 500, taskSteps: 2, voiceAlt: false, cognitiveLoad: 'moderate' },
@@ -46,9 +64,10 @@ export const NODES = Object.freeze({
     type: 'Notification',
     label: 'Now playing',
     priority: 'low',
+    schemaDigest: 'f1cd4853e75a0724c039005a58a1a239d573f5d6e223f0cee0fd63c2b58f3c04',
     semanticValidityMs: 30000,
     trustRequirements: { permittedActorClasses: ['service', 'third_party_app'], maxIngressAgeMs: 5000 },
-    contextPolicy: { applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'coalesce', ttlMs: 30000, coalescingKeyFields: ['node_id', 'target_role', 'actor_id', 'payload.session_id'], reevaluateOn: ['driver_state_change', 'vehicle_state_change'], onExpiry: 'drop', maxPendingPerKey: 1 } },
+    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'coalesce', ttlMs: 30000, coalescingKeyFields: ['node_id', 'target_role', 'actor_id', 'payload.session_id'], reevaluateOn: ['driver_state_change', 'motion_state_change', 'operating_mode_change'], onExpiry: 'drop', maxPendingPerKey: 1 } },
     presentationContract: { preferredRenderers: ['ivi', 'voice'], requiredRenderers: [], deliverySuccessPolicy: 'any_selected_presented', deliveryTimeoutMs: 1200, degradationPolicy: 'next_eligible' },
     occupantResponse: { kind: 'none' },
     attention: { glanceTimeMs: 1500, meanGlanceMs: 450, taskSteps: 1, voiceAlt: true, cognitiveLoad: 'minimal' },
@@ -57,9 +76,10 @@ export const NODES = Object.freeze({
     type: 'Notification',
     label: 'Assistant suggestion',
     priority: 'low',
+    schemaDigest: '909e52074b5af4f2583e722684fc2bfb068d43a0e500e42a0af93b18c5657042',
     semanticValidityMs: 5000,
     trustRequirements: { permittedActorClasses: ['agent_local', 'agent_cloud', 'service'], maxIngressAgeMs: 2000 },
-    contextPolicy: { applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'drop', auditRequired: true } },
+    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'drop', auditRequired: true } },
     presentationContract: { preferredRenderers: ['ivi', 'voice'], requiredRenderers: [], deliverySuccessPolicy: 'any_selected_presented', deliveryTimeoutMs: 1200, degradationPolicy: 'drop_with_audit' },
     occupantResponse: { kind: 'none' },
     attention: { glanceTimeMs: 1000, meanGlanceMs: 400, taskSteps: 1, voiceAlt: true, cognitiveLoad: 'minimal' },
@@ -69,7 +89,7 @@ export const NODES = Object.freeze({
 export const DEFAULT_NODE_ID = 'Interaction.Event.Alert.Collision.Warning';
 
 export function resolveNode(nodeId) {
-  return NODES[nodeId] || NODES[DEFAULT_NODE_ID];
+  return NODES[nodeId ?? DEFAULT_NODE_ID] || null;
 }
 
 export function nodeCatalog() {
@@ -95,15 +115,43 @@ export function trustMatrix() {
 
 export function evaluateInteraction(input) {
   const node = resolveNode(input.nodeId);
+  if (!node) {
+    return {
+      nodeId: input.nodeId,
+      node: null,
+      accepted: false,
+      outcome: 'rejected',
+      reason: `The node ${input.nodeId || '(missing)'} is not present in the installed catalog.`,
+      checks: [check('unknown_node', 'Installed declaration', false, 'Unknown nodes fail closed and are never reinterpreted as a known interaction.')],
+      priority: { declared: null, injected: input.injectedPriority || null, overridden: false, reservedFieldRejected: Boolean(input.injectedPriority) },
+      contextMode: normalizeContext(input.vehicleState),
+      context: deriveContextAxes(input.vehicleState),
+      attention: null,
+      primary: null,
+      concurrent: [],
+      rejectedRenderers: availableRenderers(input),
+      auditCode: 'TRUST_REJECTED_UNKNOWN_NODE',
+    };
+  }
   const roadType = input.roadType || 'highway';
   const driverState = input.driverState || 'attentive';
+  const observedDeclarationDigest = input.nodeSchemaDigest ?? node.schemaDigest;
+  const acceptedAtMs = input.acceptedAtMs ?? 1784116800100;
+  const occurredAtMs = input.occurredAtMs ?? acceptedAtMs - Math.max(input.ageMs ?? 0, 0);
+  const validUntilMs = input.validUntilMs ?? occurredAtMs + node.semanticValidityMs;
+  const semanticValidityOk = occurredAtMs < validUntilMs
+    && validUntilMs <= occurredAtMs + node.semanticValidityMs
+    && acceptedAtMs <= validUntilMs;
 
   const checks = [
     check('envelope', 'Closed runtime envelope', !input.injectedPriority, 'A runtime instance cannot override declaration-owned priority.'),
-    check('signature', 'Digital signature', Boolean(input.signatureValid), 'The signature does not match.'),
+    check('declaration_digest', 'Declaration digest', observedDeclarationDigest === node.schemaDigest, 'The instance references a declaration that does not match the installed catalog.'),
     check('actor', 'Emitter authority', node.trustRequirements.permittedActorClasses.includes(input.actorClass), `${actorLabel(input.actorClass)} is not allowed to emit ${node.label}.`),
-    check('freshness', 'Message freshness', Number.isFinite(input.ageMs) && input.ageMs <= node.trustRequirements.maxIngressAgeMs, `The message is ${input.ageMs} ms old; the ingress limit for this node is ${node.trustRequirements.maxIngressAgeMs} ms.`),
+    check('signature', 'Digital signature', Boolean(input.signatureValid), 'The signature does not match.'),
+    check('freshness', 'Ingress freshness', Number.isFinite(input.ageMs) && input.ageMs >= -50 && input.ageMs <= node.trustRequirements.maxIngressAgeMs, `The message age ${input.ageMs} ms is outside the permitted −50…${node.trustRequirements.maxIngressAgeMs} ms window.`),
     check('replay', 'Replay protection', !input.replayed, 'The same message has already been processed.'),
+    check('revoked', 'Revocation status', !input.revoked, 'The actor key or session is revoked in the current authority registry.'),
+    check('semantic_validity', 'Semantic validity', semanticValidityOk, 'The runtime validity is expired, reversed, or longer than the declaration permits.'),
   ];
 
   const priority = {
@@ -116,7 +164,7 @@ export function evaluateInteraction(input) {
   const failed = checks.find((item) => !item.passed);
   if (failed) {
     return {
-      nodeId: node === NODES[input.nodeId] ? input.nodeId : DEFAULT_NODE_ID,
+      nodeId: input.nodeId,
       node,
       accepted: false,
       outcome: 'rejected',
@@ -128,18 +176,19 @@ export function evaluateInteraction(input) {
       primary: null,
       concurrent: [],
       rejectedRenderers: availableRenderers(input),
-      auditCode: failed.id === 'envelope' ? 'TRUST_REJECTED_ENVELOPE' : `TRUST_REJECTED_${failed.id.toUpperCase()}`,
+      auditCode: ({ envelope: 'TRUST_REJECTED_ENVELOPE', declaration_digest: 'TRUST_REJECTED_DECLARATION_DIGEST', actor: 'TRUST_REJECTED_ACTOR', signature: 'TRUST_REJECTED_SIGNATURE', freshness: 'TRUST_REJECTED_FRESHNESS', replay: 'TRUST_REJECTED_REPLAY', revoked: 'TRUST_REJECTED_REVOKED', semantic_validity: 'TRUST_REJECTED_EXPIRED' })[failed.id],
     };
   }
 
   const contextMode = normalizeContext(input.vehicleState);
-  const nodeId = Object.prototype.hasOwnProperty.call(NODES, input.nodeId) ? input.nodeId : DEFAULT_NODE_ID;
+  const context = deriveContextAxes(input.vehicleState);
+  const nodeId = input.nodeId;
 
-  if (node.contextPolicy.applicability === 'moving_only' && input.vehicleState === 'charging') {
+  if (node.contextPolicy.applicability === 'moving_only' && context.motionState !== 'moving' && context.motionState !== 'unknown') {
     return {
       nodeId, node, accepted: true, outcome: 'not_applicable',
-      reason: 'The declaration is moving-only and the vehicle is charging. The instance closes as not applicable; diagnostics require a separate typed node.',
-      checks, priority, contextMode, attention: null, primary: null, concurrent: [],
+      reason: `${node.label} is meaningful only while the vehicle is moving. Motion is ${context.motionState}, so the instance closes as not applicable.`,
+      checks, priority, contextMode, context, attention: null, primary: null, concurrent: [],
       rejectedRenderers: availableRenderers(input), auditCode: 'CONTEXT_NOT_APPLICABLE',
     };
   }
@@ -151,7 +200,7 @@ export function evaluateInteraction(input) {
       return {
         nodeId, node, accepted: true, outcome: 'context_dropped',
         reason: 'Driver distraction blocks presentation. This node is declared ephemeral, so Context Policy records and drops it instead of surfacing stale advice later.',
-        checks, priority, contextMode, attention: null, primary: null, concurrent: [],
+        checks, priority, contextMode, context, attention: null, primary: null, concurrent: [],
         rejectedRenderers: availableRenderers(input),
         retention: { disposition: 'drop', state: 'dropped', key: null, ttlMs: null, replaceExisting: false, reevaluateOn: [] },
         auditCode: 'CONTEXT_BLOCKED_DROPPED',
@@ -164,7 +213,7 @@ export function evaluateInteraction(input) {
       reason: coalesced
         ? `Driver distraction blocks presentation. Context Policy retains only the latest ${node.label} state for up to ${blockedPolicy.ttlMs / 1000} s and re-evaluates it when the driver becomes attentive.`
         : `Driver distraction blocks presentation. Context Policy defers this notification for up to ${blockedPolicy.ttlMs / 1000} s and re-evaluates it when the driver becomes attentive.`,
-      checks, priority, contextMode, attention: null, primary: null, concurrent: [],
+      checks, priority, contextMode, context, attention: null, primary: null, concurrent: [],
       rejectedRenderers: availableRenderers(input),
       retention: {
         disposition,
@@ -199,9 +248,8 @@ export function evaluateInteraction(input) {
     for (const name of Object.keys(available)) {
       if (!available[name]) continue;
       if (name === primary) { attention.budgets[name] = { eligible: true, reason: 'safety-certified surface — selected' }; continue; }
-      if (name === 'voice' && primary && node.priority === 'critical' && node.attention.voiceAlt) {
-        concurrent.push(name);
-        attention.budgets[name] = { eligible: true, reason: 'eyes-free — concurrent with primary' };
+      if (node.presentationContract.preferredRenderers.includes(name)) {
+        attention.budgets[name] = { eligible: true, reason: 'eligible declared fallback — standby until needed' };
         continue;
       }
       rejectedRenderers.push(name);
@@ -227,7 +275,7 @@ export function evaluateInteraction(input) {
     return {
       nodeId, node, accepted: true, outcome: 'no_safe_renderer',
       reason: 'The message passed verification, but no eligible renderer from the declared fallback chain is available.',
-      checks, priority, contextMode, attention, primary: null, concurrent: [],
+      checks, priority, contextMode, context, attention, primary: null, concurrent: [],
       rejectedRenderers: rejectedRenderers.length ? rejectedRenderers : availableRenderers(input),
       auditCode: 'NO_ELIGIBLE_RENDERER',
     };
@@ -239,11 +287,13 @@ export function evaluateInteraction(input) {
     accepted: true,
     outcome: isFirstChoice ? 'dispatched' : 'fallback',
     reason: isFirstChoice
-      ? `${RENDERERS[primary].label} is the safest eligible surface for this interaction${concurrent.length ? `, with ${concurrent.map((c) => RENDERERS[c].label).join(', ')} concurrently` : ''}.`
+      ? `${RENDERERS[primary].label} is the safest eligible primary surface for this interaction.`
       : `${node.presentationContract.preferredRenderers[0] === 'cluster' ? 'The cluster is offline.' : 'The preferred renderer is unavailable or over budget.'} SIA uses the next safe option in the declared renderer order: ${RENDERERS[primary].label}.`,
-    checks, priority, contextMode, attention, primary, concurrent,
+    checks, priority, contextMode, context, attention, primary, concurrent,
     rejectedRenderers,
-    auditCode: isFirstChoice ? (concurrent.length ? 'PRIMARY_AND_CONCURRENT_SELECTED' : 'PRIMARY_SELECTED') : 'FALLBACK_SELECTED',
+    auditCode: isFirstChoice
+      ? (concurrent.length ? 'PRIMARY_AND_CONCURRENT_SELECTED' : node.presentationContract.preferredRenderers.some((renderer) => renderer !== primary && input.renderers?.[renderer]) ? 'PRIMARY_WITH_FALLBACK_STANDBY' : 'PRIMARY_SELECTED')
+      : 'FALLBACK_SELECTED',
   };
 }
 
@@ -253,8 +303,16 @@ function check(id, label, passed, reason) {
 
 function normalizeContext(vehicleState) {
   if (vehicleState === 'unknown') return 'moving_strict';
-  if (vehicleState === 'charging') return 'not_moving';
+  if (['charging', 'parked', 'service'].includes(vehicleState)) return 'stationary';
   return 'moving';
+}
+
+function deriveContextAxes(vehicleState) {
+  if (vehicleState === 'charging') return { motionState: 'stationary', operatingMode: 'parked', energyState: 'charging' };
+  if (vehicleState === 'parked') return { motionState: 'stationary', operatingMode: 'parked', energyState: 'not_charging' };
+  if (vehicleState === 'service') return { motionState: 'stationary', operatingMode: 'service', energyState: 'not_charging' };
+  if (vehicleState === 'unknown') return { motionState: 'unknown', operatingMode: 'unknown', energyState: 'unknown' };
+  return { motionState: 'moving', operatingMode: 'driving', energyState: 'not_charging' };
 }
 
 function availableRenderers(input) {
@@ -263,6 +321,46 @@ function availableRenderers(input) {
 
 function requiresOccupantResponse(node) {
   return node?.occupantResponse?.kind !== 'none';
+}
+
+function buildTimeSemantics(input, node, decision) {
+  const acceptedAtMs = input.acceptedAtMs ?? 1784116800100;
+  const ingressAgeMs = Number.isFinite(input.ageMs) ? input.ageMs : null;
+  const attestedAtMs = ingressAgeMs == null ? null : acceptedAtMs - ingressAgeMs;
+  const occurredAtMs = input.occurredAtMs ?? attestedAtMs ?? acceptedAtMs;
+  const validUntilMs = input.validUntilMs ?? occurredAtMs + node.semanticValidityMs;
+  const semanticRemainingMs = validUntilMs - acceptedAtMs;
+  const declaredRetentionTtlMs = node.contextPolicy.onBlocked.ttlMs ?? null;
+  const retentionActive = decision.retention?.state === 'held';
+  const retentionDeadlineMs = retentionActive && declaredRetentionTtlMs != null
+    ? Math.min(acceptedAtMs + declaredRetentionTtlMs, validUntilMs)
+    : null;
+
+  return {
+    ingress_freshness: {
+      attested_at_ms: attestedAtMs,
+      accepted_at_ms: acceptedAtMs,
+      ingress_age_ms: ingressAgeMs,
+      max_ingress_age_ms: node.trustRequirements.maxIngressAgeMs,
+      status: ingressAgeMs != null && ingressAgeMs <= node.trustRequirements.maxIngressAgeMs ? 'fresh' : 'stale',
+    },
+    semantic_validity: {
+      occurred_at_ms: occurredAtMs,
+      valid_until_ms: validUntilMs,
+      semantic_validity_ms: node.semanticValidityMs,
+      remaining_at_accept_ms: semanticRemainingMs,
+      status: semanticRemainingMs >= 0 ? 'valid' : 'expired',
+    },
+    retention: {
+      disposition: node.contextPolicy.onBlocked.disposition,
+      active: retentionActive,
+      retention_ttl_ms: declaredRetentionTtlMs,
+      retained_at_ms: retentionActive ? acceptedAtMs : null,
+      expires_at_ms: retentionDeadlineMs,
+      effective_window_ms: retentionDeadlineMs == null ? null : retentionDeadlineMs - acceptedAtMs,
+      bounded_by: retentionDeadlineMs == null ? null : retentionDeadlineMs === validUntilMs ? 'valid_until_ms' : 'retention_ttl_ms',
+    },
+  };
 }
 
 export function buildPhaseTrace(input, decision, acknowledgement = null, delivery = null) {
@@ -278,6 +376,8 @@ export function buildPhaseTrace(input, decision, acknowledgement = null, deliver
   const interactionClosed = acknowledgement?.closed ?? (deferred ? false : (delivery?.final ?? !decision.primary));
   const actor = actorLabel(input.actorClass);
   const allRenderers = ['cluster', 'voice', 'ivi'];
+  const observedDeclarationDigest = input.nodeSchemaDigest || node.schemaDigest;
+  const timeSemantics = buildTimeSemantics(input, node, decision);
 
   return {
     ontology: {
@@ -304,6 +404,7 @@ export function buildPhaseTrace(input, decision, acknowledgement = null, deliver
         node_id: decision.nodeId,
         payload: node.type === 'Alert' ? { time_to_collision_s: 1.4, threat_bearing_deg: 12, threat_range_m: 18, relative_speed_kmh: 42 } : { note: 'illustrative payload' },
         priority_claim: decision.priority.injected ? { injected: decision.priority.injected, result: 'closed-envelope rejection' } : null,
+        node_schema_sha256: observedDeclarationDigest,
         attestation: { actor_class: input.actorClass, signature_valid: input.signatureValid, age_ms: input.ageMs, replayed: input.replayed },
       },
     },
@@ -311,12 +412,12 @@ export function buildPhaseTrace(input, decision, acknowledgement = null, deliver
       icon: decision.accepted ? 'shield-check' : 'shield-x',
       question: 'Is this emitter allowed to say this?',
       answer: decision.accepted ? 'The node satisfies every declared trust requirement.' : `The node fails closed: ${decision.reason}`,
-      explanation: 'Authentication alone is not enough. Trust Policy checks semantic authority, freshness, and replay protection before any renderer can see the node.',
-      input: { title: 'Node + attestation', items: [`Actor: ${actor}`, `Signature: ${input.signatureValid ? 'valid' : 'invalid'}`, `Message age: ${input.ageMs} ms`] },
-      rule: { title: 'Verify requirements', items: ['closed runtime envelope', `actor ∈ [${node.trustRequirements.permittedActorClasses.join(', ')}]`, 'signature = valid', `ingress age ≤ ${node.trustRequirements.maxIngressAgeMs} ms`, 'nonce = unused'] },
+      explanation: 'Authentication alone is not enough. Trust Policy binds the instance to an installed declaration, then checks semantic authority, authenticity, freshness, replay, revocation, and validity before any renderer can see it.',
+      input: { title: 'Node + attestation', items: [`Actor: ${actor}`, `Signature: ${input.signatureValid ? 'valid' : 'invalid'}`, `Declaration digest: ${observedDeclarationDigest === node.schemaDigest ? 'matches catalog' : 'mismatch'}`, `Ingress age: ${input.ageMs} ms`] },
+      rule: { title: 'Verify all eight requirements', items: ['Closed envelope + node-specific payload schema', 'Declaration digest matches the installed catalog', `Actor class + identity permitted: [${node.trustRequirements.permittedActorClasses.join(', ')}]`, 'Signature or verified session authenticator is valid', `Ingress age ≤ ${node.trustRequirements.maxIngressAgeMs} ms`, 'Nonce has not been accepted before', 'Key and session revocation status is current', 'Semantic validity is open at acceptance'] },
       output: { title: decision.accepted ? 'Verified node' : 'Security rejection', items: decision.accepted ? ['Trust status: verified', 'Node may enter Translation', 'Provenance retained'] : [`Code: ${decision.auditCode}`, 'No renderer dispatch', 'Security event logged'] },
-      rationale: decision.accepted ? 'All four checks pass. The verified semantic identity — not payload-supplied priority — continues downstream.' : 'A single failed requirement stops the interaction before translation. Criticality never overrides trust failure.',
-      trace: { requirements: { permitted_actor_classes: node.trustRequirements.permittedActorClasses, signed_origin_required: true, max_ingress_age_ms: node.trustRequirements.maxIngressAgeMs, replay_protection: 'required' }, observed: { actor_class: input.actorClass, signature_valid: input.signatureValid, ingress_age_ms: input.ageMs, replayed: input.replayed, reserved_priority_field: input.injectedPriority || null }, checks: checkSummary, decision: decision.accepted ? 'verified' : decision.auditCode },
+      rationale: decision.accepted ? 'All eight requirements are executable in the walkthrough. Binding the instance to the declaration and current authority state keeps priority, target, validity, and policy outside emitter control.' : 'A single failed requirement stops the interaction before translation. Criticality never overrides trust failure.',
+      trace: { requirements: { closed_envelope_and_payload_schema: true, declaration_digest_required: true, permitted_actor_classes: node.trustRequirements.permittedActorClasses, signed_origin_required: true, max_ingress_age_ms: node.trustRequirements.maxIngressAgeMs, replay_protection: 'required', revocation_status: 'current', semantic_validity_at_acceptance: 'required' }, observed: { node_schema_sha256: observedDeclarationDigest, installed_declaration_sha256: node.schemaDigest, declaration_digest_matches: observedDeclarationDigest === node.schemaDigest, actor_class: input.actorClass, signature_valid: input.signatureValid, ingress_age_ms: input.ageMs, replayed: input.replayed, key_or_session_revoked: Boolean(input.revoked), semantic_validity_status: timeSemantics.semantic_validity.status, reserved_priority_field: input.injectedPriority || null }, executable_checks: checkSummary, decision: decision.accepted ? 'verified' : decision.auditCode },
     },
     translation: {
       icon: 'route',
@@ -327,7 +428,7 @@ export function buildPhaseTrace(input, decision, acknowledgement = null, deliver
       rule: { title: deferred ? 'Retention policy' : decision.attention ? 'Capability negotiation' : 'Context decision', items: decision.attention ? [`base glance ${decision.attention.base} ms × modifier ${decision.attention.modifier} = ${decision.attention.effective} ms`, node.type === 'Alert' ? 'Critical Alert → safety-certified/eyes-free surfaces only' : 'Renderer eligible only if effective glance ≤ its budget', 'Use declared renderer order'] : deferred ? [`Disposition: ${decision.retention.disposition}`, `TTL: ${decision.retention.ttlMs} ms`, `Re-evaluate on: ${decision.retention.reevaluateOn.join(', ')}`] : [`Applicability: ${node.contextPolicy.applicability}`, `Blocked disposition: ${node.contextPolicy.onBlocked.disposition}`, `Decision: ${decision.outcome}`] },
       output: { title: decision.primary ? 'Render plan' : deferred ? 'Held semantic state' : 'No dispatch', items: decision.primary ? [`Primary: ${RENDERERS[decision.primary].label}`, `Concurrent: ${decision.concurrent.map((c) => RENDERERS[c].label).join(', ') || 'none'}`, `Rejected: ${decision.rejectedRenderers.map((r) => RENDERERS[r].label).join(', ') || 'none'}`] : deferred ? [`State: ${decision.retention.state}`, `Disposition: ${decision.retention.disposition}`, decision.retention.replaceExisting ? 'Newer value replaces older held value' : `Expires after ${decision.retention.ttlMs} ms`] : [`Outcome: ${decision.outcome}`, `Code: ${decision.auditCode}`, 'Primary: none'] },
       rationale: decision.reason,
-      trace: { context: { vehicle_state: input.vehicleState, road_type: decision.attention?.roadType || input.roadType, driver_state: decision.attention?.driverState || input.driverState, effective_mode: decision.contextMode }, attention: decision.attention, capabilities: input.renderers, policy: { priority: decision.priority, applicability: node.contextPolicy.applicability, unknown_context: node.contextPolicy.unknownContext, on_blocked: node.contextPolicy.onBlocked, presentation_contract: node.presentationContract }, retention: decision.retention || null, render_plan: { primary: decision.primary, concurrent: decision.concurrent, rejected: decision.rejectedRenderers, delivery_success_policy: node.presentationContract.deliverySuccessPolicy } },
+      trace: { context: { motion_state: deriveContextAxes(input.vehicleState).motionState, operating_mode: deriveContextAxes(input.vehicleState).operatingMode, energy_state: deriveContextAxes(input.vehicleState).energyState, road_type: decision.attention?.roadType || input.roadType, driver_state: decision.attention?.driverState || input.driverState, effective_mode: decision.contextMode }, time_semantics: timeSemantics, attention: decision.attention, capabilities: input.renderers, policy: { policy_ref: node.contextPolicy.policyRef, policy_sha256: node.contextPolicy.policySha256, priority: decision.priority, applicability: node.contextPolicy.applicability, unknown_context: node.contextPolicy.unknownContext, on_blocked: node.contextPolicy.onBlocked, presentation_contract: node.presentationContract }, retention: decision.retention || null, render_plan: { primary: decision.primary, fallback_standby: node.presentationContract.preferredRenderers.filter((renderer) => renderer !== decision.primary && input.renderers?.[renderer]), concurrent: decision.concurrent, rejected: decision.rejectedRenderers, delivery_success_policy: node.presentationContract.deliverySuccessPolicy } },
     },
     runtime: {
       icon: 'reply',
@@ -338,7 +439,7 @@ export function buildPhaseTrace(input, decision, acknowledgement = null, deliver
       rule: { title: 'Coordinate two feedback loops', items: ['Dispatch one interaction ID', 'Evaluate renderer receipts against the declared success policy', 'Start occupant response only after delivery success', responseRequired ? `Accept verified input or close after ${node.occupantResponse.timeoutMs} ms` : 'Close after confirmed delivery', 'Keep all output state consistent'] },
       output: { title: 'Interaction state', items: [`Retention: ${decision.retention ? `${decision.retention.disposition} / ${decision.retention.state}` : 'none'}`, `Delivery: ${deliveryState}`, `Presented via: ${deliveryVia}`, `Occupant ACK: ${ackState}`, `Closed: ${interactionClosed}`, `Delivery audit: ${delivery?.auditCode || (decision.primary ? 'DELIVERY_PENDING' : 'DELIVERY_NOT_DISPATCHED')}`, `Occupant audit: ${ackAuditCode}`] },
       rationale: 'Delivery failure and human non-response have different causes and remediation. Keeping them separate makes fallback, timeout handling, and audit evidence unambiguous.',
-      trace: { instance_state: deferred ? 'held' : decision.primary ? 'dispatched' : decision.outcome, focus_owner: decision.primary ? decision.nodeId : null, retention: decision.retention || null, delivery: { success_policy: node.presentationContract.deliverySuccessPolicy, timeout_ms: node.presentationContract.deliveryTimeoutMs, state: deliveryState, delivered: delivery?.delivered ?? false, delivered_via: delivery?.deliveredVia || [], receipts: delivery?.receipts || {}, audit_code: delivery?.auditCode || (decision.primary ? 'DELIVERY_PENDING' : 'DELIVERY_NOT_DISPATCHED') }, occupant_response: { kind: node.occupantResponse.kind, authority: node.occupantResponse.authority || null, timeout_ms: node.occupantResponse.timeoutMs || null, state: ackState, elapsed_ms: acknowledgement?.elapsedMs ?? null, audit_code: ackAuditCode }, closed: interactionClosed },
+      trace: { instance_state: deferred ? 'held' : decision.primary ? 'dispatched' : decision.outcome, focus_owner: decision.primary ? decision.nodeId : null, time_semantics: timeSemantics, retention: decision.retention || null, delivery: { success_policy: node.presentationContract.deliverySuccessPolicy, timeout_ms: node.presentationContract.deliveryTimeoutMs, state: deliveryState, delivered: delivery?.delivered ?? false, delivered_via: delivery?.deliveredVia || [], receipts: delivery?.receipts || {}, audit_code: delivery?.auditCode || (decision.primary ? 'DELIVERY_PENDING' : 'DELIVERY_NOT_DISPATCHED') }, occupant_response: { kind: node.occupantResponse.kind, authority: node.occupantResponse.authority || null, timeout_ms: node.occupantResponse.timeoutMs || null, state: ackState, elapsed_ms: acknowledgement?.elapsedMs ?? null, audit_code: ackAuditCode }, closed: interactionClosed },
     },
     renderers: {
       icon: 'panels-top-left',

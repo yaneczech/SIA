@@ -1,5 +1,7 @@
 {
   "receipt_id": "e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23",
+  "attempt_id": "a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20",
+  "receipt_sequence": 0,
   "decision_id": "d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22",
   "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
   "renderer_id": "Renderer.Cluster.Primary",
@@ -11,6 +13,6 @@
   "attestation": {
     "key_id": "vehicle-hsm:cluster:4",
     "algorithm": "HMAC-SHA-256",
-    "signature": "EPO3OMaR5cZLMX9Lqga0KceQGHbCI_G271aj1nXMe7E"
+    "signature": "S00Hyrm25KhpfHYG9m4BdKl8dfjaQriu06hwHtTvqWU"
   }
 }

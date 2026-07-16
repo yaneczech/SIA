@@ -58,6 +58,7 @@
           <span class="chip-icon"><i data-lucide="eye-off" aria-hidden="true"></i></span><span><b>Distracted driver</b><small>latest state is retained until safe</small></span>
         </button>
       </div>
+      <p class="scenario-more">The <a href="#lab">Test Lab below</a> exposes all eight trust checks, plus priority injection, not-applicable context, delivery fallback, and occupant response.</p>
 
       <div class="demo-shell">
         <div class="pipeline" aria-label="Warning path through SIA">
@@ -82,7 +83,7 @@
             <div class="stage policy" data-stage="trust">
               <div class="stage-index">03</div>
               <div class="stage-symbol shield" aria-hidden="true"><i data-lucide="shield-check"></i></div>
-              <div><p class="stage-kicker">TRUST POLICY</p><h3>Who is speaking?</h3><p id="trust-detail">Checks the signature, authority, freshness, and replay protection.</p></div>
+              <div><p class="stage-kicker">TRUST POLICY</p><h3>Who is speaking?</h3><p id="trust-detail">Binds the message to its declaration and current authority, then checks all eight trust requirements.</p></div>
               <div class="stage-result" id="trust-result">waiting</div>
             </div>
 
@@ -186,7 +187,7 @@
       </div>
     </section>
 
-    <section class="lab" aria-labelledby="lab-title">
+    <section class="lab" id="lab" aria-labelledby="lab-title">
       <div class="section-heading">
         <div><p class="eyebrow">TEST LAB</p><h2 id="lab-title">Try to break SIA</h2></div>
         <p>Change the inputs. Test renderer delivery independently from the occupant response; the result and audit record update instantly.</p>
@@ -213,7 +214,12 @@
                 <option value="agent_cloud">Cloud AI assistant</option>
               </select>
             </div>
-            <label class="switch-row"><span><b>Valid digital signature</b><small>confirms the emitter's identity</small></span><input id="signature" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+            <div class="compact-switches">
+              <label class="switch-row"><span><b>Valid signature</b><small>authenticator verifies</small></span><input id="signature" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+              <label class="switch-row"><span><b>Credential active</b><small>not revoked</small></span><input id="credential-active" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+              <label class="switch-row"><span><b>Declaration bound</b><small>digest matches catalog</small></span><input id="declaration-bound" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+              <label class="switch-row"><span><b>Validity bounded</b><small>within declared window</small></span><input id="validity-bounded" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+            </div>
           </fieldset>
           <fieldset>
             <legend><span class="legend-index">03</span><span>Freshness</span></legend>
@@ -228,7 +234,11 @@
               <div class="field">
                 <label for="vehicle-state">Vehicle</label>
                 <select id="vehicle-state">
-                  <option value="moving">Moving</option><option value="charging">Charging</option><option value="unknown">Unknown</option>
+                  <option value="moving">Moving · driving · not charging</option>
+                  <option value="charging">Stationary · parked · charging</option>
+                  <option value="parked">Stationary · parked</option>
+                  <option value="service">Stationary · service mode</option>
+                  <option value="unknown">Unknown · strict mode</option>
                 </select>
               </div>
               <div class="field">

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/payloads/lane-departure-warning.v1.schema.json",
+  "title": "Payload: Interaction.Event.Alert.Lane.Departure.Warning (sia:payload:lane-departure-warning:1)",
+  "type": "object",
+  "required": ["departure_side", "lane_confidence_percent"],
+  "properties": {
+    "departure_side": { "enum": ["left", "right"] },
+    "lane_confidence_percent": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "time_to_crossing_s": { "type": "number", "exclusiveMinimum": 0, "maximum": 10 }
+  },
+  "additionalProperties": false
+}

@@ -2,14 +2,21 @@
   "response_id": "f8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b24",
   "decision_id": "d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22",
   "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
+  "context_id": "1a2b3c4d-1111-4aaa-8bbb-1234567890ab",
+  "delivery_receipt_ids": [
+    "e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23"
+  ],
   "state": "acknowledged",
   "authority": "driver_only",
+  "subject_role": "driver",
+  "opened_at_ms": 1784116800132,
+  "deadline_at_ms": 1784116802132,
   "occurred_at_ms": 1784116800552,
   "input_channel": "InputDevice.SteeringWheel.Right.Press",
   "evidence": {
     "kind": "verified_input",
     "key_id": "vehicle-hsm:input:5",
     "algorithm": "HMAC-SHA-256",
-    "signature": "nrgi-0YVLq4a0PyOnC2zjHXmpvCQkPay_CJRlNG37hE"
+    "signature": "8SotZNPDG0bHEFZjbkX8h4s1FYbkFmK_ZTEe9Mc-itk"
   }
 }

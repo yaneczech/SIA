@@ -12,6 +12,6 @@ Interop material for the signing rules in [Core Specification §6](../../03_Core
 
 ## Vectors
 
-[`vectors.json`](./vectors.json) lists the artifacts that MUST verify and mutations that MUST fail (tampered payload, tampered nonce, wrong key, algorithm confusion, transplanted signature). Mutations use the same RFC 7386 merge-patch format as the schema vectors. The key is selected by the artifact's `key_id` unless the vector overrides it with `verify_with_key_id`.
+[`vectors.json`](./vectors.json) lists the artifacts that MUST verify and mutations that MUST fail. Coverage includes the catalog, context policy, actor registry, runtime instance, context snapshot, capability, dispatch attempt, receipt, and response, plus tampered authority state, payload, nonce, deadline, wrong-key, algorithm-confusion, and transplanted-signature cases. Mutations use the same RFC 7386 merge-patch format as the schema vectors. The key is selected by the artifact's `key_id` unless the vector overrides it with `verify_with_key_id`.
 
 Reference implementation of sign/verify: [`tools/crypto.mjs`](../../tools/crypto.mjs). The vectors run in CI via `demo/crypto.test.mjs`. To re-sign the examples after editing them: `node tools/resign-examples.mjs`.

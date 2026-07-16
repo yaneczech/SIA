@@ -28,6 +28,8 @@
     "cognitive_load": "minimal"
   },
   "context_policy": {
+    "policy_ref": "sia:policy:core-context:1",
+    "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
     "applicability": "always",
     "unknown_context": "safe_worst_case",
     "on_blocked": {
@@ -41,7 +43,8 @@
       ],
       "reevaluate_on": [
         "driver_state_change",
-        "vehicle_state_change"
+        "motion_state_change",
+        "operating_mode_change"
       ],
       "on_expiry": "drop",
       "max_pending_per_key": 1

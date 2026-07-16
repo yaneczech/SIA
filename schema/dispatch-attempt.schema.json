@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/dispatch-attempt.schema.json",
+  "title": "SIA Renderer Dispatch Attempt",
+  "type": "object",
+  "required": [
+    "attempt_id",
+    "decision_id",
+    "instance_id",
+    "renderer_id",
+    "role",
+    "sequence",
+    "previous_attempt_id",
+    "dispatched_at_ms",
+    "deadline_at_ms",
+    "state",
+    "reason_code",
+    "integrity"
+  ],
+  "properties": {
+    "attempt_id": { "$ref": "#/$defs/uuid" },
+    "decision_id": { "$ref": "#/$defs/uuid" },
+    "instance_id": { "$ref": "#/$defs/uuid" },
+    "renderer_id": { "type": "string", "pattern": "^Renderer\\.[A-Z][A-Za-z0-9_.-]+$" },
+    "role": { "enum": ["primary", "required", "concurrent", "fallback"] },
+    "sequence": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "previous_attempt_id": { "oneOf": [{ "$ref": "#/$defs/uuid" }, { "type": "null" }] },
+    "dispatched_at_ms": { "type": "integer", "minimum": 0 },
+    "deadline_at_ms": { "type": "integer", "minimum": 1 },
+    "state": { "enum": ["dispatched", "cancelled"] },
+    "reason_code": { "type": ["string", "null"], "pattern": "^[A-Z][A-Z0-9_]+$" },
+    "integrity": { "$ref": "#/$defs/integrity" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "sequence": { "const": 0 } }, "required": ["sequence"] },
+      "then": { "properties": { "previous_attempt_id": { "const": null } } },
+      "else": { "properties": { "previous_attempt_id": { "$ref": "#/$defs/uuid" } } }
+    },
+    {
+      "if": { "properties": { "state": { "const": "dispatched" } }, "required": ["state"] },
+      "then": { "properties": { "reason_code": { "const": null } } },
+      "else": { "properties": { "reason_code": { "type": "string" } } }
+    },
+    {
+      "if": { "properties": { "role": { "const": "fallback" } }, "required": ["role"] },
+      "then": {
+        "properties": {
+          "sequence": { "type": "integer", "minimum": 1, "maximum": 100 },
+          "previous_attempt_id": { "$ref": "#/$defs/uuid" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "role": { "const": "primary" } }, "required": ["role"] },
+      "then": { "properties": { "sequence": { "const": 0 }, "previous_attempt_id": { "const": null } } }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "integrity": {
+      "type": "object",
+      "required": ["issuer", "key_id", "algorithm", "signature"],
+      "properties": {
+        "issuer": { "const": "coordination_runtime" },
+        "key_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "algorithm": { "enum": ["ES256", "EdDSA", "HMAC-SHA-256"] },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "minLength": 8, "maxLength": 4096 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

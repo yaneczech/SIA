@@ -1,0 +1,19 @@
+{
+  "attempt_id": "a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20",
+  "decision_id": "d8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22",
+  "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
+  "renderer_id": "Renderer.Cluster.Primary",
+  "role": "primary",
+  "sequence": 0,
+  "previous_attempt_id": null,
+  "dispatched_at_ms": 1784116800060,
+  "deadline_at_ms": 1784116800360,
+  "state": "dispatched",
+  "reason_code": null,
+  "integrity": {
+    "issuer": "coordination_runtime",
+    "key_id": "vehicle-hsm:runtime:1",
+    "algorithm": "EdDSA",
+    "signature": "FlJuaLv12oXUs7f3W-R_X26jg6w8JQa7VEYOhocZqetZZjMUbN7tWYMZZI5VhyKb76wEeMXgGhuj9gbHKN43AA"
+  }
+}
