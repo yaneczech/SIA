@@ -58,7 +58,23 @@ $$('.scenario-chip').forEach((button) => button.addEventListener('click', () => 
   resetAnimation();
 }));
 
-$$('[data-phase]').forEach((button) => button.addEventListener('click', () => selectInspectionPhase(button.dataset.phase)));
+const phaseTabs = $$('[data-phase]');
+phaseTabs.forEach((button) => {
+  button.addEventListener('click', () => selectInspectionPhase(button.dataset.phase));
+  button.addEventListener('keydown', (event) => {
+    const currentIndex = phaseTabs.indexOf(button);
+    let targetIndex = null;
+    if (event.key === 'ArrowRight') targetIndex = (currentIndex + 1) % phaseTabs.length;
+    if (event.key === 'ArrowLeft') targetIndex = (currentIndex - 1 + phaseTabs.length) % phaseTabs.length;
+    if (event.key === 'Home') targetIndex = 0;
+    if (event.key === 'End') targetIndex = phaseTabs.length - 1;
+    if (targetIndex === null) return;
+    event.preventDefault();
+    const target = phaseTabs[targetIndex];
+    selectInspectionPhase(target.dataset.phase);
+    target.focus();
+  });
+});
 
 $('#run-button').addEventListener('click', () => runScenario());
 $('#replay-button').addEventListener('click', () => runScenario());
@@ -88,6 +104,7 @@ function resetAnimation() {
   setIcon('#decision-icon', 'arrow-right');
   $('#decision-title').textContent = 'Ready';
   $('#decision-copy').textContent = 'Run a scenario to see why the interaction passes—or where it safely stops.';
+  $('#decision-announcement').textContent = '';
   $('#runtime-time').textContent = '0 ms';
   $('#check-list').innerHTML = '';
   $('#run-button').hidden = false;
@@ -112,6 +129,7 @@ function updateScenarioCopy(input) {
 }
 
 async function runScenario(inputOverride = null) {
+  const shouldMoveFocus = ['run-button', 'replay-button', 'resume-button'].includes(document.activeElement?.id);
   resetAnimation();
   const token = ++animationToken;
   const input = inputOverride || scenarios[activeScenario];
@@ -119,6 +137,8 @@ async function runScenario(inputOverride = null) {
   const result = evaluateInteraction(input);
   inspectionContext = { input, decision: result, delivery: null, acknowledgement: null };
   $('#run-button').hidden = true;
+  $('#decision-announcement').textContent = 'Scenario evaluation started.';
+  if (shouldMoveFocus) $('#decision-title').focus({ preventScroll: true });
   const start = performance.now();
 
   // Direct-child flow-links of .pipeline, in document order: [ontology→emitter, emitter→boundary, boundary→renderers].
@@ -292,6 +312,7 @@ function finishDecision(result, elapsed, delivery = null, acknowledgement = null
   $('#resume-button').hidden = !deferred;
   $('#replay-button').hidden = false;
   selectInspectionPhase(delivery ? 'runtime' : activeInspectionPhase);
+  announceDecision();
 }
 
 function beginAck(result, elapsed, delivery) {
@@ -303,6 +324,7 @@ function beginAck(result, elapsed, delivery) {
   $('#ack-button').hidden = false;
   $('#panel-ack-button').hidden = false;
   $('#replay-button').hidden = true;
+  announceDecision();
   const timeoutMs = result.node.occupantResponse.timeoutMs ?? 2000;
   const tick = () => {
     if (!pendingDecision) return;
@@ -318,6 +340,7 @@ function beginAck(result, elapsed, delivery) {
 
 function completeAck(explicit) {
   if (!pendingDecision) return;
+  const shouldMoveFocus = ['ack-button', 'panel-ack-button'].includes(document.activeElement?.id);
   clearInterval(ackTimer);
   const elapsedMs = explicit ? Math.round(performance.now() - pendingDecision.startedAt) : (pendingDecision.result.node.occupantResponse.timeoutMs ?? 2000);
   const ack = coordinateAcknowledgement(pendingDecision.result, { acknowledged: explicit, elapsedMs }, pendingDecision.delivery);
@@ -337,14 +360,22 @@ function completeAck(explicit) {
   $('#runtime-time').textContent = `${elapsedMs} ms demo`;
   $('#replay-button').hidden = false;
   selectInspectionPhase('runtime');
+  announceDecision();
+  if (shouldMoveFocus) $('#decision-title').focus({ preventScroll: true });
   pendingDecision = null;
+}
+
+function announceDecision() {
+  $('#decision-announcement').textContent = `${$('#decision-title').textContent}. ${$('#decision-copy').textContent}`;
 }
 
 function selectInspectionPhase(phase) {
   activeInspectionPhase = phase;
-  $$('[data-phase]').forEach((button) => {
+  phaseTabs.forEach((button) => {
     const selected = button.dataset.phase === phase;
     button.setAttribute('aria-selected', String(selected));
+    button.tabIndex = selected ? 0 : -1;
+    if (selected) $('#phase-panel').setAttribute('aria-labelledby', button.id);
   });
   if (!inspectionContext) return;
   const detail = buildPhaseTrace(inspectionContext.input, inspectionContext.decision, inspectionContext.acknowledgement, inspectionContext.delivery)[phase];

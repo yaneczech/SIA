@@ -78,11 +78,12 @@ test('walkthrough keeps six core scenarios and points advanced cases to the Test
 });
 
 test('interactive documentation exposes the complete 0.4 learning path', async () => {
-  const [html, script, css, demoHtml] = await Promise.all([
+  const [html, script, css, demoHtml, demoCss] = await Promise.all([
     readFile(path.join(root, 'demo/docs.html'), 'utf8'),
     readFile(path.join(root, 'demo/docs.js'), 'utf8'),
     readFile(path.join(root, 'demo/docs.css'), 'utf8'),
     readFile(path.join(root, 'demo/index.html'), 'utf8'),
+    readFile(path.join(root, 'demo/styles.css'), 'utf8'),
   ]);
 
   for (const section of ['overview', 'lifecycle', 'trust', 'time-context', 'feedback', 'contracts', 'operations', 'implementation', 'source-map']) {
@@ -91,6 +92,13 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
   assert.match(html, /use\.typekit\.net\/cyy0vwc\.css/);
   assert.match(css, /font-family:\s*"akagi-pro"/);
   assert.doesNotMatch(css, /letter-spacing:\s*-/);
+  const fixedFontSizes = [...css.matchAll(/(?:font-size:\s*|font:\s*(?:700\s+)?)(\d+(?:\.\d+)?)px/g)]
+    .map((match) => Number(match[1]));
+  assert.equal(
+    fixedFontSizes.filter((size) => size < 11).length,
+    0,
+    'interactive docs must not render explicit text below the 11px annotation floor',
+  );
   assert.match(html, /lucide@0\.468\.0/);
   assert.match(html, /data-reading-mode="essential"/);
   assert.match(html, /data-reading-mode="technical"/);
@@ -126,5 +134,9 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
   assert.match(script, /applicability: \"moving_only\"/);
   assert.match(css, /@media \(max-width: 900px\)/);
   assert.match(css, /@media \(max-width: 680px\)/);
+  assert.match(css, /--content-max:\s*1320px/);
+  assert.match(css, /max-width:\s*var\(--content-max\)/);
+  assert.match(demoCss, /--content-max:\s*1440px/);
+  assert.match(demoCss, /\.explainer > \*, \.matrix-section > \*, \.lab > \*/);
   assert.match(demoHtml, /href="\.\/docs\.html"/);
 });

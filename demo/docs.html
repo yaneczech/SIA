@@ -7,7 +7,7 @@
   <meta name="description" content="Interactive documentation for the Semantic Interaction Architecture 0.4 draft.">
   <title>SIA — Interactive Documentation</title>
   <link rel="stylesheet" href="https://use.typekit.net/cyy0vwc.css">
-  <link rel="stylesheet" href="./docs.css?v=0.4.4">
+  <link rel="stylesheet" href="./docs.css?v=0.4.8">
 </head>
 <body class="mode-essential">
   <a class="skip-link" href="#content">Skip to documentation</a>
@@ -190,7 +190,7 @@
         <div class="trust-explorer">
           <ul class="trust-list" aria-label="Eight trust checks" id="trust-list"></ul>
           <aside class="trust-detail" id="trust-detail" aria-live="polite">
-            <span class="detail-number" id="trust-number">01</span>
+            <span class="detail-number" id="trust-number" aria-hidden="true">01</span>
             <div class="detail-icon" id="trust-icon"><i data-lucide="file-check-2" aria-hidden="true"></i></div>
             <p class="detail-kicker">CHECK</p>
             <h3 id="trust-title">Envelope + payload schema</h3>
@@ -217,9 +217,9 @@
         </div>
 
         <div class="clock-grid" aria-label="SIA time semantics">
-          <article><span class="clock-number">01</span><i data-lucide="timer" aria-hidden="true"></i><h3>Ingress freshness</h3><p>How long transport took before Trust Policy accepted the message.</p><span class="technical-only"><code>acceptance − attestation ≤ max_ingress_age_ms</code></span></article>
-          <article><span class="clock-number">02</span><i data-lucide="hourglass" aria-hidden="true"></i><h3>Semantic validity</h3><p>How long the message still describes useful current meaning.</p><span class="technical-only"><code>now ≤ valid_until_ms</code></span></article>
-          <article><span class="clock-number">03</span><i data-lucide="archive" aria-hidden="true"></i><h3>Retention TTL</h3><p>How long an applicable but blocked interaction may remain held.</p><span class="technical-only"><code>retention_expiry ≤ valid_until_ms</code></span></article>
+          <article><span class="clock-number" aria-hidden="true">01</span><i data-lucide="timer" aria-hidden="true"></i><h3>Ingress freshness</h3><p>How long transport took before Trust Policy accepted the message.</p><span class="technical-only"><code>acceptance − attestation ≤ max_ingress_age_ms</code></span></article>
+          <article><span class="clock-number" aria-hidden="true">02</span><i data-lucide="hourglass" aria-hidden="true"></i><h3>Semantic validity</h3><p>How long the message still describes useful current meaning.</p><span class="technical-only"><code>now ≤ valid_until_ms</code></span></article>
+          <article><span class="clock-number" aria-hidden="true">03</span><i data-lucide="archive" aria-hidden="true"></i><h3>Retention TTL</h3><p>How long an applicable but blocked interaction may remain held.</p><span class="technical-only"><code>retention_expiry ≤ valid_until_ms</code></span></article>
         </div>
 
         <div class="context-explorer">
@@ -421,6 +421,6 @@
   </div>
 
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script type="module" src="./docs.js?v=0.4.2"></script>
+  <script type="module" src="./docs.js?v=0.4.3"></script>
 </body>
 </html>

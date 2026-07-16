@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#090a12">
   <title>SIA — Interactive Demo</title>
   <link rel="stylesheet" href="https://use.typekit.net/cyy0vwc.css">
-  <link rel="stylesheet" href="./styles.css?v=0.4.1">
+  <link rel="stylesheet" href="./styles.css?v=0.4.4">
 </head>
 <body>
   <a class="skip-link" href="#demo">Skip to the demo</a>
@@ -126,13 +126,14 @@
           </div>
         </div>
 
-        <aside class="decision-panel" aria-live="polite">
+        <aside class="decision-panel">
           <div class="decision-topline"><span>DECISION</span><span id="runtime-time">0 ms</span></div>
           <div class="decision-state waiting" id="decision-state">
             <span class="decision-icon" id="decision-icon"><i data-lucide="arrow-right" aria-hidden="true"></i></span>
-            <h3 id="decision-title">Ready</h3>
+            <h3 id="decision-title" tabindex="-1">Ready</h3>
             <p id="decision-copy">Run a scenario to see why the warning passes—or where it safely stops.</p>
           </div>
+          <div class="sr-only" id="decision-announcement" role="status" aria-atomic="true"></div>
           <div class="check-list" id="check-list" aria-label="Scenario checks"></div>
           <button class="run-button" id="run-button"><span>Run scenario</span><i data-lucide="play" aria-hidden="true"></i></button>
           <button class="run-button ack-action" id="panel-ack-button" hidden><span>Acknowledge as driver</span><i data-lucide="reply" aria-hidden="true"></i></button>
@@ -150,14 +151,14 @@
           <p>The short answer is always visible. Open the technical trace for exact fields, rules, and machine-readable output.</p>
         </div>
         <div class="phase-tabs" role="tablist" aria-label="Pipeline phases">
-          <button role="tab" aria-selected="true" data-phase="ontology"><span>01</span>Ontology</button>
-          <button role="tab" aria-selected="false" data-phase="emitter"><span>02</span>Emitter</button>
-          <button role="tab" aria-selected="false" data-phase="trust"><span>03</span>Trust</button>
-          <button role="tab" aria-selected="false" data-phase="translation"><span>04</span>Translation</button>
-          <button role="tab" aria-selected="false" data-phase="runtime"><span>05</span>Runtime</button>
-          <button role="tab" aria-selected="false" data-phase="renderers"><span>06</span>Renderers</button>
+          <button id="phase-tab-ontology" role="tab" aria-selected="true" aria-controls="phase-panel" tabindex="0" data-phase="ontology"><span>01</span>Ontology</button>
+          <button id="phase-tab-emitter" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="emitter"><span>02</span>Emitter</button>
+          <button id="phase-tab-trust" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="trust"><span>03</span>Trust</button>
+          <button id="phase-tab-translation" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="translation"><span>04</span>Translation</button>
+          <button id="phase-tab-runtime" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="runtime"><span>05</span>Runtime</button>
+          <button id="phase-tab-renderers" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="renderers"><span>06</span>Renderers</button>
         </div>
-        <div class="inspector-content" role="tabpanel" aria-live="polite">
+        <div class="inspector-content" id="phase-panel" role="tabpanel" aria-labelledby="phase-tab-ontology">
           <div class="inspector-summary">
             <span class="inspector-icon" id="inspector-icon"><i data-lucide="book-open" aria-hidden="true"></i></span>
             <div><p id="inspector-question">What was declared, once, in the vocabulary?</p><h3 id="inspector-answer">The interaction is defined a single time in the ontology.</h3><p id="inspector-explanation">Trust, attention and fallback are properties of the declaration, not of any single emission.</p></div>
@@ -319,6 +320,6 @@
 
   <footer><span>SIA · Semantic Interaction Architecture</span><span class="footer-links"><a href="./docs.html">Interactive documentation</a><a href="https://github.com/yaneczech/SIA">Architecture proposal →</a></span></footer>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script type="module" src="./app.js?v=0.4.1"></script>
+  <script type="module" src="./app.js?v=0.4.2"></script>
 </body>
 </html>

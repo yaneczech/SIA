@@ -646,19 +646,38 @@ $$('[data-reading-mode]').forEach((button) => button.addEventListener('click', (
 const sidebar = $('#docs-sidebar');
 const scrim = $('#sidebar-scrim');
 const menuButton = $('#menu-button');
-const closeSidebar = () => {
+const mobileSidebar = window.matchMedia('(max-width: 900px)');
+const closeSidebar = ({ restoreFocus = true } = {}) => {
+  const focusWasInside = sidebar.contains(document.activeElement);
   sidebar.classList.remove('is-open');
   menuButton.setAttribute('aria-expanded', 'false');
   scrim.hidden = true;
   document.body.classList.remove('is-menu-open');
+  if (mobileSidebar.matches) sidebar.inert = true;
+  if (restoreFocus && focusWasInside) menuButton.focus();
 };
 const openSidebar = () => {
+  sidebar.inert = false;
   sidebar.classList.add('is-open');
   menuButton.setAttribute('aria-expanded', 'true');
   scrim.hidden = false;
   document.body.classList.add('is-menu-open');
   $('#docs-search').focus();
 };
+
+const syncSidebarAvailability = () => {
+  if (mobileSidebar.matches) {
+    sidebar.inert = !sidebar.classList.contains('is-open');
+    return;
+  }
+  sidebar.inert = false;
+  sidebar.classList.remove('is-open');
+  menuButton.setAttribute('aria-expanded', 'false');
+  scrim.hidden = true;
+  document.body.classList.remove('is-menu-open');
+};
+syncSidebarAvailability();
+mobileSidebar.addEventListener('change', syncSidebarAvailability);
 
 menuButton.addEventListener('click', () => sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar());
 scrim.addEventListener('click', closeSidebar);
@@ -693,7 +712,8 @@ document.addEventListener('keydown', (event) => {
   const isFormField = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
   if (event.key === '/' && !isFormField) {
     event.preventDefault();
-    searchInput.focus();
+    if (mobileSidebar.matches && !sidebar.classList.contains('is-open')) openSidebar();
+    else searchInput.focus();
   }
   if (event.key === 'Escape') {
     if (sidebar.classList.contains('is-open')) closeSidebar();
