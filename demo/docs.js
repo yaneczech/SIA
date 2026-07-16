@@ -30,8 +30,8 @@ const lifecycle = [
     kicker: 'PHASE 01 · ONTOLOGY',
     title: 'Declare the meaning once.',
     summary: 'Long before any warning fires, engineers write one small machine-readable card: what a collision warning means, who may send it, how urgent it is, where it may appear, and what must happen afterwards. That card is called a node—one entry in the vehicle’s dictionary of everything it is allowed to say to people.',
-    story: 'The card says: “A collision warning is critical. Only the driver-assistance system (ADAS) may send it. It must arrive within 200 ms, appear on the instrument cluster or by voice, and the driver must confirm it within 2 seconds.”',
-    why: 'Because the rules live on this card—not inside each screen’s code—every screen, voice channel, and future device applies exactly the same rules. And nothing can talk its way into higher importance later: if the card says the priority, the priority is settled.',
+    story: 'The card says: “A collision warning is critical. Only the driver-assistance system (ADAS) may send it. It must arrive within 200 ms and appear on the instrument cluster or by voice. Once delivery succeeds, acknowledgement or a runtime timeout closes the 2-second response window.”',
+    why: 'Because the rules live on this card and shared policy—not inside each screen’s code—the mediation boundary evaluates the same rule set before any eligible output is asked to present. Nothing can talk its way into higher importance later: if the card says the priority, the priority is settled.',
     icon: 'book-open',
     outputBadge: 'Signed node declaration',
     inputTitle: 'Interaction intent',
@@ -40,7 +40,7 @@ const lifecycle = [
     rules: ['Closed schema', 'Canonical digest binding', 'Policy is data—not runtime override'],
     outputTitle: 'Versioned semantic node',
     output: ['Trust requirements', 'Attention + context policy', 'Delivery + response contract'],
-    codeIntro: 'This is the actual card in the format machines read (JSON). Don’t read every line—notice permitted_actor_classes: the complete list of who may send this warning, and priority, decided here, once.',
+    codeIntro: 'This representative excerpt uses the format machines read (JSON). Don’t read every line—notice permitted_actor_classes: the complete list of who may send this warning, and priority, decided here, once.',
     codeLabel: 'collision-warning.node.json',
     code: {
       id: 'Interaction.Event.Alert.Collision.Warning',
@@ -73,13 +73,13 @@ const lifecycle = [
     rules: ['Catalog + declaration digests bound', 'Actor credential bound', 'Nonce scoped to actor and key'],
     outputTitle: 'Signed occurrence',
     output: ['No priority override', 'No renderer request', 'No acknowledgement override'],
-    codeIntro: 'The signed message. Notice what is missing: no priority, no screen choice, no styling. payload holds the measured facts; attestation holds the proof of who sent it and when.',
+    codeIntro: 'An excerpt of the signed message. Notice what is missing: no priority, no screen choice, no styling. payload holds the measured facts; attestation holds the proof of who sent it and when.',
     codeLabel: 'collision-warning.instance.json',
     code: {
       spec_version: '0.4.0',
       profile_id: 'sia-minimal',
       node_id: 'Interaction.Event.Alert.Collision.Warning',
-      node_schema_sha256: 'cd8cbd4f…f1cc7c',
+      node_schema_sha256: 'cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c',
       instance_id: 'c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21',
       occurred_at_ms: 1784116800000,
       valid_until_ms: 1784116800500,
@@ -92,7 +92,7 @@ const lifecycle = [
     title: 'Verify all eight trust requirements.',
     summary: 'Before any screen even knows the message exists, SIA interrogates it: Is it well-formed? Does it reference the exact card we have installed? Is ADAS allowed to say this? Does the signature verify? Is it fresh—younger than the 200 ms the card demands? Have we seen it before? Is the sender’s key still valid? Is the warning still meaningful right now?',
     story: 'Eight questions, all mandatory. One “no” stops everything—the message never reaches a screen, no matter how urgent it claims to be.',
-    why: 'This gate is what makes a fake warning from a music app impossible rather than unlikely: a valid login is not enough, because authority to speak comes from the card, not from being authenticated. The full list of checks is explored one by one in section 02 below.',
+    why: 'Under the declared trust model, this gate makes a fake warning from a music app fail closed: a valid login is not enough, because authority to speak comes from the card, not from authentication alone. The full list of checks is explored one by one in section 02 below.',
     icon: 'shield-check',
     outputBadge: 'Verified or trust_rejected',
     inputTitle: 'Instance + trust stores',
@@ -101,8 +101,8 @@ const lifecycle = [
     rules: ['Every check is mandatory', 'Unknown nodes stay unknown', 'Signature alone is insufficient'],
     outputTitle: 'Trust decision',
     output: ['Stable reason code', 'Exact evidence digests', 'Audit on terminal rejection'],
-    codeIntro: 'The verifier’s own record of the eight answers. Auditors read these stable codes later to reconstruct exactly why a message passed—or where it died.',
-    codeLabel: 'trust-decision.json',
+    codeIntro: 'This teaching trace summarises the verifier’s eight answers; it is not an additional wire contract. Normative audit records use stable outcome codes to reconstruct why a message passed—or where it stopped.',
+    codeLabel: 'trust-evaluation.trace.json',
     code: {
       state: 'verified',
       reason_code: 'TRUST_VERIFIED',
@@ -122,7 +122,7 @@ const lifecycle = [
     kicker: 'PHASE 04 · TRANSLATION + CONTEXT',
     title: 'Resolve applicability and eligible outputs.',
     summary: 'The warning is genuine—now where should it appear? SIA takes a signed snapshot of the situation (moving, highway, driver attentive) and matches the card’s requirements against what each output can prove about itself.',
-    story: 'The instrument cluster is a certified safety display—selected. Voice—kept on standby. The big center screen would pull the driver’s eyes off the road for too long—rejected, and the reason is written down.',
+    story: 'The instrument cluster has the required safety assurance and glance capability—selected. Voice—kept on standby. The center screen does not meet this warning’s declared safety profile—rejected, and the reason is written down.',
     why: 'The choice is deterministic: same inputs, same plan, every time. No screen improvises, every rejection has a recorded reason—that is what makes the behaviour certifiable and auditable.',
     icon: 'route',
     outputBadge: 'Deterministic render plan',
@@ -151,7 +151,7 @@ const lifecycle = [
     title: 'Dispatch one ordered attempt at a time.',
     summary: 'SIA now asks the cluster to show the warning—one attempt at a time, each with its own deadline. If the cluster fails or stays silent past the deadline, the next attempt goes to voice.',
     story: 'The whole cascade must finish while the warning is still true: an expired warning is never sent anywhere.',
-    why: 'Ordered attempts with deadlines mean a broken screen cannot silently swallow a critical warning—and two outputs cannot blare the same alert twice by accident. Every attempt is numbered and points to its predecessor, so the order is provable afterwards.',
+    why: 'Ordered attempts with deadlines mean a broken screen cannot silently swallow a critical warning. Every attempt is numbered and points to its predecessor, so the order is provable afterwards. SIA still assumes at-least-once transport, so deployments must prevent duplicate presentation where normal and fallback paths can overlap.',
     icon: 'send',
     outputBadge: 'Authenticated dispatch attempt',
     inputTitle: 'Render plan',
@@ -179,7 +179,7 @@ const lifecycle = [
     title: 'Record delivery and occupant response separately.',
     summary: 'The cluster confirms: “presented, 72 ms after dispatch.” That machine receipt opens the 2-second window for the human. The driver presses the steering-wheel button—a separate, authenticated event.',
     story: 'Two different facts, never merged: the car showed the warning, and the driver answered it. If the driver does not respond, the timeout is recorded as the runtime’s own decision—the system never pretends a human acted.',
-    why: 'Every step of the story now sits in a tamper-evident audit log: who sent what, what was verified, what was shown where, and who responded. After an incident, that log answers questions no screenshot ever could.',
+    why: 'Decision-relevant outcomes now sit in a tamper-evident audit chain: who sent what, what was verified, what was shown where, and whether an authorised occupant responded. After an incident, that chain answers questions no screenshot could reconstruct.',
     icon: 'reply',
     outputBadge: 'Receipt, response, and audit',
     inputTitle: 'Renderer + occupant evidence',
@@ -188,8 +188,8 @@ const lifecycle = [
     rules: ['Presentation ≠ awareness', 'Response binds opening receipts', 'Timeout is a runtime event'],
     outputTitle: 'Closed lifecycle',
     output: ['Delivery outcome', 'Occupant outcome', 'Hash-linked audit record'],
-    codeIntro: 'Both pieces of evidence side by side—the renderer’s receipt and the occupant’s response. They are separate records with separate signers; neither can impersonate the other.',
-    codeLabel: 'feedback-outcome.json',
+    codeIntro: 'A combined teaching view of two separate records: the renderer’s receipt and the occupant’s response. Each has its own authority and schema; neither can impersonate the other.',
+    codeLabel: 'feedback-outcome.view.json',
     code: {
       delivery: {
         receipt_id: 'e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23',
@@ -269,6 +269,62 @@ const feedbackCases = {
 };
 
 const contracts = {
+  catalog: {
+    kicker: 'AUTHORITY BUNDLE',
+    title: 'Catalog manifest',
+    description: 'The versioned, integrity-protected collection of semantic declarations installed for one SIA profile.',
+    schema: 'catalog.schema.json', identity: 'catalog version + canonical SHA-256', owner: 'Catalog authority', file: 'catalog.json',
+    value: {
+      spec_version: '0.4.0',
+      profile_id: 'sia-minimal',
+      profile_version: '0.4.0',
+      catalog_version: '0.4.0',
+      generated_at_ms: 1784116800000,
+      nodes: [
+        { id: 'Interaction.Event.Alert.Collision.Warning', priority: 'critical' },
+        { id: 'Interaction.Event.Alert.Lane.Departure.Warning', priority: 'high' },
+        { id: 'Interaction.Event.Notification.Media.NowPlaying', priority: 'low' },
+      ],
+      integrity: { issuer: 'SIA Test Catalog Authority', key_id: 'vehicle-hsm:catalog:1', algorithm: 'EdDSA' },
+    },
+  },
+  registry: {
+    kicker: 'TRUST STORE',
+    title: 'Actor registry',
+    description: 'The current credential, actor-class, validity, and revocation authority used by the trust gate.',
+    schema: 'actor-registry.schema.json', identity: 'registry version + credential ID', owner: 'Actor authority', file: 'actor-registry.json',
+    value: {
+      spec_version: '0.4.0',
+      profile_id: 'sia-minimal',
+      registry_version: '0.4.0',
+      credentials: [{
+        credential_id: '11111111-1111-4111-8111-111111111111',
+        actor_id: 'ADAS_v2.3.1',
+        actor_class: 'adas',
+        key_id: 'vehicle-hsm:adas:7',
+        valid_until_ms: 1900000000000,
+        status: 'active',
+      }],
+      integrity: { issuer: 'SIA Test Actor Authority', key_id: 'vehicle-hsm:actor-registry:1', algorithm: 'EdDSA' },
+    },
+  },
+  policy: {
+    kicker: 'POLICY AUTHORITY',
+    title: 'Context policy',
+    description: 'Signed freshness, confidence, uncertainty, and attention rules for every independent context axis.',
+    schema: 'context-policy.schema.json', identity: 'policy reference + canonical SHA-256', owner: 'Context Policy authority', file: 'core.context-policy.json',
+    value: {
+      spec_version: '0.4.0',
+      policy_id: 'sia:policy:core-context:1',
+      policy_version: '0.4.0',
+      axis_requirements: {
+        motion_state: { max_age_ms: 100, min_confidence: 95, unknown_handling: 'safe_worst_case' },
+        driver_state: { max_age_ms: 250, min_confidence: 70, unknown_handling: 'safe_worst_case' },
+        occupancy: { max_age_ms: 1000, min_confidence: 80, unknown_handling: 'fail_closed' },
+      },
+      integrity: { issuer: 'SIA Test Policy Authority', key_id: 'vehicle-hsm:policy:1', algorithm: 'EdDSA' },
+    },
+  },
   node: {
     kicker: 'DECLARATION',
     title: 'Interaction node',
@@ -292,7 +348,7 @@ const contracts = {
       context_id: '1a2b3c4d-1111-4aaa-8bbb-1234567890ab',
       captured_at_ms: 1784116800040,
       policy_ref: 'sia:policy:core-context:1',
-      policy_sha256: 'b614a380…798e22',
+      policy_sha256: 'b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22',
       axes: {
         motion_state: { value: 'moving', source_id: 'Vehicle.SpeedState', observed_at_ms: 1784116800036, confidence: 100 },
         operating_mode: { value: 'driving', source_id: 'Vehicle.OperatingMode', observed_at_ms: 1784116800036, confidence: 100 },
@@ -301,6 +357,45 @@ const contracts = {
         driver_state: { value: 'attentive', source_id: 'DMS.AttentionState', observed_at_ms: 1784116800028, confidence: 92 },
       },
       integrity: { issuer: 'Vehicle Context Authority', key_id: 'vehicle-hsm:context:3', algorithm: 'EdDSA' },
+    },
+  },
+  renderer: {
+    kicker: 'CAPABILITY EVIDENCE',
+    title: 'Renderer capability',
+    description: 'An attested statement of what one output can safely present, including its assurance and glance constraints.',
+    schema: 'renderer-capability.schema.json', identity: 'renderer ID + capability version', owner: 'Renderer registry', file: 'cluster.renderer.json',
+    value: {
+      renderer_id: 'Renderer.Cluster.Primary',
+      kind: 'cluster',
+      capability_version: '0.4.0',
+      safety_assurance: { level: 'safety_relevant', evidence_ref: 'urn:oem:assurance:cluster-primary:2026-07' },
+      capabilities: {
+        max_simultaneous_elements: 6,
+        text_max_chars: 48,
+        max_glance_budget_ms: 1000,
+        supports_animation: true,
+        glance_optimized: true,
+      },
+      attestation: { issuer: 'OEM.RendererRegistry', key_id: 'vehicle-hsm:renderer-registry:2', algorithm: 'ES256' },
+    },
+  },
+  retention: {
+    kicker: 'BOUNDED RUNTIME STATE',
+    title: 'Retention record',
+    description: 'Evidence that an applicable interaction was dropped, held, coalesced, superseded, expired, or released under declaration-owned policy.',
+    schema: 'retention-record.schema.json', identity: 'retention ID + bound instance', owner: 'Coordination Runtime', file: 'now-playing.retention-record.json',
+    value: {
+      retention_id: 'a8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b25',
+      instance_id: 'b8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b26',
+      context_id: '2a2b3c4d-1111-4aaa-8bbb-1234567890ac',
+      node_id: 'Interaction.Event.Notification.Media.NowPlaying',
+      disposition: 'coalesce',
+      state: 'held',
+      retained_at_ms: 1784116800100,
+      expires_at_ms: 1784116830000,
+      valid_until_ms: 1784116830000,
+      reevaluate_on: ['driver_state_change', 'motion_state_change', 'operating_mode_change'],
+      reason_code: 'CONTEXT_COALESCED_DISTRACTED',
     },
   },
   plan: {
@@ -357,6 +452,24 @@ const contracts = {
       evidence: { kind: 'verified_input', key_id: 'vehicle-hsm:input:5', algorithm: 'HMAC-SHA-256' },
     },
   },
+  audit: {
+    kicker: 'TERMINAL EVIDENCE',
+    title: 'Audit record',
+    description: 'A hash-linked outcome record binding the exact instance, declaration, catalog, policy, context, phase, and stable reason code.',
+    schema: 'audit-record.schema.json', identity: 'event ID + sequence + previous hash', owner: 'Coordination Runtime', file: 'collision.audit-record.json',
+    value: {
+      event_id: '98e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b27',
+      sequence: 0,
+      previous_record_sha256: null,
+      record_sha256: '22a4944655c0d1e6b0a5698e51bc9f418fee9671bb23a2e32a546e7356a61edf',
+      timestamp_ms: 1784116800132,
+      instance_id: 'c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21',
+      context_id: '1a2b3c4d-1111-4aaa-8bbb-1234567890ab',
+      phase: 'delivery',
+      outcome_code: 'DELIVERY_PRESENTED',
+      details: { renderer_id: 'Renderer.Cluster.Primary', receipt_id: 'e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23' },
+    },
+  },
 };
 
 const renderList = (selector, items) => {
@@ -367,7 +480,12 @@ const renderList = (selector, items) => {
 const renderLifecycle = (index, moveFocus = false) => {
   const item = lifecycle[index];
   const tabs = $$('[data-lifecycle-step]');
-  tabs.forEach((tab, tabIndex) => tab.setAttribute('aria-selected', String(tabIndex === index)));
+  tabs.forEach((tab, tabIndex) => {
+    const selected = tabIndex === index;
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  });
+  $('#lifecycle-panel').setAttribute('aria-labelledby', tabs[index].id);
   if (moveFocus) tabs[index].focus();
   $('#phase-icon').innerHTML = `<i data-lucide="${item.icon}" aria-hidden="true"></i>`;
   setText('#phase-kicker', item.kicker);
@@ -400,11 +518,13 @@ $$('[data-lifecycle-step]').forEach((button, index, tabs) => {
 
 const buildTrustList = () => {
   $('#trust-list').innerHTML = trustChecks.map((item, index) => `
-  <button type="button" role="listitem" data-trust-check="${index}" aria-pressed="${index === 0}">
-    <span>${String(index + 1).padStart(2, '0')}</span>
-    <span><b>${item.title}</b><small>${item.short}</small></span>
-    <i data-lucide="chevron-right" aria-hidden="true"></i>
-  </button>
+  <li>
+    <button type="button" data-trust-check="${index}" aria-pressed="${index === 0}" aria-controls="trust-detail">
+      <span>${String(index + 1).padStart(2, '0')}</span>
+      <span><b>${item.title}</b><small>${item.short}</small></span>
+      <i data-lucide="chevron-right" aria-hidden="true"></i>
+    </button>
+  </li>
 `).join('');
   $$('[data-trust-check]').forEach((button) => button.addEventListener('click', () => renderTrust(Number(button.dataset.trustCheck))));
 };
@@ -449,7 +569,7 @@ const renderFeedback = (caseName) => {
   $('#occupant-result').textContent = item.occupantTitle;
   $('#occupant-claim').textContent = item.occupantClaim;
   $('.occupant-return').classList.toggle('is-timeout', item.occupantTimeout);
-  $('#dispatch-label').textContent = item.fallback ? 'attempt 1 · primary' : 'attempt 1 · primary';
+  $('#dispatch-label').textContent = 'attempt 1 · primary';
 };
 
 $$('[data-feedback-case]').forEach((button) => button.addEventListener('click', () => renderFeedback(button.dataset.feedbackCase)));
@@ -457,8 +577,14 @@ $$('[data-feedback-case]').forEach((button) => button.addEventListener('click', 
 const renderContract = (name, moveFocus = false) => {
   const item = contracts[name];
   const tabs = $$('[data-contract]');
-  tabs.forEach((tab) => tab.setAttribute('aria-selected', String(tab.dataset.contract === name)));
-  if (moveFocus) tabs.find((tab) => tab.dataset.contract === name)?.focus();
+  const activeTab = tabs.find((tab) => tab.dataset.contract === name);
+  tabs.forEach((tab) => {
+    const selected = tab === activeTab;
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  });
+  $('#contract-panel').setAttribute('aria-labelledby', activeTab.id);
+  if (moveFocus) activeTab.focus();
   $('#contract-kicker').textContent = item.kicker;
   $('#contract-title').textContent = item.title;
   $('#contract-description').textContent = item.description;

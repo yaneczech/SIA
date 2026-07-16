@@ -85,7 +85,7 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
     readFile(path.join(root, 'demo/index.html'), 'utf8'),
   ]);
 
-  for (const section of ['overview', 'lifecycle', 'trust', 'time-context', 'feedback', 'contracts', 'implementation', 'source-map']) {
+  for (const section of ['overview', 'lifecycle', 'trust', 'time-context', 'feedback', 'contracts', 'operations', 'implementation', 'source-map']) {
     assert.match(html, new RegExp(`id="${section}"`), `interactive docs are missing #${section}`);
   }
   assert.match(html, /use\.typekit\.net\/cyy0vwc\.css/);
@@ -98,8 +98,30 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
   assert.match(html, /data-copy-target="contract-code"/);
   assert.match(html, /Renderer receipt means/);
   assert.match(html, /Occupant response means/);
+  assert.match(html, /thirteen top-level machine-readable contracts/);
+  assert.equal([...html.matchAll(/data-contract="/g)].length, 13);
+  assert.equal([...html.matchAll(/aria-controls="contract-panel"/g)].length, 13);
+  for (const schema of [
+    'catalog',
+    'actor-registry',
+    'context-policy',
+    'interaction-node',
+    'runtime-instance',
+    'context-snapshot',
+    'renderer-capability',
+    'retention-record',
+    'render-plan',
+    'dispatch-attempt',
+    'delivery-receipt',
+    'occupant-response',
+    'audit-record',
+  ]) assert.match(script, new RegExp(`schema: '${schema}\\.schema\\.json'`));
   assert.match(script, /const trustChecks = \[/);
   assert.equal([...script.matchAll(/failure: 'TRUST_REJECTED_/g)].length, 8);
+  assert.doesNotMatch(script, /role="listitem"/);
+  assert.doesNotMatch(script, /must confirm it within 2 seconds/);
+  assert.match(html, /does not claim distributed exactly-once delivery/);
+  assert.match(html, /Fail closed and fail operational/);
   assert.match(script, /applicability: \"always\"/);
   assert.match(script, /applicability: \"moving_only\"/);
   assert.match(css, /@media \(max-width: 900px\)/);

@@ -7,7 +7,7 @@
   <meta name="description" content="Interactive documentation for the Semantic Interaction Architecture 0.4 draft.">
   <title>SIA — Interactive Documentation</title>
   <link rel="stylesheet" href="https://use.typekit.net/cyy0vwc.css">
-  <link rel="stylesheet" href="./docs.css?v=0.4.1">
+  <link rel="stylesheet" href="./docs.css?v=0.4.2">
 </head>
 <body class="mode-essential">
   <a class="skip-link" href="#content">Skip to documentation</a>
@@ -53,8 +53,9 @@
           <a href="#time-context" data-nav-section="time-context"><span>03</span>Time &amp; context</a>
           <a href="#feedback" data-nav-section="feedback"><span>04</span>Delivery &amp; response</a>
           <a href="#contracts" data-nav-section="contracts"><span>05</span>Contract explorer</a>
-          <a href="#implementation" data-nav-section="implementation"><span>06</span>Implement &amp; test</a>
-          <a href="#source-map" data-nav-section="source-map"><span>07</span>Source map</a>
+          <a href="#operations" data-nav-section="operations"><span>06</span>Guarantees &amp; limits</a>
+          <a href="#implementation" data-nav-section="implementation"><span>07</span>Implement &amp; test</a>
+          <a href="#source-map" data-nav-section="source-map"><span>08</span>Source map</a>
         </nav>
 
         <div class="version-card">
@@ -78,7 +79,7 @@
           <div class="hero-content">
             <p class="eyebrow">SEMANTIC INTERACTION ARCHITECTURE · 0.4</p>
             <h1>Who may say what to the people in a car—and how do you prove it?</h1>
-            <p class="hero-copy">A modern car has dozens of software systems, several screens, a voice assistant—and soon third-party apps and AI agents. All of them want your attention while you drive. SIA is a proposed checkpoint layer that decides which messages get through, where they appear, and keeps evidence of everything that happened.</p>
+            <p class="hero-copy">A modern car has dozens of software systems, several screens, a voice assistant—and soon third-party apps and AI agents. All of them want your attention while you drive. SIA is a proposed mediation layer that decides which messages get through, where they may appear, and preserves bound evidence for each lifecycle outcome.</p>
             <div class="hero-actions">
               <a class="primary-action" href="#lifecycle">Explore the lifecycle <i data-lucide="arrow-down" aria-hidden="true"></i></a>
               <a class="secondary-action" href="./index.html#lab">Test a scenario <i data-lucide="flask-conical" aria-hidden="true"></i></a>
@@ -102,24 +103,24 @@
         <div class="problem-block" aria-label="The problem SIA solves">
           <div class="problem-card">
             <span class="problem-step">WHAT BREAKS TODAY</span>
-            <h3>Any system can look like a safety system.</h3>
-            <p>Nothing in today’s vehicle stack structurally stops a music app or an AI assistant from drawing something that looks exactly like a collision warning—or from being drowned out by one that matters less.</p>
+            <h3>Different systems make competing claims.</h3>
+            <p>Vehicle platforms already use permissions and HMI rules, but those controls are usually platform-specific. They do not provide one portable contract that proves an emitter has authority to make a particular semantic claim.</p>
           </div>
           <div class="problem-card">
             <span class="problem-step">WHY IT HAPPENS</span>
-            <h3>Every screen keeps its own rules.</h3>
-            <p>Each display and voice channel separately decides what to show and how urgent it looks. The rules live in every screen’s code, so they differ per screen, per car, per software update—and nobody can audit them in one place.</p>
+            <h3>Interaction policy is fragmented.</h3>
+            <p>Displays and voice channels still need local safety controls, but meaning, priority, context, and evidence are often expressed differently across products. That makes consistent enforcement and end-to-end audit difficult.</p>
           </div>
           <div class="problem-card">
             <span class="problem-step">WHAT SIA CHANGES</span>
             <h3>One checkpoint, rules written once.</h3>
-            <p>SIA moves the rules out of the screens into one shared checkpoint. Every message declares its meaning; the checkpoint verifies who sent it, checks it is fresh and relevant, picks the safest output, and demands proof of what happened.</p>
+            <p>SIA adds a shared semantic contract and mediation boundary. Every message references a declared meaning; the boundary verifies who sent it, checks it is fresh and relevant, selects eligible outputs, and demands evidence of what happened.</p>
           </div>
         </div>
 
         <div class="running-example" aria-label="Running example">
           <i data-lucide="milestone" aria-hidden="true"></i>
-          <p><b>One story runs through this whole page.</b> Your car’s driver-assistance system (ADAS) detects a collision risk at highway speed. Follow that single warning from the day its rules were written to the moment the driver acknowledges it.</p>
+          <p><b>One story runs through this whole page.</b> Your car’s driver-assistance system (ADAS) detects a collision risk at highway speed. Follow that warning from the day its rules were written through delivery and the separate occupant-response window.</p>
         </div>
 
         <div class="definition-strip" aria-label="SIA definition">
@@ -141,20 +142,20 @@
       <section class="docs-section" id="lifecycle" data-search="lifecycle ontology emitter trust translation context runtime renderer receive verify plan dispatch delivery acknowledge retain release">
         <div class="section-heading">
           <div><p class="section-index">01 · LIFECYCLE</p><h2>Follow one interaction end to end</h2></div>
-          <p>Six phases, in order, from design time to the driver’s response. Each phase tells the collision-warning story first, then shows the exact artifact that crosses the boundary.</p>
+          <p>Six phases, in order, from design time to lifecycle closure. Each phase tells the collision-warning story first, then shows a representative excerpt of the artifact or trace at that boundary.</p>
         </div>
 
         <div class="lifecycle-explorer">
           <div class="lifecycle-steps" role="tablist" aria-label="SIA lifecycle phases">
-            <button role="tab" aria-selected="true" aria-controls="lifecycle-panel" data-lifecycle-step="0"><span>01</span><i data-lucide="book-open" aria-hidden="true"></i><b>Declare</b><small>Ontology</small></button>
-            <button role="tab" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="1"><span>02</span><i data-lucide="radio-tower" aria-hidden="true"></i><b>Emit</b><small>Runtime instance</small></button>
-            <button role="tab" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="2"><span>03</span><i data-lucide="shield-check" aria-hidden="true"></i><b>Verify</b><small>Trust policy</small></button>
-            <button role="tab" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="3"><span>04</span><i data-lucide="route" aria-hidden="true"></i><b>Translate</b><small>Context + capability</small></button>
-            <button role="tab" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="4"><span>05</span><i data-lucide="send" aria-hidden="true"></i><b>Dispatch</b><small>Ordered attempt</small></button>
-            <button role="tab" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="5"><span>06</span><i data-lucide="reply" aria-hidden="true"></i><b>Close</b><small>Evidence + response</small></button>
+            <button id="lifecycle-tab-0" role="tab" tabindex="0" aria-selected="true" aria-controls="lifecycle-panel" data-lifecycle-step="0"><span>01</span><i data-lucide="book-open" aria-hidden="true"></i><b>Declare</b><small>Ontology</small></button>
+            <button id="lifecycle-tab-1" role="tab" tabindex="-1" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="1"><span>02</span><i data-lucide="radio-tower" aria-hidden="true"></i><b>Emit</b><small>Runtime instance</small></button>
+            <button id="lifecycle-tab-2" role="tab" tabindex="-1" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="2"><span>03</span><i data-lucide="shield-check" aria-hidden="true"></i><b>Verify</b><small>Trust policy</small></button>
+            <button id="lifecycle-tab-3" role="tab" tabindex="-1" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="3"><span>04</span><i data-lucide="route" aria-hidden="true"></i><b>Translate</b><small>Context + capability</small></button>
+            <button id="lifecycle-tab-4" role="tab" tabindex="-1" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="4"><span>05</span><i data-lucide="send" aria-hidden="true"></i><b>Dispatch</b><small>Ordered attempt</small></button>
+            <button id="lifecycle-tab-5" role="tab" tabindex="-1" aria-selected="false" aria-controls="lifecycle-panel" data-lifecycle-step="5"><span>06</span><i data-lucide="reply" aria-hidden="true"></i><b>Close</b><small>Evidence + response</small></button>
           </div>
 
-          <div class="lifecycle-panel" id="lifecycle-panel" role="tabpanel" aria-live="polite">
+          <div class="lifecycle-panel" id="lifecycle-panel" role="tabpanel" aria-labelledby="lifecycle-tab-0" aria-live="polite">
             <div class="phase-summary">
               <span class="phase-icon" id="phase-icon"><i data-lucide="book-open" aria-hidden="true"></i></span>
               <div><p id="phase-kicker">PHASE 01 · ONTOLOGY</p><h3 id="phase-title">Declare the meaning once.</h3><p id="phase-summary"></p></div>
@@ -187,7 +188,7 @@
         </div>
 
         <div class="trust-explorer">
-          <div class="trust-list" role="list" aria-label="Eight trust checks" id="trust-list"></div>
+          <ul class="trust-list" aria-label="Eight trust checks" id="trust-list"></ul>
           <aside class="trust-detail" id="trust-detail" aria-live="polite">
             <span class="detail-number" id="trust-number">01</span>
             <div class="detail-icon" id="trust-icon"><i data-lucide="file-check-2" aria-hidden="true"></i></div>
@@ -280,23 +281,29 @@
         </div>
       </section>
 
-      <section class="docs-section" id="contracts" data-search="contract explorer json schema node instance context render plan dispatch attempt delivery receipt occupant response audit code example artifact">
+      <section class="docs-section" id="contracts" data-search="contract explorer json schema catalog registry policy node instance context renderer capability retention render plan dispatch attempt delivery receipt occupant response audit code example artifact">
         <div class="section-heading">
-          <div><p class="section-index">05 · CONTRACT EXPLORER</p><h2>Inspect the evidence chain</h2></div>
-          <p>Every box you saw in the lifecycle is a real, signed file—and this is all of them. Pick one to see the actual artifact from the repository. There is no hidden state anywhere else: these seven records are the entire story.</p>
+          <div><p class="section-index">05 · CONTRACT EXPLORER</p><h2>Inspect the complete contract set</h2></div>
+          <p>SIA 0.4 defines thirteen top-level machine-readable contracts, plus node-specific payload schemas. Pick any contract to inspect a representative excerpt derived from the validated repository examples.</p>
         </div>
 
         <div class="contract-explorer">
           <div class="contract-nav" role="tablist" aria-label="SIA contracts">
-            <button role="tab" aria-selected="true" data-contract="node"><i data-lucide="file-key-2" aria-hidden="true"></i><span><b>Node</b><small>declared authority</small></span></button>
-            <button role="tab" aria-selected="false" data-contract="instance"><i data-lucide="radio-tower" aria-hidden="true"></i><span><b>Instance</b><small>signed occurrence</small></span></button>
-            <button role="tab" aria-selected="false" data-contract="context"><i data-lucide="scan-search" aria-hidden="true"></i><span><b>Context</b><small>provenanced snapshot</small></span></button>
-            <button role="tab" aria-selected="false" data-contract="plan"><i data-lucide="route" aria-hidden="true"></i><span><b>Render plan</b><small>deterministic choice</small></span></button>
-            <button role="tab" aria-selected="false" data-contract="dispatch"><i data-lucide="send" aria-hidden="true"></i><span><b>Dispatch</b><small>ordered attempt</small></span></button>
-            <button role="tab" aria-selected="false" data-contract="receipt"><i data-lucide="monitor-check" aria-hidden="true"></i><span><b>Receipt</b><small>delivery evidence</small></span></button>
-            <button role="tab" aria-selected="false" data-contract="response"><i data-lucide="message-square-reply" aria-hidden="true"></i><span><b>Response</b><small>occupant evidence</small></span></button>
+            <button id="contract-tab-catalog" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="catalog"><i data-lucide="library" aria-hidden="true"></i><span><b>Catalog</b><small>versioned declarations</small></span></button>
+            <button id="contract-tab-registry" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="registry"><i data-lucide="badge-check" aria-hidden="true"></i><span><b>Actor registry</b><small>credentials + revocation</small></span></button>
+            <button id="contract-tab-policy" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="policy"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span><b>Context policy</b><small>freshness + uncertainty</small></span></button>
+            <button id="contract-tab-node" role="tab" tabindex="0" aria-selected="true" aria-controls="contract-panel" data-contract="node"><i data-lucide="file-key-2" aria-hidden="true"></i><span><b>Node</b><small>declared authority</small></span></button>
+            <button id="contract-tab-instance" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="instance"><i data-lucide="radio-tower" aria-hidden="true"></i><span><b>Instance</b><small>signed occurrence</small></span></button>
+            <button id="contract-tab-context" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="context"><i data-lucide="scan-search" aria-hidden="true"></i><span><b>Context</b><small>provenanced snapshot</small></span></button>
+            <button id="contract-tab-renderer" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="renderer"><i data-lucide="monitor-cog" aria-hidden="true"></i><span><b>Renderer</b><small>attested capability</small></span></button>
+            <button id="contract-tab-retention" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="retention"><i data-lucide="archive" aria-hidden="true"></i><span><b>Retention</b><small>held + release evidence</small></span></button>
+            <button id="contract-tab-plan" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="plan"><i data-lucide="route" aria-hidden="true"></i><span><b>Render plan</b><small>deterministic choice</small></span></button>
+            <button id="contract-tab-dispatch" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="dispatch"><i data-lucide="send" aria-hidden="true"></i><span><b>Dispatch</b><small>ordered attempt</small></span></button>
+            <button id="contract-tab-receipt" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="receipt"><i data-lucide="monitor-check" aria-hidden="true"></i><span><b>Receipt</b><small>delivery evidence</small></span></button>
+            <button id="contract-tab-response" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="response"><i data-lucide="message-square-reply" aria-hidden="true"></i><span><b>Response</b><small>occupant evidence</small></span></button>
+            <button id="contract-tab-audit" role="tab" tabindex="-1" aria-selected="false" aria-controls="contract-panel" data-contract="audit"><i data-lucide="list-checks" aria-hidden="true"></i><span><b>Audit</b><small>hash-linked outcome</small></span></button>
           </div>
-          <div class="contract-panel" role="tabpanel" aria-live="polite">
+          <div class="contract-panel" id="contract-panel" role="tabpanel" aria-labelledby="contract-tab-node" aria-live="polite">
             <div class="contract-meta">
               <div><p class="detail-kicker" id="contract-kicker">DECLARATION</p><h3 id="contract-title">Interaction node</h3><p id="contract-description">The source of authority for meaning, trust, attention, context, delivery, and response behaviour.</p></div>
               <dl class="technical-only">
@@ -306,17 +313,59 @@
               </dl>
             </div>
             <div class="large-code-block">
-              <div class="code-toolbar"><span><i data-lucide="file-json-2" aria-hidden="true"></i><b id="contract-file">collision-warning.node.json</b><em>validated example excerpt</em></span><button type="button" data-copy-target="contract-code"><i data-lucide="copy" aria-hidden="true"></i> Copy JSON</button></div>
+              <div class="code-toolbar"><span><i data-lucide="file-json-2" aria-hidden="true"></i><b id="contract-file">collision-warning.node.json</b><em>excerpt from validated example</em></span><button type="button" data-copy-target="contract-code"><i data-lucide="copy" aria-hidden="true"></i> Copy JSON</button></div>
               <pre><code id="contract-code"></code></pre>
             </div>
           </div>
         </div>
       </section>
 
+      <section class="docs-section" id="operations" data-search="operational guarantees limits profile scope alert notification action state task applicability blocking retention drop defer coalesce quotas delivery success policy received presented at least once idempotency monotonic context uncertainty safe worst case fail closed version compatibility secure time watchdog fallback duplicate privacy rate limit audit">
+        <div class="section-heading">
+          <div><p class="section-index">06 · GUARANTEES &amp; LIMITS</p><h2>Know exactly what SIA promises</h2></div>
+          <p>A professional implementation needs explicit boundaries as much as features. These eight deployment truths connect the tutorial to the normative requirements without hiding failure modes or claiming more than the protocol guarantees.</p>
+        </div>
+
+        <div class="guarantee-grid">
+          <details class="guarantee-item">
+            <summary><i data-lucide="shapes" aria-hidden="true"></i><span><b>Minimal profile scope</b><small>Alerts and Notifications only</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p><code>sia-minimal 0.4</code> standardises system-to-occupant Alert and Notification emissions. Action, State, and Task remain architectural types for future profiles and cannot be emitted under this profile.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#2-scope-and-profiles">Normative §2 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="guarantee-item">
+            <summary><i data-lucide="archive-restore" aria-hidden="true"></i><span><b>Applicability and retention</b><small>Not applicable is not suppressed</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Applicable interactions may continue, drop, defer, or coalesce according to the declaration. A retained item is bounded by validity, TTL, per-identity quotas, and deterministic re-evaluation; an inapplicable meaning closes without presentation.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#8-applicability-blocking-and-retention">Normative §8 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="guarantee-item">
+            <summary><i data-lucide="monitor-check" aria-hidden="true"></i><span><b>Delivery success is declared</b><small>Received does not mean presented</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>A plan chooses one of three success policies: any selected renderer presented, the primary presented, or all required renderers presented. Occupant response cannot start before that declared policy is satisfied.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#11-delivery-contract">Normative §11 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="guarantee-item">
+            <summary><i data-lucide="repeat-2" aria-hidden="true"></i><span><b>At-least-once transport</b><small>Retries are expected, not hidden</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>SIA does not claim distributed exactly-once delivery. Receipt processing is idempotent by receipt ID and monotonic by <code>(attempt_id, receipt_sequence)</code>; deployments must prevent duplicate presentation where normal and fallback paths can overlap.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#11-delivery-contract">Normative §11 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="guarantee-item">
+            <summary><i data-lucide="clock-alert" aria-hidden="true"></i><span><b>Uncertainty never relaxes policy</b><small>Three clocks and secure time</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Unknown or stale context maps to <code>safe_worst_case</code> or <code>fail_closed</code>. Ingress freshness, semantic validity, and retention TTL remain distinct, and each deployment defines clock skew and behaviour when secure time is unavailable.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#7-time-semantics">Normative §7 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="guarantee-item">
+            <summary><i data-lucide="git-compare-arrows" aria-hidden="true"></i><span><b>Compatibility is explicit</b><small>Spec, profile, and catalog evolve separately</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Runtime instances bind all three version axes. Unsupported wire contracts are rejected; older catalogs are accepted only through a compatibility table. Unknown fields never act as an implicit extension mechanism.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#3-version-identifiers">Normative §3 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="guarantee-item">
+            <summary><i data-lucide="shield-plus" aria-hidden="true"></i><span><b>Fail closed and fail operational</b><small>Security gate plus certified safety path</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Unauthorised claims fail closed. Critical delivery also needs a deployment-defined fail-operational path with latency budgets, watchdog and restart behaviour, unavailable-dependency handling, and a certified fallback that does not create duplicate output.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#13-availability-and-safety-fallback">Normative §13 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="guarantee-item">
+            <summary><i data-lucide="scan-eye" aria-hidden="true"></i><span><b>Abuse and privacy stay bounded</b><small>Rate limits, quotas, minimal evidence</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Emitters are rate-limited; nonce caches, retained queues, and audit storage are bounded. Evidence records minimise payload and PII, while persistent retention requires encryption, integrity protection, and an explicit privacy policy.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#14-abuse-resistance-and-privacy">Normative §14 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+        </div>
+      </section>
+
       <section class="docs-section" id="implementation" data-search="implementation quickstart npm validate conformance test emitter renderer runtime security compatibility schema command digest canonical json rfc 8785">
         <div class="section-heading">
-          <div><p class="section-index">06 · IMPLEMENT &amp; TEST</p><h2>Start with contracts, finish with vectors</h2></div>
-          <p>This section is for engineers. Everything above is a contract with executable tests behind it: strict schemas, cross-artifact invariants, cryptographic examples, and a conformance suite scoped to the role you build—so you never have to implement someone else’s side of the boundary.</p>
+          <div><p class="section-index">07 · IMPLEMENT &amp; TEST</p><h2>Start with contracts, finish with vectors</h2></div>
+          <p>This section is for engineers. The normative contracts behind the tutorial have executable tests: strict schemas, cross-artifact invariants, cryptographic examples, and a conformance suite scoped so each implementation can validate the boundary it owns.</p>
         </div>
 
         <div class="implementation-grid">
@@ -348,7 +397,7 @@
 
       <section class="docs-section source-section" id="source-map" data-search="source documentation specification paper threat model authoring guide glossary schemas examples reason codes conformance repository">
         <div class="section-heading">
-          <div><p class="section-index">07 · SOURCE MAP</p><h2>Go from explanation to authority</h2></div>
+          <div><p class="section-index">08 · SOURCE MAP</p><h2>Go from explanation to authority</h2></div>
           <p>This page explains the model; the specification, schemas, registries, and vectors remain the source of truth.</p>
         </div>
         <div class="source-grid">
@@ -372,6 +421,6 @@
   </div>
 
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script type="module" src="./docs.js?v=0.4.1"></script>
+  <script type="module" src="./docs.js?v=0.4.2"></script>
 </body>
 </html>

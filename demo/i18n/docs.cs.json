@@ -4,16 +4,16 @@
   "selectors": {
     "#overview .hero-content .eyebrow": "SÉMANTICKÁ INTERAKČNÍ ARCHITEKTURA · 0.4",
     "#overview .hero-content h1": "Kdo smí co říkat lidem v autě—a jak to dokážete?",
-    "#overview .hero-content .hero-copy": "Moderní auto má desítky softwarových systémů, několik obrazovek, hlasového asistenta—a brzy i aplikace třetích stran a AI agenty. Všichni chtějí vaši pozornost za jízdy. SIA je navrhovaná kontrolní vrstva, která rozhoduje, které zprávy projdou, kde se zobrazí, a uchovává důkazy o všem, co se stalo.",
+    "#overview .hero-content .hero-copy": "Moderní auto má desítky softwarových systémů, několik obrazovek, hlasového asistenta—a brzy i aplikace třetích stran a AI agenty. Všichni chtějí vaši pozornost za jízdy. SIA je navrhovaná mediační vrstva, která rozhoduje, které zprávy projdou, kde se smějí zobrazit, a uchovává provázané důkazy o každém výsledku životního cyklu.",
     "#overview .problem-card:nth-child(1) .problem-step": "CO SE DNES ROZBÍJÍ",
-    "#overview .problem-card:nth-child(1) h3": "Jakýkoli systém může vypadat jako bezpečnostní.",
-    "#overview .problem-card:nth-child(1) p": "Nic v dnešním vozidlovém stacku strukturálně nebrání hudební aplikaci nebo AI asistentovi vykreslit něco, co vypadá přesně jako kolizní varování—ani tomu, aby ho přehlušilo něco méně důležitého.",
+    "#overview .problem-card:nth-child(1) h3": "Různé systémy vznášejí soupeřící nároky.",
+    "#overview .problem-card:nth-child(1) p": "Vozidlové platformy už používají oprávnění a HMI pravidla, ta jsou ale obvykle specifická pro danou platformu. Neposkytují jeden přenositelný kontrakt, který dokáže, že emitor smí učinit konkrétní sémantický nárok.",
     "#overview .problem-card:nth-child(2) .problem-step": "PROČ SE TO DĚJE",
-    "#overview .problem-card:nth-child(2) h3": "Každá obrazovka si drží vlastní pravidla.",
-    "#overview .problem-card:nth-child(2) p": "Každý displej a hlasový kanál rozhoduje sám, co zobrazit a jak naléhavě to má působit. Pravidla žijí v kódu každé obrazovky zvlášť—liší se per obrazovka, per auto, per aktualizace, a nikdo je nemůže auditovat na jednom místě.",
+    "#overview .problem-card:nth-child(2) h3": "Interakční politika je roztříštěná.",
+    "#overview .problem-card:nth-child(2) p": "Displeje a hlasové kanály stále potřebují lokální bezpečnostní kontroly, význam, priorita, kontext a důkazy jsou ale napříč produkty často vyjádřeny rozdílně. Konzistentní vynucení a end-to-end audit jsou proto obtížné.",
     "#overview .problem-card:nth-child(3) .problem-step": "CO SIA MĚNÍ",
     "#overview .problem-card:nth-child(3) h3": "Jeden checkpoint, pravidla napsaná jednou.",
-    "#overview .problem-card:nth-child(3) p": "SIA přesouvá pravidla z obrazovek do jednoho sdíleného checkpointu. Každá zpráva deklaruje svůj význam; checkpoint ověří, kdo ji poslal, zda je čerstvá a relevantní, vybere nejbezpečnější výstup a vyžaduje důkaz o tom, co se stalo."
+    "#overview .problem-card:nth-child(3) p": "SIA přidává sdílený sémantický kontrakt a mediační hranici. Každá zpráva odkazuje na deklarovaný význam; hranice ověří, kdo ji poslal, zda je čerstvá a relevantní, vybere způsobilé výstupy a vyžaduje důkaz o tom, co se stalo."
   },
   "data": {
     "lifecycle": {
@@ -21,8 +21,8 @@
         "kicker": "FÁZE 01 · ONTOLOGIE",
         "title": "Deklarujte význam jednou.",
         "summary": "Dávno předtím, než jakékoli varování vystřelí, napíší inženýři jednu malou strojově čitelnou kartu: co kolizní varování znamená, kdo ho smí poslat, jak je naléhavé, kde se smí objevit a co musí následovat. Té kartě se říká node—jeden záznam ve slovníku všeho, co smí vozidlo říkat lidem.",
-        "story": "Karta říká: „Kolizní varování je kritické. Smí ho poslat pouze asistenční systém (ADAS). Musí dorazit do 200 ms, zobrazit se na přístrojovém štítu nebo hlasem a řidič ho musí do 2 sekund potvrdit.“",
-        "why": "Protože pravidla žijí na této kartě—ne v kódu každé obrazovky—aplikuje každá obrazovka, hlasový kanál i budoucí zařízení přesně stejná pravidla. A nic si nemůže později vymluvit vyšší důležitost: když prioritu určuje karta, je priorita rozhodnutá."
+        "story": "Karta říká: „Kolizní varování je kritické. Smí ho poslat pouze asistenční systém (ADAS). Musí dorazit do 200 ms a zobrazit se na přístrojovém štítu nebo hlasem. Po úspěšném doručení uzavře dvousekundové okno odpovědi potvrzení nebo timeout runtime.“",
+        "why": "Protože pravidla žijí na této kartě a ve sdílené politice—ne v kódu každé obrazovky—vyhodnotí mediační hranice stejnou sadu pravidel dříve, než požádá způsobilý výstup o prezentaci. Nic si nemůže později vymluvit vyšší důležitost: když prioritu určuje karta, je priorita rozhodnutá."
       }
     }
   }
