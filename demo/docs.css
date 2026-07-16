@@ -95,9 +95,8 @@ svg { flex: 0 0 auto; }
 .visual-source b, .visual-target b { font-size: 13px; }
 .visual-source small, .visual-target small { margin-top: 3px; color: var(--muted); font-size: 10px; }
 .visual-arrow { position: relative; display: grid; justify-items: center; gap: 7px; color: var(--muted); }
-.visual-arrow span { font-size: 9px; white-space: nowrap; transform: translateX(-12px); }
+.visual-arrow span { width: 56px; font-size: 9px; line-height: 1.2; text-align: center; text-wrap: balance; }
 .visual-arrow svg { color: var(--yellow); }
-.visual-arrow-out span { transform: translateX(12px); }
 .visual-arrow-out svg { color: var(--rose); }
 .visual-boundary { position: relative; display: grid; gap: 7px; padding: 25px 10px 10px; border: 1px solid var(--indigo); background: #282c693f; }
 .visual-boundary-label { position: absolute; top: -7px; left: 10px; padding: 0 6px; background: #0e1019; color: var(--indigo-soft); font-size: 8px; font-weight: 700; letter-spacing: .12em; }
