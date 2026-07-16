@@ -193,7 +193,7 @@ async function runScenario(inputOverride = null) {
   markRenderers(result);
   const delivery = simulateDelivery(input, result, input.deliveryMode || 'presented');
   inspectionContext.delivery = delivery;
-  await new Promise((resolve) => setTimeout(resolve, 450));
+  await new Promise((resolve) => setTimeout(resolve, prefersReducedMotion() ? 0 : 450));
   if (token !== animationToken) return;
   showDelivery(delivery);
 
@@ -215,13 +215,16 @@ async function runScenario(inputOverride = null) {
   }
 }
 
+const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
 async function activate(element, duration, token) {
   if (token !== animationToken) return;
   if (element) {
     element.classList.add('is-active');
     if (element.dataset.stage) selectInspectionPhase(element.dataset.stage);
   }
-  await new Promise((resolve) => setTimeout(resolve, duration));
+  // Honour prefers-reduced-motion: keep the same end state, drop the step delays.
+  await new Promise((resolve) => setTimeout(resolve, prefersReducedMotion() ? 0 : duration));
 }
 
 function renderChecks(checks) {
@@ -409,8 +412,8 @@ function renderTrustMatrix() {
   const matrix = trustMatrix();
   const nodes = nodeCatalog();
   const table = $('#trust-matrix');
-  const head = `<thead><tr><th>Actor class</th>${nodes.map((n) => `<th>${n.label}<small>${n.type}</small></th>`).join('')}</tr></thead>`;
-  const body = `<tbody>${matrix.map((row) => `<tr><th>${row.label}</th>${row.cells.map((cell) => `<td class="${cell.allowed ? 'allowed' : 'blocked'}"><i data-lucide="${cell.allowed ? 'check' : 'x'}" aria-hidden="true"></i><span class="sr-only">${cell.allowed ? 'Allowed' : 'Blocked'}</span></td>`).join('')}</tr>`).join('')}</tbody>`;
+  const head = `<thead><tr><th scope="col">Actor class</th>${nodes.map((n) => `<th scope="col">${n.label}<small>${n.type}</small></th>`).join('')}</tr></thead>`;
+  const body = `<tbody>${matrix.map((row) => `<tr><th scope="row">${row.label}</th>${row.cells.map((cell) => `<td class="${cell.allowed ? 'allowed' : 'blocked'}"><i data-lucide="${cell.allowed ? 'check' : 'x'}" aria-hidden="true"></i><span class="sr-only">${cell.allowed ? 'Allowed' : 'Blocked'}</span></td>`).join('')}</tr>`).join('')}</tbody>`;
   table.innerHTML = head + body;
   refreshIcons();
 }
