@@ -1,0 +1,583 @@
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+const refreshIcons = () => window.lucide?.createIcons({ attrs: { width: 18, height: 18, 'stroke-width': 1.8 } });
+
+const highlightJson = (element, value) => {
+  const plain = JSON.stringify(value, null, 2);
+  const escaped = plain
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  element.innerHTML = escaped.replace(
+    /("(?:\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"\s*:|"(?:\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"|\btrue\b|\bfalse\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+    (token) => {
+      let className = 'json-number';
+      if (token.startsWith('"')) className = token.trimEnd().endsWith(':') ? 'json-key' : 'json-string';
+      else if (token === 'true' || token === 'false') className = 'json-boolean';
+      else if (token === 'null') className = 'json-null';
+      return `<span class="${className}">${token}</span>`;
+    },
+  );
+  element.dataset.copyValue = plain;
+};
+
+const lifecycle = [
+  {
+    kicker: 'PHASE 01 · ONTOLOGY',
+    title: 'Declare the meaning once.',
+    summary: 'The node owns priority, authority, context behaviour, renderer policy, and occupant-response rules. A runtime message cannot override them.',
+    icon: 'book-open',
+    outputBadge: 'Signed node declaration',
+    inputTitle: 'Interaction intent',
+    input: ['One stable semantic meaning', 'Target occupant role', 'Payload facts required to render'],
+    ruleTitle: 'Declaration is authority',
+    rules: ['Closed schema', 'Canonical digest binding', 'Policy is data—not runtime override'],
+    outputTitle: 'Versioned semantic node',
+    output: ['Trust requirements', 'Attention + context policy', 'Delivery + response contract'],
+    codeLabel: 'collision-warning.node.json',
+    code: {
+      id: 'Interaction.Event.Alert.Collision.Warning',
+      since_version: '0.4.0',
+      priority: 'critical',
+      trust_requirements: {
+        permitted_actor_classes: ['adas'],
+        max_ingress_age_ms: 200,
+        replay_protection: 'required',
+      },
+      context_policy: { applicability: 'always', on_blocked: { disposition: 'never_block' } },
+      presentation_contract: {
+        preferred_renderers: ['cluster', 'voice'],
+        delivery_success_policy: 'any_selected_presented',
+      },
+      occupant_response: { kind: 'explicit_or_timeout', authority: 'driver_only', timeout_ms: 2000 },
+    },
+  },
+  {
+    kicker: 'PHASE 02 · EMITTER',
+    title: 'Emit facts—not new authority.',
+    summary: 'A vehicle system creates one typed occurrence, binds it to the installed declaration, and signs the facts it observed.',
+    icon: 'radio-tower',
+    outputBadge: 'Attested runtime instance',
+    inputTitle: 'Vehicle-system decision',
+    input: ['Known node ID', 'Node-specific payload', 'Occurrence and validity window'],
+    ruleTitle: 'Immutable identity',
+    rules: ['Catalog + declaration digests bound', 'Actor credential bound', 'Nonce scoped to actor and key'],
+    outputTitle: 'Signed occurrence',
+    output: ['No priority override', 'No renderer request', 'No acknowledgement override'],
+    codeLabel: 'collision-warning.instance.json',
+    code: {
+      spec_version: '0.4.0',
+      profile_id: 'sia-minimal',
+      node_id: 'Interaction.Event.Alert.Collision.Warning',
+      node_schema_sha256: 'cd8cbd4f…f1cc7c',
+      instance_id: 'c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21',
+      occurred_at_ms: 1784116800000,
+      valid_until_ms: 1784116800500,
+      payload: { time_to_collision_s: 1.4, threat_bearing_deg: 12, threat_range_m: 18 },
+      attestation: { actor_class: 'adas', key_id: 'vehicle-hsm:adas:7', algorithm: 'ES256', nonce: 'cmFuZG9tLW5vbmNlLTE' },
+    },
+  },
+  {
+    kicker: 'PHASE 03 · TRUST POLICY',
+    title: 'Verify all eight trust requirements.',
+    summary: 'The runtime validates structure, declaration binding, actor authority, signature, freshness, replay, revocation, and semantic validity before context can influence anything.',
+    icon: 'shield-check',
+    outputBadge: 'Verified or trust_rejected',
+    inputTitle: 'Instance + trust stores',
+    input: ['Signed runtime instance', 'Authenticated catalog', 'Current actor registry'],
+    ruleTitle: 'Fail closed',
+    rules: ['Every check is mandatory', 'Unknown nodes stay unknown', 'Signature alone is insufficient'],
+    outputTitle: 'Trust decision',
+    output: ['Stable reason code', 'Exact evidence digests', 'Audit on terminal rejection'],
+    codeLabel: 'trust-decision.json',
+    code: {
+      state: 'verified',
+      reason_code: 'TRUST_VERIFIED',
+      checks: {
+        envelope_and_payload: 'pass',
+        declaration_digest: 'pass',
+        actor_authority: 'pass',
+        signature: 'pass',
+        ingress_freshness: 'pass',
+        nonce_replay: 'pass',
+        revocation_status: 'pass',
+        semantic_validity: 'pass',
+      },
+    },
+  },
+  {
+    kicker: 'PHASE 04 · TRANSLATION + CONTEXT',
+    title: 'Resolve applicability and eligible outputs.',
+    summary: 'A signed context snapshot is evaluated against the declaration. Eligible renderer capabilities then produce one deterministic plan with explicit rejection reasons.',
+    icon: 'route',
+    outputBadge: 'Deterministic render plan',
+    inputTitle: 'Verified meaning + context',
+    input: ['Immutable context snapshot', 'Signed context policy', 'Attested renderer capabilities'],
+    ruleTitle: 'Meaning stays stable',
+    rules: ['Applicability ≠ blocking', 'Unknown context never relaxes policy', 'Stable renderer tie-breaker'],
+    outputTitle: 'Selected + rejected',
+    output: ['Exactly one primary', 'Ordered fallbacks', 'Reason for every rejection'],
+    codeLabel: 'collision.render-plan.json',
+    code: {
+      decision_id: 'd8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22',
+      context_id: '1a2b3c4d-1111-4aaa-8bbb-1234567890ab',
+      selected: [
+        { renderer_id: 'Renderer.Cluster.Primary', role: 'primary' },
+        { renderer_id: 'Renderer.Voice.Primary', role: 'fallback' },
+      ],
+      rejected: [{ renderer_id: 'Renderer.IVI.Primary', reason_code: 'SAFETY_PROFILE_INELIGIBLE' }],
+      delivery_timeout_ms: 300,
+      reason_code: 'PRIMARY_WITH_FALLBACK_STANDBY',
+    },
+  },
+  {
+    kicker: 'PHASE 05 · COORDINATION RUNTIME',
+    title: 'Dispatch one ordered attempt at a time.',
+    summary: 'Each renderer attempt binds the plan, role, sequence, predecessor, and a deadline no later than semantic expiry. Fallback begins only after a terminal primary failure.',
+    icon: 'send',
+    outputBadge: 'Authenticated dispatch attempt',
+    inputTitle: 'Render plan',
+    input: ['Selected primary', 'Standby fallback', 'Delivery deadline'],
+    ruleTitle: 'Causal ordering',
+    rules: ['One attempt ID per dispatch', 'Fallback needs failed predecessor', 'Expired meaning is never dispatched'],
+    outputTitle: 'Renderer request',
+    output: ['Attempt sequence', 'Bound decision + instance', 'Authenticated runtime evidence'],
+    codeLabel: 'collision.dispatch-attempt.json',
+    code: {
+      attempt_id: 'a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20',
+      decision_id: 'd8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22',
+      renderer_id: 'Renderer.Cluster.Primary',
+      role: 'primary',
+      sequence: 0,
+      previous_attempt_id: null,
+      dispatched_at_ms: 1784116800060,
+      deadline_at_ms: 1784116800360,
+      state: 'dispatched',
+    },
+  },
+  {
+    kicker: 'PHASE 06 · FEEDBACK + CLOSURE',
+    title: 'Record delivery and occupant response separately.',
+    summary: 'A presented receipt can open an occupant-response window. It cannot stand in for the occupant response, and a response wait never starts when delivery fails.',
+    icon: 'reply',
+    outputBadge: 'Receipt, response, and audit',
+    inputTitle: 'Renderer + occupant evidence',
+    input: ['Monotonic renderer receipt', 'Presented receipt IDs', 'Authenticated occupant input'],
+    ruleTitle: 'Two independent claims',
+    rules: ['Presentation ≠ awareness', 'Response binds opening receipts', 'Timeout is a runtime event'],
+    outputTitle: 'Closed lifecycle',
+    output: ['Delivery outcome', 'Occupant outcome', 'Hash-linked audit record'],
+    codeLabel: 'feedback-outcome.json',
+    code: {
+      delivery: {
+        receipt_id: 'e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23',
+        attempt_id: 'a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20',
+        renderer_id: 'Renderer.Cluster.Primary',
+        state: 'presented',
+        elapsed_ms: 72,
+      },
+      occupant_response: {
+        response_id: 'f8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b24',
+        delivery_receipt_ids: ['e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23'],
+        state: 'acknowledged',
+        subject_role: 'driver',
+      },
+    },
+  },
+];
+
+const trustChecks = [
+  { title: 'Envelope + payload schema', short: 'Only declared fields', icon: 'file-check-2', stops: 'Priority, renderer, or policy injection', failure: 'TRUST_REJECTED_ENVELOPE', guarantee: 'Only schema-declared facts can enter semantic processing.', description: 'Reject unknown authority-changing fields and malformed node-specific payloads before semantic processing.' },
+  { title: 'Declaration digest', short: 'Instance → exact node', icon: 'fingerprint', stops: 'Binding an instance to altered declaration rules', failure: 'TRUST_REJECTED_DECLARATION_DIGEST', guarantee: 'The runtime evaluates the exact installed declaration the instance names.', description: 'Compare the instance node digest with the canonical digest of the signed catalog declaration.' },
+  { title: 'Actor authority', short: 'Class + identity permitted', icon: 'badge-check', stops: 'An app or assistant impersonating ADAS', failure: 'TRUST_REJECTED_ACTOR', guarantee: 'A credential proves identity and the declaration grants semantic authority.', description: 'Resolve the current credential and verify both actor identity and actor class against the node declaration.' },
+  { title: 'Signature / authenticator', short: 'Origin evidence verifies', icon: 'key-round', stops: 'Tampering and unattributed emission', failure: 'TRUST_REJECTED_SIGNATURE', guarantee: 'The accepted bytes are attributable to the bound key or session.', description: 'Verify the configured algorithm over the RFC 8785 canonical signing representation.' },
+  { title: 'Ingress freshness', short: 'Transport is recent', icon: 'timer', stops: 'Delayed-but-still-signed messages', failure: 'TRUST_REJECTED_FRESHNESS', guarantee: 'Acceptance occurs inside the declaration-owned transport budget.', description: 'Compare acceptance time with the attestation timestamp and max_ingress_age_ms.' },
+  { title: 'Nonce replay protection', short: 'Fresh message, first use', icon: 'copy-x', stops: 'Replaying a valid recent warning', failure: 'TRUST_REJECTED_REPLAY', guarantee: 'A nonce is unique per actor and key for the bounded replay window.', description: 'Check the scoped nonce cache. Cache overflow fails closed instead of forgetting earlier nonces.' },
+  { title: 'Revocation status', short: 'Credential is current', icon: 'shield-x', stops: 'Use of a compromised or withdrawn credential', failure: 'TRUST_REJECTED_REVOKED', guarantee: 'A mathematically valid signature from a revoked key has no authority.', description: 'Evaluate current key and session status from the authenticated actor registry at acceptance time.' },
+  { title: 'Semantic validity', short: 'Meaning has not expired', icon: 'hourglass', stops: 'Presenting facts that are no longer useful now', failure: 'TRUST_REJECTED_EXPIRED', guarantee: 'The interaction is accepted no later than its declaration-bounded expiry.', description: 'Verify valid_until_ms against occurrence, declaration maximum, acceptance time, and secure-time policy.' },
+];
+
+const contextCases = {
+  collision: {
+    status: 'APPLICABLE · NEVER BLOCK',
+    title: 'The warning continues.',
+    description: 'Another vehicle may reverse into a stationary or charging car. Charging must not suppress an external collision threat.',
+    code: 'applicability: "always"',
+    icon: 'shield-check',
+    className: '',
+  },
+  lane: {
+    status: 'NOT APPLICABLE',
+    title: 'The instance closes without presentation.',
+    description: 'A stationary vehicle cannot depart its lane. This meaning is irrelevant here—it is not temporarily suppressed or retained.',
+    code: 'applicability: "moving_only"',
+    icon: 'circle-slash-2',
+    className: 'is-not-applicable',
+  },
+};
+
+const feedbackCases = {
+  success: {
+    primaryState: 'presented',
+    primaryFailed: false,
+    fallback: false,
+    receipt: 'Machine evidence: cluster output was presented.',
+    occupantTitle: 'Occupant acknowledged',
+    occupantClaim: 'Separate authenticated human input.',
+    occupantTimeout: false,
+  },
+  fallback: {
+    primaryState: 'failed · terminal',
+    primaryFailed: true,
+    fallback: true,
+    receipt: 'Primary failed; fallback voice output was presented.',
+    occupantTitle: 'Occupant acknowledged',
+    occupantClaim: 'The response binds the fallback presented receipt.',
+    occupantTimeout: false,
+  },
+  'no-response': {
+    primaryState: 'presented',
+    primaryFailed: false,
+    fallback: false,
+    receipt: 'Machine evidence: cluster output was presented.',
+    occupantTitle: 'Response timed out',
+    occupantClaim: 'Runtime closed the wait; it did not invent a human action.',
+    occupantTimeout: true,
+  },
+};
+
+const contracts = {
+  node: {
+    kicker: 'DECLARATION',
+    title: 'Interaction node',
+    description: 'The source of authority for meaning, trust, attention, context, delivery, and response behaviour.',
+    schema: 'interaction-node.schema.json', identity: 'node ID + canonical SHA-256', owner: 'Catalog author', file: 'collision-warning.node.json',
+    value: lifecycle[0].code,
+  },
+  instance: {
+    kicker: 'EMISSION',
+    title: 'Runtime instance',
+    description: 'One immutable occurrence containing observed facts, exact declaration bindings, a validity window, and actor attestation.',
+    schema: 'runtime-instance.schema.json', identity: 'instance_id + node digest', owner: 'Authorised emitter', file: 'collision-warning.instance.json',
+    value: lifecycle[1].code,
+  },
+  context: {
+    kicker: 'DECISION INPUT',
+    title: 'Context snapshot',
+    description: 'A signed, immutable set of orthogonal observations. Each axis carries its own source, timestamp, and confidence.',
+    schema: 'context-snapshot.schema.json', identity: 'context_id + policy digest', owner: 'Vehicle Context Authority', file: 'context-attentive.json',
+    value: {
+      context_id: '1a2b3c4d-1111-4aaa-8bbb-1234567890ab',
+      captured_at_ms: 1784116800040,
+      policy_ref: 'sia:policy:core-context:1',
+      policy_sha256: 'b614a380…798e22',
+      axes: {
+        motion_state: { value: 'moving', source_id: 'Vehicle.SpeedState', observed_at_ms: 1784116800036, confidence: 100 },
+        operating_mode: { value: 'driving', source_id: 'Vehicle.OperatingMode', observed_at_ms: 1784116800036, confidence: 100 },
+        energy_state: { value: 'not_charging', source_id: 'Vehicle.ChargeState', observed_at_ms: 1784116800030, confidence: 100 },
+        road_type: { value: 'highway', source_id: 'Navigation.RoadClass', observed_at_ms: 1784116799800, confidence: 96 },
+        driver_state: { value: 'attentive', source_id: 'DMS.AttentionState', observed_at_ms: 1784116800028, confidence: 92 },
+      },
+      integrity: { issuer: 'Vehicle Context Authority', key_id: 'vehicle-hsm:context:3', algorithm: 'EdDSA' },
+    },
+  },
+  plan: {
+    kicker: 'TRANSLATION OUTPUT',
+    title: 'Render plan',
+    description: 'A deterministic, context-bound choice of one primary, optional fallbacks, and stable reasons for every rejected renderer.',
+    schema: 'render-plan.schema.json', identity: 'decision_id + bound inputs', owner: 'Translation Layer', file: 'collision.render-plan.json',
+    value: lifecycle[3].code,
+  },
+  dispatch: {
+    kicker: 'DELIVERY INPUT',
+    title: 'Dispatch attempt',
+    description: 'An authenticated, causally ordered request to one renderer with a deadline bounded by semantic validity.',
+    schema: 'dispatch-attempt.schema.json', identity: 'attempt_id + predecessor', owner: 'Coordination Runtime', file: 'collision.dispatch-attempt.json',
+    value: lifecycle[4].code,
+  },
+  receipt: {
+    kicker: 'MACHINE FEEDBACK',
+    title: 'Delivery receipt',
+    description: 'Renderer evidence for received, presented, or failed output—or a runtime-issued delivery timeout.',
+    schema: 'delivery-receipt.schema.json', identity: 'receipt_id + attempt sequence', owner: 'Renderer or runtime', file: 'collision.delivery-receipt.json',
+    value: {
+      receipt_id: 'e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23',
+      attempt_id: 'a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20',
+      receipt_sequence: 0,
+      decision_id: 'd8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22',
+      instance_id: 'c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21',
+      renderer_id: 'Renderer.Cluster.Primary',
+      issuer: 'renderer',
+      state: 'presented',
+      observed_at_ms: 1784116800132,
+      elapsed_ms: 72,
+      attestation: { key_id: 'vehicle-hsm:cluster:4', algorithm: 'HMAC-SHA-256' },
+    },
+  },
+  response: {
+    kicker: 'HUMAN FEEDBACK',
+    title: 'Occupant response',
+    description: 'A separate response bound to the decision, context, and presented receipt IDs that opened the response window.',
+    schema: 'occupant-response.schema.json', identity: 'response_id + presented receipts', owner: 'Input authority or runtime', file: 'collision.occupant-response.json',
+    value: {
+      response_id: 'f8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b24',
+      decision_id: 'd8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22',
+      instance_id: 'c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21',
+      context_id: '1a2b3c4d-1111-4aaa-8bbb-1234567890ab',
+      delivery_receipt_ids: ['e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23'],
+      state: 'acknowledged',
+      authority: 'driver_only',
+      subject_role: 'driver',
+      opened_at_ms: 1784116800132,
+      deadline_at_ms: 1784116802132,
+      occurred_at_ms: 1784116800552,
+      input_channel: 'InputDevice.SteeringWheel.Right.Press',
+      evidence: { kind: 'verified_input', key_id: 'vehicle-hsm:input:5', algorithm: 'HMAC-SHA-256' },
+    },
+  },
+};
+
+const renderList = (selector, items) => {
+  $(selector).innerHTML = items.map((item) => `<li>${item}</li>`).join('');
+};
+
+const renderLifecycle = (index, moveFocus = false) => {
+  const item = lifecycle[index];
+  const tabs = $$('[data-lifecycle-step]');
+  tabs.forEach((tab, tabIndex) => tab.setAttribute('aria-selected', String(tabIndex === index)));
+  if (moveFocus) tabs[index].focus();
+  $('#phase-icon').innerHTML = `<i data-lucide="${item.icon}" aria-hidden="true"></i>`;
+  $('#phase-kicker').textContent = item.kicker;
+  $('#phase-title').textContent = item.title;
+  $('#phase-summary').textContent = item.summary;
+  $('#phase-output-badge').textContent = item.outputBadge;
+  $('#phase-input-title').textContent = item.inputTitle;
+  $('#phase-rule-title').textContent = item.ruleTitle;
+  $('#phase-output-title').textContent = item.outputTitle;
+  renderList('#phase-input-list', item.input);
+  renderList('#phase-rule-list', item.rules);
+  renderList('#phase-output-list', item.output);
+  $('#phase-code-label').textContent = item.codeLabel;
+  highlightJson($('#phase-code'), item.code);
+  refreshIcons();
+};
+
+$$('[data-lifecycle-step]').forEach((button, index, tabs) => {
+  button.addEventListener('click', () => renderLifecycle(index));
+  button.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    renderLifecycle(next, true);
+  });
+});
+
+const trustList = $('#trust-list');
+trustList.innerHTML = trustChecks.map((item, index) => `
+  <button type="button" role="listitem" data-trust-check="${index}" aria-pressed="${index === 0}">
+    <span>${String(index + 1).padStart(2, '0')}</span>
+    <span><b>${item.title}</b><small>${item.short}</small></span>
+    <i data-lucide="chevron-right" aria-hidden="true"></i>
+  </button>
+`).join('');
+
+const renderTrust = (index) => {
+  const item = trustChecks[index];
+  $$('[data-trust-check]').forEach((button, buttonIndex) => button.setAttribute('aria-pressed', String(buttonIndex === index)));
+  $('#trust-number').textContent = String(index + 1).padStart(2, '0');
+  $('#trust-icon').innerHTML = `<i data-lucide="${item.icon}" aria-hidden="true"></i>`;
+  $('#trust-title').textContent = item.title;
+  $('#trust-description').textContent = item.description;
+  $('#trust-stops').textContent = item.stops;
+  $('#trust-failure').innerHTML = `<code>${item.failure}</code>`;
+  $('#trust-guarantee').textContent = item.guarantee;
+  refreshIcons();
+};
+
+$$('[data-trust-check]').forEach((button) => button.addEventListener('click', () => renderTrust(Number(button.dataset.trustCheck))));
+
+const renderContext = (caseName) => {
+  const item = contextCases[caseName];
+  $$('[data-context-case]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.contextCase === caseName)));
+  const result = $('#context-result');
+  result.className = `context-result ${item.className}`.trim();
+  $('.result-icon', result).innerHTML = `<i data-lucide="${item.icon}" aria-hidden="true"></i>`;
+  $('#context-status').textContent = item.status;
+  $('#context-title').textContent = item.title;
+  $('#context-description').textContent = item.description;
+  $('#context-code').textContent = item.code;
+  refreshIcons();
+};
+
+$$('[data-context-case]').forEach((button) => button.addEventListener('click', () => renderContext(button.dataset.contextCase)));
+
+const renderFeedback = (caseName) => {
+  const item = feedbackCases[caseName];
+  $$('[data-feedback-case]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.feedbackCase === caseName)));
+  $('#primary-renderer').classList.toggle('is-failed', item.primaryFailed);
+  $('#primary-state').textContent = item.primaryState;
+  $('#fallback-forward').hidden = !item.fallback;
+  $('#fallback-renderer').hidden = !item.fallback;
+  $('#receipt-claim').textContent = item.receipt;
+  $('#occupant-result').textContent = item.occupantTitle;
+  $('#occupant-claim').textContent = item.occupantClaim;
+  $('.occupant-return').classList.toggle('is-timeout', item.occupantTimeout);
+  $('#dispatch-label').textContent = item.fallback ? 'attempt 1 · primary' : 'attempt 1 · primary';
+};
+
+$$('[data-feedback-case]').forEach((button) => button.addEventListener('click', () => renderFeedback(button.dataset.feedbackCase)));
+
+const renderContract = (name, moveFocus = false) => {
+  const item = contracts[name];
+  const tabs = $$('[data-contract]');
+  tabs.forEach((tab) => tab.setAttribute('aria-selected', String(tab.dataset.contract === name)));
+  if (moveFocus) tabs.find((tab) => tab.dataset.contract === name)?.focus();
+  $('#contract-kicker').textContent = item.kicker;
+  $('#contract-title').textContent = item.title;
+  $('#contract-description').textContent = item.description;
+  $('#contract-schema').textContent = item.schema;
+  $('#contract-identity').textContent = item.identity;
+  $('#contract-owner').textContent = item.owner;
+  $('#contract-file').textContent = item.file;
+  highlightJson($('#contract-code'), item.value);
+};
+
+$$('[data-contract]').forEach((button, index, tabs) => {
+  button.addEventListener('click', () => renderContract(button.dataset.contract));
+  button.addEventListener('keydown', (event) => {
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const forward = ['ArrowDown', 'ArrowRight'].includes(event.key);
+    const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (forward ? 1 : -1) + tabs.length) % tabs.length;
+    renderContract(tabs[nextIndex].dataset.contract, true);
+  });
+});
+
+const copyText = async (text, button) => {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const temporary = document.createElement('textarea');
+    temporary.value = text;
+    temporary.setAttribute('readonly', '');
+    temporary.style.position = 'fixed';
+    temporary.style.opacity = '0';
+    document.body.append(temporary);
+    temporary.select();
+    document.execCommand('copy');
+    temporary.remove();
+  }
+  const oldLabel = button.innerHTML;
+  button.innerHTML = '<i data-lucide="check" aria-hidden="true"></i> Copied';
+  refreshIcons();
+  window.setTimeout(() => {
+    button.innerHTML = oldLabel;
+    refreshIcons();
+  }, 1400);
+};
+
+$$('[data-copy-target]').forEach((button) => button.addEventListener('click', () => {
+  const target = document.getElementById(button.dataset.copyTarget);
+  copyText(target.dataset.copyValue || target.textContent, button);
+}));
+$$('[data-copy-text]').forEach((button) => button.addEventListener('click', () => copyText(button.dataset.copyText, button)));
+
+const setReadingMode = (mode) => {
+  document.body.classList.toggle('mode-essential', mode === 'essential');
+  $$('[data-reading-mode]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.readingMode === mode)));
+  try { localStorage.setItem('sia-docs-reading-mode', mode); } catch { /* storage is optional */ }
+};
+
+$$('[data-reading-mode]').forEach((button) => button.addEventListener('click', () => setReadingMode(button.dataset.readingMode)));
+
+const sidebar = $('#docs-sidebar');
+const scrim = $('#sidebar-scrim');
+const menuButton = $('#menu-button');
+const closeSidebar = () => {
+  sidebar.classList.remove('is-open');
+  menuButton.setAttribute('aria-expanded', 'false');
+  scrim.hidden = true;
+  document.body.classList.remove('is-menu-open');
+};
+const openSidebar = () => {
+  sidebar.classList.add('is-open');
+  menuButton.setAttribute('aria-expanded', 'true');
+  scrim.hidden = false;
+  document.body.classList.add('is-menu-open');
+  $('#docs-search').focus();
+};
+
+menuButton.addEventListener('click', () => sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar());
+scrim.addEventListener('click', closeSidebar);
+$$('.section-nav a').forEach((link) => link.addEventListener('click', closeSidebar));
+
+const searchInput = $('#docs-search');
+const searchableSections = $$('.docs-section[data-search]');
+const updateSearch = () => {
+  const query = searchInput.value.trim().toLowerCase();
+  const tokens = query.split(/\s+/).filter(Boolean);
+  let visible = 0;
+  searchableSections.forEach((section) => {
+    const haystack = `${section.dataset.search} ${section.textContent}`.toLowerCase();
+    const matches = tokens.length === 0 || tokens.every((token) => haystack.includes(token));
+    section.hidden = !matches;
+    visible += Number(matches);
+    const nav = $(`[data-nav-section="${section.id}"]`);
+    if (nav) nav.hidden = !matches;
+  });
+  $('#search-empty').hidden = visible !== 0;
+  $('.docs-cta').hidden = tokens.length > 0;
+  $('.docs-footer').hidden = tokens.length > 0;
+};
+searchInput.addEventListener('input', updateSearch);
+$('#clear-search').addEventListener('click', () => {
+  searchInput.value = '';
+  updateSearch();
+  searchInput.focus();
+});
+
+document.addEventListener('keydown', (event) => {
+  const isFormField = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+  if (event.key === '/' && !isFormField) {
+    event.preventDefault();
+    searchInput.focus();
+  }
+  if (event.key === 'Escape') {
+    if (sidebar.classList.contains('is-open')) closeSidebar();
+    else if (searchInput.value) {
+      searchInput.value = '';
+      updateSearch();
+      searchInput.focus();
+    }
+  }
+});
+
+const navLinks = $$('.section-nav a');
+const observer = new IntersectionObserver((entries) => {
+  const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+  if (!visible) return;
+  navLinks.forEach((link) => link.classList.toggle('is-active', link.dataset.navSection === visible.target.id));
+}, { rootMargin: '-18% 0px -67% 0px', threshold: [0, .15, .45] });
+searchableSections.forEach((section) => observer.observe(section));
+
+let storedMode = 'essential';
+try { storedMode = localStorage.getItem('sia-docs-reading-mode') || 'essential'; } catch { /* storage is optional */ }
+setReadingMode(storedMode === 'technical' ? 'technical' : 'essential');
+renderLifecycle(0);
+renderTrust(0);
+renderContract('node');
+refreshIcons();
+
+if (location.hash) {
+  window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+    let targetId = location.hash.slice(1);
+    try { targetId = decodeURIComponent(targetId); } catch { /* keep the literal hash */ }
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = 'auto';
+    target.scrollIntoView({ block: 'start' });
+    document.documentElement.style.scrollBehavior = previousScrollBehavior;
+  }));
+}

@@ -30,6 +30,9 @@ a { color: inherit; }
 .site-header { height: 78px; padding: 0 clamp(20px, 5vw, 76px); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 16px; text-decoration: none; font: 700 11px "akagi-pro", sans-serif; letter-spacing: .16em; }
 .brand img { width: 70px; filter: brightness(0) invert(1); }
+.header-actions { display: flex; align-items: center; gap: 16px; }
+.site-nav-link { display: inline-flex; align-items: center; gap: 7px; padding: 8px 10px; border-radius: 8px; color: var(--text); text-decoration: none; font-size: 12px; font-weight: 700; }
+.site-nav-link:hover { background: var(--surface-2); }
 .header-meta { display: flex; align-items: center; gap: 9px; color: var(--muted); font: 400 12px "akagi-pro", sans-serif; }
 .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px color-mix(in srgb, var(--green) 14%, transparent); }
 
@@ -279,6 +282,7 @@ pre { padding: 14px; overflow: auto; border-radius: 8px; background: #080a10; co
 .takeaway-logo { width: clamp(112px, 13vw, 190px); height: auto; filter: brightness(0) invert(1); }
 .takeaway p { margin: 0; font-size: clamp(22px, 3vw, 40px); line-height: 1.25; }
 footer { padding: 28px clamp(20px, 5vw, 76px); display: flex; justify-content: space-between; gap: 20px; color: var(--muted); font-size: 12px; }
+.footer-links { display: flex; gap: 22px; }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 @media (max-width: 1280px) {
@@ -297,6 +301,7 @@ footer { padding: 28px clamp(20px, 5vw, 76px); display: flex; justify-content: s
 }
 @media (max-width: 680px) {
   .header-meta { display: none; }
+  .site-nav-link { font-size: 11px; }
   .hero { min-height: 580px; padding-top: 90px; }
   .section-heading { grid-template-columns: 1fr; gap: 18px; }
   .scenario-bar { grid-template-columns: 1fr; }
@@ -318,6 +323,7 @@ footer { padding: 28px clamp(20px, 5vw, 76px); display: flex; justify-content: s
   .inspector-icon { width: 48px; height: 48px; }
   .trace-grid { grid-template-columns: 1fr; }
   .technical-trace summary span:last-child { display: none; }
+  .footer-links { flex-direction: column; }
   .takeaway { grid-template-columns: 1fr; gap: 15px; }
   footer { flex-direction: column; }
 }

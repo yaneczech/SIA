@@ -76,3 +76,33 @@ test('walkthrough keeps six core scenarios and points advanced cases to the Test
   assert.match(html, /href="#lab">Test Lab below<\/a>/);
   assert.match(html, /<section class="lab" id="lab"/);
 });
+
+test('interactive documentation exposes the complete 0.4 learning path', async () => {
+  const [html, script, css, demoHtml] = await Promise.all([
+    readFile(path.join(root, 'demo/docs.html'), 'utf8'),
+    readFile(path.join(root, 'demo/docs.js'), 'utf8'),
+    readFile(path.join(root, 'demo/docs.css'), 'utf8'),
+    readFile(path.join(root, 'demo/index.html'), 'utf8'),
+  ]);
+
+  for (const section of ['overview', 'lifecycle', 'trust', 'time-context', 'feedback', 'contracts', 'implementation', 'source-map']) {
+    assert.match(html, new RegExp(`id="${section}"`), `interactive docs are missing #${section}`);
+  }
+  assert.match(html, /use\.typekit\.net\/cyy0vwc\.css/);
+  assert.match(css, /font-family:\s*"akagi-pro"/);
+  assert.doesNotMatch(css, /letter-spacing:\s*-/);
+  assert.match(html, /lucide@0\.468\.0/);
+  assert.match(html, /data-reading-mode="essential"/);
+  assert.match(html, /data-reading-mode="technical"/);
+  assert.match(html, /id="docs-search"/);
+  assert.match(html, /data-copy-target="contract-code"/);
+  assert.match(html, /Renderer receipt means/);
+  assert.match(html, /Occupant response means/);
+  assert.match(script, /const trustChecks = \[/);
+  assert.equal([...script.matchAll(/failure: 'TRUST_REJECTED_/g)].length, 8);
+  assert.match(script, /applicability: \"always\"/);
+  assert.match(script, /applicability: \"moving_only\"/);
+  assert.match(css, /@media \(max-width: 900px\)/);
+  assert.match(css, /@media \(max-width: 680px\)/);
+  assert.match(demoHtml, /href="\.\/docs\.html"/);
+});
