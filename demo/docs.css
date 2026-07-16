@@ -391,6 +391,13 @@ body.mode-essential .technical-only { display: none; }
 .phase-story p, .phase-why p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
 
 .code-intro { margin: 0 0 10px; padding: 10px 13px; border-radius: 9px; background: #454ade14; color: var(--indigo-soft); font-size: 12.5px; line-height: 1.5; }
+
+.paper-figure { margin: 26px 0 0; }
+.paper-figure img { display: block; width: 100%; height: auto; padding: clamp(10px, 2vw, 22px); border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.paper-figure figcaption { max-width: 860px; margin-top: 12px; color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+.paper-figure figcaption b { color: var(--text); }
+.paper-figure figcaption em { color: var(--muted-2); font-style: normal; }
+.paper-figure figcaption code { font-size: 11px; }
 .mode-hint { display: block; margin-top: 9px; color: var(--muted-2); font-size: 12px; line-height: 1.5; }
 
 @media (prefers-reduced-motion: reduce) {

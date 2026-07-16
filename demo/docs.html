@@ -78,8 +78,8 @@
         <div class="hero-grid">
           <div class="hero-content">
             <p class="eyebrow">SEMANTIC INTERACTION ARCHITECTURE · 0.4</p>
-            <h1>Who may say what to the people in a car—and how do you prove it?</h1>
-            <p class="hero-copy">A modern car has dozens of software systems, several screens, a voice assistant—and soon third-party apps and AI agents. All of them want your attention while you drive. SIA is a proposed mediation layer that decides which messages get through, where they may appear, and preserves bound evidence for each lifecycle outcome.</p>
+            <h1>Who may say what to the people in a car – and how do you prove it?</h1>
+            <p class="hero-copy">A modern car has dozens of software systems, several screens, a voice assistant – and soon third-party apps and AI agents. All of them want your attention while you drive. SIA is a proposed mediation layer that decides which messages get through, where they may appear, and preserves bound evidence for each lifecycle outcome.</p>
             <div class="hero-actions">
               <a class="primary-action" href="#lifecycle">Explore the lifecycle <i data-lucide="arrow-down" aria-hidden="true"></i></a>
               <a class="secondary-action" href="./index.html#lab">Test a scenario <i data-lucide="flask-conical" aria-hidden="true"></i></a>
@@ -137,6 +137,11 @@
           <i data-lucide="ban" aria-hidden="true"></i>
           <div><b>SIA does not detect the hazard.</b><p>ADAS decides whether a collision risk is real. SIA decides whether the resulting interaction claim is authorised, fresh, context-appropriate, and eligible for presentation.</p></div>
         </aside>
+
+        <figure class="paper-figure">
+          <img src="../figures/fig2-stack-position.png" alt="Layer diagram: occupant on top, then HMI surfaces, then the SIA layer, then SDV services, data model, middleware, and hardware." loading="lazy">
+          <figcaption><b>Where SIA sits.</b> Above the vehicle’s data and service stack, below the screens and voice channels—one thin layer where meaning, trust, context, and coordination live. <em>Figure 2 of the position paper.</em></figcaption>
+        </figure>
       </section>
 
       <section class="docs-section" id="lifecycle" data-search="lifecycle ontology emitter trust translation context runtime renderer receive verify plan dispatch delivery acknowledge retain release">
@@ -318,6 +323,11 @@
             </div>
           </div>
         </div>
+
+        <figure class="paper-figure">
+          <img src="../figures/fig4-node-taxonomy.png" alt="Taxonomy diagram: Interaction branches into Event (Alert and Notification), Action, State, and Task, each with example node identifiers." loading="lazy">
+          <figcaption><b>The full semantic family.</b> Profile 0.4 emits only the two <code>Event</code> branches—<code>Alert</code> and <code>Notification</code>; <code>Action</code>, <code>State</code>, and <code>Task</code> are reserved for future input and flow profiles. The per-family labels are early 0.3 vocabulary: acknowledgement became the occupant-response contract, suppression became the declared blocked disposition. <em>Figure 4 of the position paper.</em></figcaption>
+        </figure>
       </section>
 
       <section class="docs-section" id="operations" data-search="operational guarantees limits profile scope alert notification action state task applicability blocking retention drop defer coalesce quotas delivery success policy received presented at least once idempotency monotonic context uncertainty safe worst case fail closed version compatibility secure time watchdog fallback duplicate privacy rate limit audit">

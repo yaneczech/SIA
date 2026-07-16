@@ -37,7 +37,7 @@ A natural objection is that any additional boundary creates additional complexit
 
 ![Figure 1 — complexity comparison](./figures/fig1-complexity-comparison.png)
 
-*Figure 1. Without SIA, cross-cutting interaction logic is duplicated across emitter–renderer pairs. With SIA, this logic is consolidated at a mediation boundary; renderers become thinner consumers and adding new emitters or renderers becomes linear rather than multiplicative.*
+*Figure 1. Without SIA, cross-cutting interaction logic is duplicated across emitter–renderer pairs. With SIA, this logic is consolidated at a mediation boundary; renderers become thinner consumers and adding new emitters or renderers becomes linear rather than multiplicative. The concern labels inside the illustration reflect the 0.3 draft: 0.4 expands trust verification to eight checks, adds bounded context retention, and splits renderer delivery receipts from the occupant response.*
 
 The first version of such a boundary should be deliberately narrow. We scope SIA 0.4 to three cores:
 
@@ -132,7 +132,7 @@ Renderers and input devices are external to SIA. They declare measurable capabil
 
 ![Figure 3 — Mediation architecture](./figures/fig3-mediation-architecture.png)
 
-*Figure 3. SIA contains three functional components and two policies. Emitters submit nodes through Trust Policy; renderers register capabilities and consume modality decisions.*
+*Figure 3. SIA contains three functional components and two policies. Emitters submit nodes through Trust Policy; renderers register capabilities and consume modality decisions. The illustration predates the 0.4 contract in three details: the core context axes are now `motion_state`, `operating_mode`, `energy_state`, `road_type`, `driver_state`, and `occupancy`; Trust Policy verifies eight requirements; and the single “render / input / ack” arrow is now two separate authenticated loops — a renderer delivery receipt and an independent occupant response.*
 
 ---
 
@@ -142,7 +142,7 @@ A common failure mode in interaction schemas is treating all interactions as gen
 
 ![Figure 4 — Node taxonomy](./figures/fig4-node-taxonomy.png)
 
-*Figure 4. Four architectural semantic types. In the 0.4 minimal profile, only two concrete `Event` subtypes — `Alert` and `Notification` — are emitted.*
+*Figure 4. Four architectural semantic types. In the 0.4 minimal profile, only two concrete `Event` subtypes — `Alert` and `Notification` — are emitted. The per-family metadata labels shown are illustrative 0.3 vocabulary: in 0.4, acknowledgement fields became the `occupant_response` contract and suppression/merging became the declared blocked disposition (`drop`, `defer`, `coalesce`).*
 
 **Action.** Occupant-initiated. May be discrete (`Action.Navigate.Back`), sustained (`Action.Media.Volume.Increase`) or continuous (`Action.Map.Zoom`). A complete input authentication, execution-result and cancellation contract is deferred from 0.4; the output-renderer delivery contract must not be reused as a shortcut.
 

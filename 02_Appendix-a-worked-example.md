@@ -111,7 +111,7 @@ The three version axes are explicit. `catalog_sha256` and `node_schema_sha256` b
 
 ![Figure A.1 — Alert.Collision.Warning trust and translation flow](./figures/figA1-alert-flow.png)
 
-*Figure A.1. Trust verification is a chokepoint before Translation. A failed instance never reaches a renderer, regardless of claimed urgency.*
+*Figure A.1. Trust verification is a chokepoint before Translation. A failed instance never reaches a renderer, regardless of claimed urgency. The sequence shown is the 0.3 sketch: in 0.4, dispatch is an ordered, deadline-bounded attempt per renderer, the “acknowledgement or timeout” return is split into an authenticated delivery receipt and a separate occupant response, and the response window opens only on `presented` evidence (§A.6–A.7).*
 
 Trust Policy performs these checks before context or rendering:
 
