@@ -95,7 +95,7 @@ svg { flex: 0 0 auto; }
 .visual-source b, .visual-target b { font-size: 13px; }
 .visual-source small, .visual-target small { margin-top: 3px; color: var(--muted); font-size: 10px; }
 .visual-arrow { position: relative; display: grid; justify-items: center; gap: 7px; color: var(--muted); }
-.visual-arrow span { font-size: 9px; white-space: nowrap; }
+.visual-arrow span { font-size: 9px; white-space: nowrap; transform: translateX(-7px); }
 .visual-arrow svg { color: var(--yellow); }
 .visual-arrow-out svg { color: var(--rose); }
 .visual-boundary { position: relative; display: grid; gap: 7px; padding: 25px 10px 10px; border: 1px solid var(--indigo); background: #282c693f; }
@@ -119,6 +119,11 @@ svg { flex: 0 0 auto; }
 .definition-result span { color: var(--indigo-soft); }
 .scope-note, .principle-callout { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 16px; align-items: start; margin-top: 18px; padding: 19px 22px; border-left: 3px solid var(--yellow); background: #ffda690d; }
 .scope-note > svg, .principle-callout > svg { width: 42px; height: 42px; padding: 10px; border-radius: 50%; background: #ffda691b; color: var(--yellow); }
+/* Lucide draws some strokes to the edge of the viewBox; the SVG default of
+   overflow: hidden shaves half the stroke off inside circular chips. */
+.visual-source > svg, .visual-target > svg, .visual-boundary > div:not(.visual-boundary-label) > svg,
+.scope-note > svg, .principle-callout > svg, .running-example > svg,
+.phase-icon svg, .detail-icon svg, .result-icon svg, .claim-icon svg { overflow: visible; }
 .scope-note b, .principle-callout b { font-size: 14px; }
 .scope-note p, .principle-callout p { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 

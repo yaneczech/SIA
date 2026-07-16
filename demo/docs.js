@@ -233,7 +233,7 @@ const contextCases = {
     title: 'The instance closes without presentation.',
     description: 'A stationary vehicle cannot depart its lane. This meaning is irrelevant here—it is not temporarily suppressed or retained.',
     code: 'applicability: "moving_only"',
-    icon: 'circle-slash-2',
+    icon: 'ban',
     className: 'is-not-applicable',
   },
 };
