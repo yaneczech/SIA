@@ -42,6 +42,7 @@
             <button type="button" data-reading-mode="essential" aria-pressed="true">Essential</button>
             <button type="button" data-reading-mode="technical" aria-pressed="false">Technical</button>
           </div>
+          <small class="mode-hint">Essential is a plain-language tutorial. Technical adds the real machine-readable artifacts and links to the normative spec.</small>
         </div>
 
         <nav class="section-nav" aria-label="On this page">
@@ -76,8 +77,8 @@
         <div class="hero-grid">
           <div class="hero-content">
             <p class="eyebrow">SEMANTIC INTERACTION ARCHITECTURE · 0.4</p>
-            <h1>A semantic contract between vehicle systems and people.</h1>
-            <p class="hero-copy">SIA gives every interaction a declared meaning, authority, attention cost, context policy, delivery contract, and response lifecycle—before any screen decides how to show it.</p>
+            <h1>Who may say what to the people in a car—and how do you prove it?</h1>
+            <p class="hero-copy">A modern car has dozens of software systems, several screens, a voice assistant—and soon third-party apps and AI agents. All of them want your attention while you drive. SIA is a proposed checkpoint layer that decides which messages get through, where they appear, and keeps evidence of everything that happened.</p>
             <div class="hero-actions">
               <a class="primary-action" href="#lifecycle">Explore the lifecycle <i data-lucide="arrow-down" aria-hidden="true"></i></a>
               <a class="secondary-action" href="./index.html#lab">Test a scenario <i data-lucide="flask-conical" aria-hidden="true"></i></a>
@@ -96,6 +97,29 @@
             <div class="visual-target"><i data-lucide="monitor-speaker" aria-hidden="true"></i><span><b>Renderers</b><small>cluster · voice · IVI</small></span></div>
             <div class="visual-feedback"><i data-lucide="corner-left-up" aria-hidden="true"></i><span>receipt + separate occupant response</span></div>
           </div>
+        </div>
+
+        <div class="problem-block" aria-label="The problem SIA solves">
+          <div class="problem-card">
+            <span class="problem-step">WHAT BREAKS TODAY</span>
+            <h3>Any system can look like a safety system.</h3>
+            <p>Nothing in today’s vehicle stack structurally stops a music app or an AI assistant from drawing something that looks exactly like a collision warning—or from being drowned out by one that matters less.</p>
+          </div>
+          <div class="problem-card">
+            <span class="problem-step">WHY IT HAPPENS</span>
+            <h3>Every screen keeps its own rules.</h3>
+            <p>Each display and voice channel separately decides what to show and how urgent it looks. The rules live in every screen’s code, so they differ per screen, per car, per software update—and nobody can audit them in one place.</p>
+          </div>
+          <div class="problem-card">
+            <span class="problem-step">WHAT SIA CHANGES</span>
+            <h3>One checkpoint, rules written once.</h3>
+            <p>SIA moves the rules out of the screens into one shared checkpoint. Every message declares its meaning; the checkpoint verifies who sent it, checks it is fresh and relevant, picks the safest output, and demands proof of what happened.</p>
+          </div>
+        </div>
+
+        <div class="running-example" aria-label="Running example">
+          <i data-lucide="milestone" aria-hidden="true"></i>
+          <p><b>One story runs through this whole page.</b> Your car’s driver-assistance system (ADAS) detects a collision risk at highway speed. Follow that single warning from the day its rules were written to the moment the driver acknowledges it.</p>
         </div>
 
         <div class="definition-strip" aria-label="SIA definition">
@@ -117,7 +141,7 @@
       <section class="docs-section" id="lifecycle" data-search="lifecycle ontology emitter trust translation context runtime renderer receive verify plan dispatch delivery acknowledge retain release">
         <div class="section-heading">
           <div><p class="section-index">01 · LIFECYCLE</p><h2>Follow one interaction end to end</h2></div>
-          <p>Select a phase to see its input, invariant, output, and the exact artifact that crosses the boundary.</p>
+          <p>Six phases, in order, from design time to the driver’s response. Each phase tells the collision-warning story first, then shows the exact artifact that crosses the boundary.</p>
         </div>
 
         <div class="lifecycle-explorer">
@@ -133,8 +157,12 @@
           <div class="lifecycle-panel" id="lifecycle-panel" role="tabpanel" aria-live="polite">
             <div class="phase-summary">
               <span class="phase-icon" id="phase-icon"><i data-lucide="book-open" aria-hidden="true"></i></span>
-              <div><p id="phase-kicker">PHASE 01 · ONTOLOGY</p><h3 id="phase-title">Declare the meaning once.</h3><p id="phase-summary">The node owns priority, authority, context behaviour, renderer policy, and occupant-response rules. A runtime message cannot override them.</p></div>
+              <div><p id="phase-kicker">PHASE 01 · ONTOLOGY</p><h3 id="phase-title">Declare the meaning once.</h3><p id="phase-summary"></p></div>
               <div class="phase-outcome"><small>OUTPUT</small><b id="phase-output-badge">Signed node declaration</b></div>
+            </div>
+            <div class="phase-story-row">
+              <div class="phase-story"><span><i data-lucide="milestone" aria-hidden="true"></i> IN OUR STORY</span><p id="phase-story"></p></div>
+              <div class="phase-why"><span><i data-lucide="lightbulb" aria-hidden="true"></i> WHY IT MATTERS</span><p id="phase-why"></p></div>
             </div>
             <div class="phase-flow">
               <div><span>INPUT</span><b id="phase-input-title">Interaction intent</b><ul id="phase-input-list"></ul></div>
@@ -144,6 +172,7 @@
               <div><span>OUTPUT</span><b id="phase-output-title">Versioned semantic node</b><ul id="phase-output-list"></ul></div>
             </div>
             <div class="inline-code-block technical-only">
+              <p class="code-intro" id="phase-code-intro"></p>
               <div class="code-toolbar"><span><i data-lucide="braces" aria-hidden="true"></i><b id="phase-code-label">interaction-node.json</b></span><button type="button" data-copy-target="phase-code"><i data-lucide="copy" aria-hidden="true"></i> Copy</button></div>
               <pre><code id="phase-code"></code></pre>
             </div>
@@ -154,7 +183,7 @@
       <section class="docs-section" id="trust" data-search="trust eight checks digest declaration actor class signature freshness ingress replay nonce revocation semantic validity closed schema priority injection fail closed">
         <div class="section-heading">
           <div><p class="section-index">02 · TRUST BOUNDARY</p><h2>Eight checks. No shortcuts.</h2></div>
-          <p>A valid signature is necessary, but never sufficient. Select a check to see the attack it prevents and its fail-closed result.</p>
+          <p>You met these eight questions in phase 03 of the lifecycle. Here each one is a defence: select a check to see the concrete attack it stops and what happens when it fails.</p>
         </div>
 
         <div class="trust-explorer">
@@ -254,7 +283,7 @@
       <section class="docs-section" id="contracts" data-search="contract explorer json schema node instance context render plan dispatch attempt delivery receipt occupant response audit code example artifact">
         <div class="section-heading">
           <div><p class="section-index">05 · CONTRACT EXPLORER</p><h2>Inspect the evidence chain</h2></div>
-          <p>Each artifact binds the identifiers and digests needed to explain one decision without trusting prose or hidden runtime state.</p>
+          <p>Every box you saw in the lifecycle is a real, signed file — and this is all of them. Pick one to see the actual artifact from the repository. There is no hidden state anywhere else: these seven records are the entire story.</p>
         </div>
 
         <div class="contract-explorer">
