@@ -1,5 +1,8 @@
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+// Tolerates a stale-cache mismatch between docs.html and docs.js: a missing
+// slot is skipped instead of crashing the whole render.
+const setText = (selector, value) => { const el = $(selector); if (el) el.textContent = value; };
 
 const refreshIcons = () => window.lucide?.createIcons({ attrs: { width: 18, height: 18, 'stroke-width': 1.8 } });
 
@@ -26,9 +29,9 @@ const lifecycle = [
   {
     kicker: 'PHASE 01 · ONTOLOGY',
     title: 'Declare the meaning once.',
-    summary: 'Long before any warning fires, engineers write one small machine-readable card: what a collision warning means, who may send it, how urgent it is, where it may appear, and what must happen afterwards. That card is called a node — one entry in the vehicle’s dictionary of everything it is allowed to say to people.',
+    summary: 'Long before any warning fires, engineers write one small machine-readable card: what a collision warning means, who may send it, how urgent it is, where it may appear, and what must happen afterwards. That card is called a node—one entry in the vehicle’s dictionary of everything it is allowed to say to people.',
     story: 'The card says: “A collision warning is critical. Only the driver-assistance system (ADAS) may send it. It must arrive within 200 ms, appear on the instrument cluster or by voice, and the driver must confirm it within 2 seconds.”',
-    why: 'Because the rules live on this card — not inside each screen’s code — every screen, voice channel, and future device applies exactly the same rules. And nothing can talk its way into higher importance later: if the card says the priority, the priority is settled.',
+    why: 'Because the rules live on this card—not inside each screen’s code—every screen, voice channel, and future device applies exactly the same rules. And nothing can talk its way into higher importance later: if the card says the priority, the priority is settled.',
     icon: 'book-open',
     outputBadge: 'Signed node declaration',
     inputTitle: 'Interaction intent',
@@ -37,7 +40,7 @@ const lifecycle = [
     rules: ['Closed schema', 'Canonical digest binding', 'Policy is data—not runtime override'],
     outputTitle: 'Versioned semantic node',
     output: ['Trust requirements', 'Attention + context policy', 'Delivery + response contract'],
-    codeIntro: 'This is the actual card in the format machines read (JSON). Don’t read every line — notice permitted_actor_classes: the complete list of who may send this warning, and priority, decided here, once.',
+    codeIntro: 'This is the actual card in the format machines read (JSON). Don’t read every line—notice permitted_actor_classes: the complete list of who may send this warning, and priority, decided here, once.',
     codeLabel: 'collision-warning.node.json',
     code: {
       id: 'Interaction.Event.Alert.Collision.Warning',
@@ -59,8 +62,8 @@ const lifecycle = [
   {
     kicker: 'PHASE 02 · EMITTER',
     title: 'Emit facts—not new authority.',
-    summary: 'Now the moment happens: ADAS sees the gap to the car ahead closing fast. It writes one short message — “collision warning, 1.4 seconds to impact” — points it at the dictionary card by name, adds a timestamp and its cryptographic signature, and hands it to SIA.',
-    story: 'The message carries only observed facts. It cannot ask for a bigger screen, a louder sound, or a higher priority — those fields simply do not exist in the message format.',
+    summary: 'Now the moment happens: ADAS sees the gap to the car ahead closing fast. It writes one short message—“collision warning, 1.4 seconds to impact”—points it at the dictionary card by name, adds a timestamp and its cryptographic signature, and hands it to SIA.',
+    story: 'The message carries only observed facts. It cannot ask for a bigger screen, a louder sound, or a higher priority—those fields simply do not exist in the message format.',
     why: 'A compromised or misbehaving system cannot smuggle authority into a message: any extra field makes the whole message invalid. Facts travel; power stays on the card.',
     icon: 'radio-tower',
     outputBadge: 'Attested runtime instance',
@@ -87,8 +90,8 @@ const lifecycle = [
   {
     kicker: 'PHASE 03 · TRUST POLICY',
     title: 'Verify all eight trust requirements.',
-    summary: 'Before any screen even knows the message exists, SIA interrogates it: Is it well-formed? Does it reference the exact card we have installed? Is ADAS allowed to say this? Does the signature verify? Is it fresh — younger than the 200 ms the card demands? Have we seen it before? Is the sender’s key still valid? Is the warning still meaningful right now?',
-    story: 'Eight questions, all mandatory. One “no” stops everything — the message never reaches a screen, no matter how urgent it claims to be.',
+    summary: 'Before any screen even knows the message exists, SIA interrogates it: Is it well-formed? Does it reference the exact card we have installed? Is ADAS allowed to say this? Does the signature verify? Is it fresh—younger than the 200 ms the card demands? Have we seen it before? Is the sender’s key still valid? Is the warning still meaningful right now?',
+    story: 'Eight questions, all mandatory. One “no” stops everything—the message never reaches a screen, no matter how urgent it claims to be.',
     why: 'This gate is what makes a fake warning from a music app impossible rather than unlikely: a valid login is not enough, because authority to speak comes from the card, not from being authenticated. The full list of checks is explored one by one in section 02 below.',
     icon: 'shield-check',
     outputBadge: 'Verified or trust_rejected',
@@ -98,7 +101,7 @@ const lifecycle = [
     rules: ['Every check is mandatory', 'Unknown nodes stay unknown', 'Signature alone is insufficient'],
     outputTitle: 'Trust decision',
     output: ['Stable reason code', 'Exact evidence digests', 'Audit on terminal rejection'],
-    codeIntro: 'The verifier’s own record of the eight answers. Auditors read these stable codes later to reconstruct exactly why a message passed — or where it died.',
+    codeIntro: 'The verifier’s own record of the eight answers. Auditors read these stable codes later to reconstruct exactly why a message passed—or where it died.',
     codeLabel: 'trust-decision.json',
     code: {
       state: 'verified',
@@ -118,9 +121,9 @@ const lifecycle = [
   {
     kicker: 'PHASE 04 · TRANSLATION + CONTEXT',
     title: 'Resolve applicability and eligible outputs.',
-    summary: 'The warning is genuine — now where should it appear? SIA takes a signed snapshot of the situation (moving, highway, driver attentive) and matches the card’s requirements against what each output can prove about itself.',
-    story: 'The instrument cluster is a certified safety display — selected. Voice — kept on standby. The big center screen would pull the driver’s eyes off the road for too long — rejected, and the reason is written down.',
-    why: 'The choice is deterministic: same inputs, same plan, every time. No screen improvises, every rejection has a recorded reason — that is what makes the behaviour certifiable and auditable.',
+    summary: 'The warning is genuine—now where should it appear? SIA takes a signed snapshot of the situation (moving, highway, driver attentive) and matches the card’s requirements against what each output can prove about itself.',
+    story: 'The instrument cluster is a certified safety display—selected. Voice—kept on standby. The big center screen would pull the driver’s eyes off the road for too long—rejected, and the reason is written down.',
+    why: 'The choice is deterministic: same inputs, same plan, every time. No screen improvises, every rejection has a recorded reason—that is what makes the behaviour certifiable and auditable.',
     icon: 'route',
     outputBadge: 'Deterministic render plan',
     inputTitle: 'Verified meaning + context',
@@ -129,7 +132,7 @@ const lifecycle = [
     rules: ['Applicability ≠ blocking', 'Unknown context never relaxes policy', 'Stable renderer tie-breaker'],
     outputTitle: 'Selected + rejected',
     output: ['Exactly one primary', 'Ordered fallbacks', 'Reason for every rejection'],
-    codeIntro: 'The render plan. Both halves matter: selected says where the warning goes; rejected shows the center screen refused with a reason code — not silently skipped.',
+    codeIntro: 'The render plan. Both halves matter: selected says where the warning goes; rejected shows the center screen refused with a reason code—not silently skipped.',
     codeLabel: 'collision.render-plan.json',
     code: {
       decision_id: 'd8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22',
@@ -146,9 +149,9 @@ const lifecycle = [
   {
     kicker: 'PHASE 05 · COORDINATION RUNTIME',
     title: 'Dispatch one ordered attempt at a time.',
-    summary: 'SIA now asks the cluster to show the warning — one attempt at a time, each with its own deadline. If the cluster fails or stays silent past the deadline, the next attempt goes to voice.',
+    summary: 'SIA now asks the cluster to show the warning—one attempt at a time, each with its own deadline. If the cluster fails or stays silent past the deadline, the next attempt goes to voice.',
     story: 'The whole cascade must finish while the warning is still true: an expired warning is never sent anywhere.',
-    why: 'Ordered attempts with deadlines mean a broken screen cannot silently swallow a critical warning — and two outputs cannot blare the same alert twice by accident. Every attempt is numbered and points to its predecessor, so the order is provable afterwards.',
+    why: 'Ordered attempts with deadlines mean a broken screen cannot silently swallow a critical warning—and two outputs cannot blare the same alert twice by accident. Every attempt is numbered and points to its predecessor, so the order is provable afterwards.',
     icon: 'send',
     outputBadge: 'Authenticated dispatch attempt',
     inputTitle: 'Render plan',
@@ -174,8 +177,8 @@ const lifecycle = [
   {
     kicker: 'PHASE 06 · FEEDBACK + CLOSURE',
     title: 'Record delivery and occupant response separately.',
-    summary: 'The cluster confirms: “presented, 72 ms after dispatch.” That machine receipt opens the 2-second window for the human. The driver presses the steering-wheel button — a separate, authenticated event.',
-    story: 'Two different facts, never merged: the car showed the warning, and the driver answered it. If the driver does not respond, the timeout is recorded as the runtime’s own decision — the system never pretends a human acted.',
+    summary: 'The cluster confirms: “presented, 72 ms after dispatch.” That machine receipt opens the 2-second window for the human. The driver presses the steering-wheel button—a separate, authenticated event.',
+    story: 'Two different facts, never merged: the car showed the warning, and the driver answered it. If the driver does not respond, the timeout is recorded as the runtime’s own decision—the system never pretends a human acted.',
     why: 'Every step of the story now sits in a tamper-evident audit log: who sent what, what was verified, what was shown where, and who responded. After an incident, that log answers questions no screenshot ever could.',
     icon: 'reply',
     outputBadge: 'Receipt, response, and audit',
@@ -185,7 +188,7 @@ const lifecycle = [
     rules: ['Presentation ≠ awareness', 'Response binds opening receipts', 'Timeout is a runtime event'],
     outputTitle: 'Closed lifecycle',
     output: ['Delivery outcome', 'Occupant outcome', 'Hash-linked audit record'],
-    codeIntro: 'Both pieces of evidence side by side — the renderer’s receipt and the occupant’s response. They are separate records with separate signers; neither can impersonate the other.',
+    codeIntro: 'Both pieces of evidence side by side—the renderer’s receipt and the occupant’s response. They are separate records with separate signers; neither can impersonate the other.',
     codeLabel: 'feedback-outcome.json',
     code: {
       delivery: {
@@ -357,7 +360,8 @@ const contracts = {
 };
 
 const renderList = (selector, items) => {
-  $(selector).innerHTML = items.map((item) => `<li>${item}</li>`).join('');
+  const el = $(selector);
+  if (el) el.innerHTML = items.map((item) => `<li>${item}</li>`).join('');
 };
 
 const renderLifecycle = (index, moveFocus = false) => {
@@ -366,20 +370,20 @@ const renderLifecycle = (index, moveFocus = false) => {
   tabs.forEach((tab, tabIndex) => tab.setAttribute('aria-selected', String(tabIndex === index)));
   if (moveFocus) tabs[index].focus();
   $('#phase-icon').innerHTML = `<i data-lucide="${item.icon}" aria-hidden="true"></i>`;
-  $('#phase-kicker').textContent = item.kicker;
-  $('#phase-title').textContent = item.title;
-  $('#phase-summary').textContent = item.summary;
-  $('#phase-story').textContent = item.story;
-  $('#phase-why').textContent = item.why;
-  $('#phase-code-intro').textContent = item.codeIntro;
-  $('#phase-output-badge').textContent = item.outputBadge;
-  $('#phase-input-title').textContent = item.inputTitle;
-  $('#phase-rule-title').textContent = item.ruleTitle;
-  $('#phase-output-title').textContent = item.outputTitle;
+  setText('#phase-kicker', item.kicker);
+  setText('#phase-title', item.title);
+  setText('#phase-summary', item.summary);
+  setText('#phase-story', item.story);
+  setText('#phase-why', item.why);
+  setText('#phase-code-intro', item.codeIntro);
+  setText('#phase-output-badge', item.outputBadge);
+  setText('#phase-input-title', item.inputTitle);
+  setText('#phase-rule-title', item.ruleTitle);
+  setText('#phase-output-title', item.outputTitle);
   renderList('#phase-input-list', item.input);
   renderList('#phase-rule-list', item.rules);
   renderList('#phase-output-list', item.output);
-  $('#phase-code-label').textContent = item.codeLabel;
+  setText('#phase-code-label', item.codeLabel);
   highlightJson($('#phase-code'), item.code);
   refreshIcons();
 };
@@ -394,14 +398,16 @@ $$('[data-lifecycle-step]').forEach((button, index, tabs) => {
   });
 });
 
-const trustList = $('#trust-list');
-trustList.innerHTML = trustChecks.map((item, index) => `
+const buildTrustList = () => {
+  $('#trust-list').innerHTML = trustChecks.map((item, index) => `
   <button type="button" role="listitem" data-trust-check="${index}" aria-pressed="${index === 0}">
     <span>${String(index + 1).padStart(2, '0')}</span>
     <span><b>${item.title}</b><small>${item.short}</small></span>
     <i data-lucide="chevron-right" aria-hidden="true"></i>
   </button>
 `).join('');
+  $$('[data-trust-check]').forEach((button) => button.addEventListener('click', () => renderTrust(Number(button.dataset.trustCheck))));
+};
 
 const renderTrust = (index) => {
   const item = trustChecks[index];
@@ -416,7 +422,6 @@ const renderTrust = (index) => {
   refreshIcons();
 };
 
-$$('[data-trust-check]').forEach((button) => button.addEventListener('click', () => renderTrust(Number(button.dataset.trustCheck))));
 
 const renderContext = (caseName) => {
   const item = contextCases[caseName];
@@ -582,9 +587,52 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-18% 0px -67% 0px', threshold: [0, .15, .45] });
 searchableSections.forEach((section) => observer.observe(section));
 
+// --- Localisation ---------------------------------------------------------
+// English lives in this file and in docs.html. A translation is one JSON file
+// in ./i18n/ (see i18n/README.md): "selectors" overrides static page text by
+// CSS selector, "data" deep-merges over the dynamic content above. Any key a
+// translation omits silently keeps its English text.
+const deepMerge = (target, patch) => {
+  if (patch === null || typeof patch !== 'object') return patch;
+  if (typeof target !== 'object' || target === null) return patch;
+  for (const [key, value] of Object.entries(patch)) target[key] = deepMerge(target[key], value);
+  return target;
+};
+
+const localizableData = { lifecycle, trustChecks, contextCases, feedbackCases, contracts };
+
+const detectLocale = () => {
+  const fromQuery = new URLSearchParams(location.search).get('lang');
+  if (fromQuery) {
+    try { localStorage.setItem('sia-docs-lang', fromQuery); } catch { /* storage is optional */ }
+    return fromQuery;
+  }
+  try { return localStorage.getItem('sia-docs-lang') || 'en'; } catch { return 'en'; }
+};
+
+const applyLocale = async () => {
+  const locale = detectLocale().toLowerCase();
+  if (!/^[a-z]{2}(-[a-z0-9]+)?$/.test(locale) || locale === 'en') return;
+  try {
+    const response = await fetch(`./i18n/docs.${locale}.json`);
+    if (!response.ok) return;
+    const dictionary = await response.json();
+    for (const [selector, text] of Object.entries(dictionary.selectors || {})) {
+      const element = document.querySelector(selector);
+      if (element) element.textContent = text;
+    }
+    for (const [name, patch] of Object.entries(dictionary.data || {})) {
+      if (localizableData[name]) deepMerge(localizableData[name], patch);
+    }
+    document.documentElement.lang = dictionary.lang || locale;
+  } catch { /* untranslated keys keep their English text */ }
+};
+
 let storedMode = 'essential';
 try { storedMode = localStorage.getItem('sia-docs-reading-mode') || 'essential'; } catch { /* storage is optional */ }
 setReadingMode(storedMode === 'technical' ? 'technical' : 'essential');
+await applyLocale();
+buildTrustList();
 renderLifecycle(0);
 renderTrust(0);
 renderContract('node');

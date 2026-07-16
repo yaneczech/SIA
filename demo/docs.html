@@ -7,7 +7,7 @@
   <meta name="description" content="Interactive documentation for the Semantic Interaction Architecture 0.4 draft.">
   <title>SIA — Interactive Documentation</title>
   <link rel="stylesheet" href="https://use.typekit.net/cyy0vwc.css">
-  <link rel="stylesheet" href="./docs.css">
+  <link rel="stylesheet" href="./docs.css?v=0.4.1">
 </head>
 <body class="mode-essential">
   <a class="skip-link" href="#content">Skip to documentation</a>
@@ -212,13 +212,13 @@
       <section class="docs-section" id="time-context" data-search="three clocks ingress freshness semantic validity retention ttl context charging collision lane departure moving stationary driver distracted coalesce not applicable axes source confidence signed snapshot">
         <div class="section-heading">
           <div><p class="section-index">03 · TIME &amp; CONTEXT</p><h2>Three clocks, six independent axes</h2></div>
-          <p>Fresh transport does not guarantee useful meaning, and a temporarily blocked interaction is not automatically irrelevant.</p>
+          <p>The eight checks decided <em>who</em> may speak. The next two questions are <em>when</em> a message is still worth delivering and <em>where</em> the vehicle currently is—and “recent”, “still true”, and “worth waiting for” turn out to be three different clocks.</p>
         </div>
 
         <div class="clock-grid" aria-label="SIA time semantics">
-          <article><span class="clock-number">01</span><i data-lucide="timer" aria-hidden="true"></i><h3>Ingress freshness</h3><p>How long transport took before Trust Policy accepted the message.</p><code>acceptance − attestation ≤ max_ingress_age_ms</code></article>
-          <article><span class="clock-number">02</span><i data-lucide="hourglass" aria-hidden="true"></i><h3>Semantic validity</h3><p>How long the message still describes useful current meaning.</p><code>now ≤ valid_until_ms</code></article>
-          <article><span class="clock-number">03</span><i data-lucide="archive" aria-hidden="true"></i><h3>Retention TTL</h3><p>How long an applicable but blocked interaction may remain held.</p><code>retention_expiry ≤ valid_until_ms</code></article>
+          <article><span class="clock-number">01</span><i data-lucide="timer" aria-hidden="true"></i><h3>Ingress freshness</h3><p>How long transport took before Trust Policy accepted the message.</p><span class="technical-only"><code>acceptance − attestation ≤ max_ingress_age_ms</code></span></article>
+          <article><span class="clock-number">02</span><i data-lucide="hourglass" aria-hidden="true"></i><h3>Semantic validity</h3><p>How long the message still describes useful current meaning.</p><span class="technical-only"><code>now ≤ valid_until_ms</code></span></article>
+          <article><span class="clock-number">03</span><i data-lucide="archive" aria-hidden="true"></i><h3>Retention TTL</h3><p>How long an applicable but blocked interaction may remain held.</p><span class="technical-only"><code>retention_expiry ≤ valid_until_ms</code></span></article>
         </div>
 
         <div class="context-explorer">
@@ -253,7 +253,7 @@
       <section class="docs-section" id="feedback" data-search="delivery receipt renderer feedback acknowledgement occupant response ack timeout dispatch attempt presented received failed fallback loop machine confirmation human response">
         <div class="section-heading">
           <div><p class="section-index">04 · DELIVERY &amp; RESPONSE</p><h2>Two feedback loops, two different claims</h2></div>
-          <p>A renderer can prove presentation. Only a separate occupant response can prove an explicit acknowledgement.</p>
+          <p>The plan is made—now prove what actually happened. A renderer can prove it presented something. Only a separate occupant response can prove a human acknowledged it. SIA never lets one claim stand in for the other.</p>
         </div>
 
         <div class="feedback-explorer">
@@ -283,7 +283,7 @@
       <section class="docs-section" id="contracts" data-search="contract explorer json schema node instance context render plan dispatch attempt delivery receipt occupant response audit code example artifact">
         <div class="section-heading">
           <div><p class="section-index">05 · CONTRACT EXPLORER</p><h2>Inspect the evidence chain</h2></div>
-          <p>Every box you saw in the lifecycle is a real, signed file — and this is all of them. Pick one to see the actual artifact from the repository. There is no hidden state anywhere else: these seven records are the entire story.</p>
+          <p>Every box you saw in the lifecycle is a real, signed file—and this is all of them. Pick one to see the actual artifact from the repository. There is no hidden state anywhere else: these seven records are the entire story.</p>
         </div>
 
         <div class="contract-explorer">
@@ -316,7 +316,7 @@
       <section class="docs-section" id="implementation" data-search="implementation quickstart npm validate conformance test emitter renderer runtime security compatibility schema command digest canonical json rfc 8785">
         <div class="section-heading">
           <div><p class="section-index">06 · IMPLEMENT &amp; TEST</p><h2>Start with contracts, finish with vectors</h2></div>
-          <p>The repository ships strict schemas, cross-artifact invariants, cryptographic examples, and role-specific conformance suites.</p>
+          <p>This section is for engineers. Everything above is a contract with executable tests behind it: strict schemas, cross-artifact invariants, cryptographic examples, and a conformance suite scoped to the role you build—so you never have to implement someone else’s side of the boundary.</p>
         </div>
 
         <div class="implementation-grid">
@@ -372,6 +372,6 @@
   </div>
 
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script type="module" src="./docs.js"></script>
+  <script type="module" src="./docs.js?v=0.4.1"></script>
 </body>
 </html>
