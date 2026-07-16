@@ -86,7 +86,7 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
     readFile(path.join(root, 'demo/styles.css'), 'utf8'),
   ]);
 
-  for (const section of ['overview', 'lifecycle', 'trust', 'time-context', 'feedback', 'contracts', 'operations', 'implementation', 'source-map']) {
+  for (const section of ['overview', 'lifecycle', 'architecture', 'trust', 'time-context', 'feedback', 'contracts', 'operations', 'implementation', 'source-map']) {
     assert.match(html, new RegExp(`id="${section}"`), `interactive docs are missing #${section}`);
   }
   assert.match(html, /use\.typekit\.net\/cyy0vwc\.css/);

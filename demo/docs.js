@@ -1,3 +1,5 @@
+import { evaluateInteraction, coordinateDelivery, coordinateAcknowledgement, RENDERERS, resolveNode } from './sia-engine.js';
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 // Tolerates a stale-cache mismatch between docs.html and docs.js: a missing
@@ -5,6 +7,7 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const setText = (selector, value) => { const el = $(selector); if (el) el.textContent = value; };
 
 const refreshIcons = () => window.lucide?.createIcons({ attrs: { width: 18, height: 18, 'stroke-width': 1.8 } });
+const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 const highlightJson = (element, value) => {
   const plain = JSON.stringify(value, null, 2);
@@ -777,8 +780,89 @@ const applyLocale = async () => {
 let storedMode = 'essential';
 try { storedMode = localStorage.getItem('sia-docs-reading-mode') || 'essential'; } catch { /* storage is optional */ }
 setReadingMode(storedMode === 'technical' ? 'technical' : 'essential');
+// --- Architecture explorer (engine-bound, replaces the static figures) ----
+// The six core context axes are the source of truth for the diagram; the
+// architecture.test.mjs suite asserts these match the context-snapshot schema.
+const CORE_AXES = ['motion_state', 'operating_mode', 'energy_state', 'road_type', 'driver_state', 'occupancy'];
+const ARCH_SCENARIO = { nodeId: 'Interaction.Event.Alert.Collision.Warning', actorClass: 'adas', signatureValid: true, ageMs: 80, replayed: false, vehicleState: 'moving', roadType: 'highway', driverState: 'attentive', renderers: { cluster: true, voice: true, ivi: true } };
+let archToken = 0;
+
+const archLabel = (name) => RENDERERS[name]?.label || name;
+
+function buildArchitecture() {
+  const axes = $('#arch-axes');
+  if (axes) axes.innerHTML = CORE_AXES.map((axis) => `<li>${axis}</li>`).join('');
+  const trustCount = $('#arch-trust-count');
+  if (trustCount) trustCount.textContent = `${trustChecks.length} checks · fail-closed`;
+  const surfaces = $('#arch-surfaces');
+  if (surfaces) surfaces.innerHTML = Object.keys(RENDERERS).map((name) => `<li data-arch-surface="${name}">${archLabel(name)}</li>`).join('');
+}
+
+function resetArchitecture() {
+  archToken += 1;
+  $$('#arch-stage [data-arch-node]').forEach((node) => node.classList.remove('is-active', 'is-pass', 'is-fail'));
+  $$('#arch-stage [data-arch-surface]').forEach((li) => li.classList.remove('is-selected'));
+  $$('#arch-stage .arch-wire').forEach((w) => w.classList.remove('is-live'));
+  const setState = (key, text) => { const el = $(`[data-arch-state="${key}"]`); if (el) el.textContent = text; };
+  setState('emitter', 'idle');
+  ['trust', 'context', 'translation', 'runtime', 'renderers'].forEach((k) => setState(k, 'waiting'));
+  setState('receipt', 'machine evidence — awaiting run');
+  setState('occupant', 'separate human evidence — awaiting run');
+}
+
+async function runArchitecture() {
+  const token = ++archToken;
+  const reduce = prefersReducedMotion();
+  const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? 0 : ms));
+  const button = $('#arch-run');
+  const status = $('#arch-status');
+  const stage = $('#arch-stage');
+  if (!stage) return;
+
+  resetArchitecture();
+  archToken = token; // resetArchitecture bumped it; re-claim this run
+  if (button) button.disabled = true;
+
+  const node = resolveNode(ARCH_SCENARIO.nodeId);
+  const decision = evaluateInteraction(ARCH_SCENARIO);
+  const selected = decision.primary ? [decision.primary, ...decision.concurrent] : [];
+  const receipts = Object.fromEntries(selected.map((name) => [name, { state: 'presented', elapsedMs: name === 'cluster' ? 72 : 90 }]));
+  const delivery = coordinateDelivery(ARCH_SCENARIO, decision, { receipts });
+  const ack = coordinateAcknowledgement(decision, { acknowledged: true, elapsedMs: 620 }, delivery);
+
+  const setState = (key, text) => { const el = $(`[data-arch-state="${key}"]`); if (el) el.textContent = text; };
+  const light = (nodeName, cls, ms) => wait(ms).then(() => {
+    if (token !== archToken) return;
+    const el = $(`#arch-stage [data-arch-node="${nodeName}"]`);
+    if (el) { el.classList.add('is-active'); if (cls) el.classList.add(cls); }
+  });
+
+  const steps = [
+    () => { setState('emitter', `emits ${node.label}`); light('emitter', 'is-pass', 0); if (status) status.textContent = `${node.label}: ADAS emits a signed instance.`; $('.arch-wire-in')?.classList.add('is-live'); },
+    () => { setState('trust', decision.accepted ? `verified · ${trustChecks.length}/${trustChecks.length}` : 'rejected'); light('trust', decision.accepted ? 'is-pass' : 'is-fail', 0); if (status) status.textContent = `Trust Policy: ${decision.accepted ? `all ${trustChecks.length} checks pass` : decision.auditCode}.`; },
+    () => { setState('context', `${decision.context.motionState} · applicable`); light('context', 'is-pass', 0); if (status) status.textContent = `Context: ${CORE_AXES.length} signed axes — applicable while ${decision.context.motionState}.`; },
+    () => { setState('translation', decision.primary ? `${decision.auditCode}` : decision.auditCode); light('translation', decision.primary ? 'is-pass' : 'is-fail', 0); if (status) status.textContent = `Translation: primary ${archLabel(decision.primary)}${decision.concurrent.length ? ` + ${decision.concurrent.map(archLabel).join(', ')}` : ''}.`; $('.arch-wire-out')?.classList.add('is-live'); },
+    () => { setState('runtime', 'ordered dispatch'); light('runtime', 'is-pass', 0); if (status) status.textContent = 'Coordination Runtime dispatches one deadline-bounded attempt.'; },
+    () => { light('renderers', 'is-pass', 0); selected.forEach((name) => $(`[data-arch-surface="${name}"]`)?.classList.add('is-selected')); setState('renderers', `presented: ${selected.map(archLabel).join(' + ') || 'none'}`); if (status) status.textContent = `Renderers present on ${selected.map(archLabel).join(' + ')}.`; },
+    () => { light('receipt', 'is-pass', 0); setState('receipt', `${delivery.auditCode}`); if (status) status.textContent = `Delivery receipt: ${delivery.auditCode}.`; },
+    () => { light('occupant', 'is-pass', 0); setState('occupant', `${ack.auditCode}`); if (status) status.textContent = `Occupant response: ${ack.auditCode}. Delivery and response stay separate.`; },
+  ];
+
+  for (const step of steps) {
+    await wait(reduce ? 0 : 620);
+    if (token !== archToken) { if (button) button.disabled = false; return; }
+    step();
+    refreshIcons();
+  }
+  if (button) button.disabled = false;
+}
+
+const archRun = $('#arch-run');
+if (archRun) archRun.addEventListener('click', runArchitecture);
+
 await applyLocale();
 buildTrustList();
+buildArchitecture();
 renderLifecycle(0);
 renderTrust(0);
 renderContract('node');

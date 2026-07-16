@@ -81,9 +81,20 @@ If static images are still wanted for the paper/PDF, keep a single editable sour
 At minimum, add a test that greps the figure **captions** for the 0.4 terms so a stale
 caption fails CI (cheap interim guard until the redraw lands).
 
-### Interim (already done)
-Captions in the paper and appendix now state each figure's 0.3→0.4 deltas explicitly, so
-no figure silently contradicts the spec while the redraw is pending.
+### Done — Option A shipped for fig3 + figA1
+The interactive `#architecture` section in [`../demo/docs.html`](../demo/docs.html) now
+replaces the static mediation-architecture (fig3) and alert-flow (figA1) concepts with an
+engine-bound diagram: emitter → trust (8 checks) → context (6 axes) → translation → runtime
+→ renderers, plus the two return loops. The trust-check count, context axes, and output
+surfaces render from `trustChecks`, `CORE_AXES`, and the engine's `RENDERERS`; the run
+animation uses real `evaluateInteraction` / `coordinateDelivery` / `coordinateAcknowledgement`
+output. [`../demo/architecture.test.mjs`](../demo/architecture.test.mjs) fails CI if the axes
+diverge from the context-snapshot schema, a trust code is unregistered, or the renderer set
+changes — so this diagram cannot drift.
+
+Still open: static PNG redraw of fig1 (inner labels) and fig4 (two labels) for the
+paper/PDF, per the specs above. The paper/appendix captions already flag their 0.3→0.4
+deltas in the interim.
 
 ## Suggested sequence
 1. figA1 redraw (highest teaching value, most misleading) — or fold into Option A.

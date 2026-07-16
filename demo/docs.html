@@ -50,6 +50,7 @@
           <p>On this page</p>
           <a href="#overview" data-nav-section="overview"><span>00</span>Overview</a>
           <a href="#lifecycle" data-nav-section="lifecycle"><span>01</span>Lifecycle</a>
+          <a href="#architecture" data-nav-section="architecture"><span aria-hidden="true">◆</span>Architecture</a>
           <a href="#trust" data-nav-section="trust"><span>02</span>Trust boundary</a>
           <a href="#time-context" data-nav-section="time-context"><span>03</span>Time &amp; context</a>
           <a href="#feedback" data-nav-section="feedback"><span>04</span>Delivery &amp; response</a>
@@ -185,6 +186,79 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <section class="docs-section" id="architecture" data-search="architecture diagram mediation boundary emitter trust context translation runtime renderer delivery receipt occupant response animate flow engine generated live">
+        <div class="section-heading">
+          <div><p class="section-index">◆ ARCHITECTURE</p><h2>Watch the boundary decide</h2></div>
+          <p>This diagram is generated from the same engine the Lab runs. Press play to send the genuine collision warning through it—every lit node and label below is the engine's real output, so the picture can never disagree with the specification.</p>
+        </div>
+
+        <div class="arch-explorer">
+          <div class="arch-controls">
+            <button type="button" id="arch-run"><i data-lucide="play" aria-hidden="true"></i> <span>Run the collision story</span></button>
+            <p id="arch-status" role="status" aria-live="polite">Idle — press play to trace one genuine collision warning end to end.</p>
+          </div>
+          <div class="arch-stage" id="arch-stage" role="img" aria-label="Mediation architecture: an emitter sends a signed instance into the SIA boundary, which verifies trust, evaluates context, translates to a render plan, and coordinates dispatch to renderers, receiving a delivery receipt and a separate occupant response.">
+            <div class="arch-col arch-emitters">
+              <div class="arch-node" data-arch-node="emitter">
+                <span class="arch-badge">EMITTER</span>
+                <b>Vehicle systems</b>
+                <small>ADAS · services · agents</small>
+                <em class="arch-state" data-arch-state="emitter">idle</em>
+              </div>
+              <div class="arch-wire arch-wire-in"><span>signed instance</span></div>
+            </div>
+
+            <div class="arch-boundary">
+              <div class="arch-boundary-label">SIA MEDIATION BOUNDARY</div>
+              <div class="arch-node arch-policy" data-arch-node="trust">
+                <span class="arch-badge">TRUST POLICY</span>
+                <b>Verify authority</b>
+                <small id="arch-trust-count">— checks · fail-closed</small>
+                <em class="arch-state" data-arch-state="trust">waiting</em>
+              </div>
+              <div class="arch-node arch-context" data-arch-node="context">
+                <span class="arch-badge">CONTEXT POLICY</span>
+                <b>Six signed axes</b>
+                <ul class="arch-axes" id="arch-axes" aria-label="Core context axes"></ul>
+                <em class="arch-state" data-arch-state="context">waiting</em>
+              </div>
+              <div class="arch-node" data-arch-node="translation">
+                <span class="arch-badge">TRANSLATION</span>
+                <b>Deterministic plan</b>
+                <small>capability × context → one primary</small>
+                <em class="arch-state" data-arch-state="translation">waiting</em>
+              </div>
+              <div class="arch-node" data-arch-node="runtime">
+                <span class="arch-badge">COORDINATION RUNTIME</span>
+                <b>Ordered dispatch</b>
+                <small>attempt · deadline ≤ validity</small>
+                <em class="arch-state" data-arch-state="runtime">waiting</em>
+              </div>
+            </div>
+
+            <div class="arch-col arch-renderers">
+              <div class="arch-wire arch-wire-out"><span>render plan</span></div>
+              <div class="arch-node arch-render" data-arch-node="renderers">
+                <span class="arch-badge">RENDERERS</span>
+                <b>External surfaces</b>
+                <ul class="arch-surfaces" id="arch-surfaces" aria-label="Output surfaces"></ul>
+                <em class="arch-state" data-arch-state="renderers">waiting</em>
+              </div>
+            </div>
+
+            <div class="arch-returns">
+              <div class="arch-return" data-arch-node="receipt"><i data-lucide="corner-left-down" aria-hidden="true"></i><span><b>Delivery receipt</b><small data-arch-state="receipt">machine evidence — awaiting run</small></span></div>
+              <div class="arch-return arch-return-occupant" data-arch-node="occupant"><i data-lucide="corner-left-down" aria-hidden="true"></i><span><b>Occupant response</b><small data-arch-state="occupant">separate human evidence — awaiting run</small></span></div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="principle-callout">
+          <i data-lucide="git-compare-arrows" aria-hidden="true"></i>
+          <div><b>This replaces the static architecture figures.</b><p>The trust-check count, context axes, and output surfaces are read from the engine and schema at load time; the run animation uses the real <code>evaluateInteraction</code>, <code>coordinateDelivery</code>, and <code>coordinateAcknowledgement</code> output. A CI test fails if the diagram and the spec disagree.</p></div>
+        </aside>
       </section>
 
       <section class="docs-section" id="trust" data-search="trust eight checks digest declaration actor class signature freshness ingress replay nonce revocation semantic validity closed schema priority injection fail closed">
