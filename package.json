@@ -4,7 +4,9 @@
   "type": "module",
   "description": "Semantic Interaction Architecture — schemas, conformance examples, tools, and interactive demo",
   "scripts": {
-    "test": "node --test demo/*.test.mjs",
+    "test": "node --test demo/*.test.mjs bench/*.test.mjs",
+    "benchmark": "node bench/run.mjs",
+    "benchmark:quick": "node bench/run.mjs --quick",
     "build:demo-profile": "node tools/build-demo-profile.mjs",
     "check:demo-profile": "node tools/build-demo-profile.mjs --check",
     "validate": "node tools/validate.mjs",

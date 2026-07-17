@@ -138,7 +138,10 @@ npm test                                                    # full conformance s
 npm run check:demo-profile                                  # generated demo data matches canonical artifacts
 npm run validate -- examples/v0.4.0/collision-warning.instance.json
 npm run conformance -- emitter                              # vectors for your conformance class
+npm run benchmark:quick                                     # development-host timing; never production evidence
 ```
+
+The [portable benchmark harness](./bench/) measures the repository implementation and burst queue behaviour while target hardware is unavailable. Its results are explicitly non-normative; production latency claims require the same methodology on representative ECU/SoC, HSM, OS, transport, renderer, and mixed-load conditions.
 
 The validator auto-detects the contract, validates it in JSON Schema 2020-12 strict mode, verifies payload digests and signatures made with published test keys, and evaluates cross-artifact authority, time, context, and lifecycle invariants against the published dependency set. Production trust anchors remain deployment-owned. `npm run digest -- <file.json>` prints the RFC 8785 canonical SHA-256 used by every digest binding. The same suite runs in CI on every push.
 
