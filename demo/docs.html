@@ -57,7 +57,8 @@
           <a href="#contracts" data-nav-section="contracts"><span>05</span>Contract explorer</a>
           <a href="#operations" data-nav-section="operations"><span>06</span>Guarantees &amp; limits</a>
           <a href="#implementation" data-nav-section="implementation"><span>07</span>Implement &amp; test</a>
-          <a href="#source-map" data-nav-section="source-map"><span>08</span>Source map</a>
+          <a href="#faq" data-nav-section="faq"><span>08</span>FAQ</a>
+          <a href="#source-map" data-nav-section="source-map"><span>09</span>Source map</a>
         </nav>
 
         <div class="version-card">
@@ -472,6 +473,44 @@
           </div>
         </div>
 
+        <div class="impl-explainer">
+          <article>
+            <span class="detail-kicker">WHERE THE EXAMPLES COME FROM</span>
+            <h3>Signed reference artifacts ship in the repository.</h3>
+            <p><code>examples/v0.4/</code> holds one validated, cryptographically signed instance of every contract—the same collision-warning story this page tells. You do not write them; you clone the repo and point the validator at them, or copy one as the starting template for your own node.</p>
+            <a href="https://github.com/yaneczech/SIA/tree/main/examples/v0.4">Browse the examples <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+          </article>
+          <article>
+            <span class="detail-kicker">WHAT VALIDATION CHECKS</span>
+            <h3>Shape, then meaning, then signature.</h3>
+            <p>Each artifact is validated in JSON Schema 2020-12 strict mode, then against cross-artifact invariants (does the instance bind the exact declaration digest? is the render plan deterministic? is retention inside validity?), then its signature and canonical digests are recomputed. Failures print in plain language, not raw schema paths.</p>
+          </article>
+          <article>
+            <span class="detail-kicker">WHAT THE SUITE PROVES</span>
+            <h3>Positive and adversarial vectors, per role.</h3>
+            <p><code>npm test</code> runs the full suite; <code>npm run conformance -- &lt;role&gt;</code> runs only the vectors your class must pass. Vectors are language-neutral (a base example plus an RFC 7386 patch), so a C++ or Rust runtime reuses them without touching this JavaScript reference.</p>
+          </article>
+        </div>
+
+        <div class="impl-sample">
+          <div class="code-toolbar"><span><i data-lucide="terminal" aria-hidden="true"></i><b>npm run validate -- examples/v0.4/collision-warning.instance.json</b></span></div>
+          <pre><code><span class="json-string">✓</span> collision-warning.instance.json <span class="json-null">(runtime-instance)</span>
+  envelope: closed, no reserved fields
+  declaration digest: matches installed catalog
+  attestation: ES256 signature verified
+  <span class="json-string">valid</span> against runtime-instance.schema.json + invariants
+
+<span class="json-boolean">✗</span> tampered-instance.json <span class="json-null">(runtime-instance)</span>
+  (document root): unexpected field <span class="json-string">"priority"</span> — the runtime
+  envelope is closed; a runtime instance must not carry policy overrides.
+  /attestation/algorithm: value must be one of ["ES256","EdDSA","HMAC-SHA-256"].</code></pre>
+        </div>
+
+        <aside class="scope-note">
+          <i data-lucide="info" aria-hidden="true"></i>
+          <div><b>This is SIA's own conformance suite, not an external certification.</b><p>Passing it proves an implementation obeys the SIA 0.4 contracts—not that a vehicle complies with ISO, UNECE, NHTSA, or JAMA. SIA references those standards (attention axes, forward-collision families, RFC 8785 signing, JSON Schema) but tests against its own machine-readable contracts. Regulatory compliance is proven separately, by the deployment, with empirical testing.</p></div>
+        </aside>
+
         <div class="quality-row" aria-label="Implementation qualities">
           <div><i data-lucide="shield" aria-hidden="true"></i><span><b>Fail closed</b><small>Unknown authority never widens access.</small></span></div>
           <div><i data-lucide="repeat-2" aria-hidden="true"></i><span><b>Idempotent</b><small>Receipts and responses tolerate retries.</small></span></div>
@@ -480,9 +519,42 @@
         </div>
       </section>
 
+      <section class="docs-section" id="faq" data-search="faq questions how hard implementation cost effort oem tier-1 supplier requirements dependencies replace stack performance latency standard status adopt prototype who owns runtime library language crypto hsm">
+        <div class="section-heading">
+          <div><p class="section-index">08 · FAQ</p><h2>The questions an adopter asks first</h2></div>
+          <p>Honest answers about effort, dependencies, and what SIA does and does not demand of an existing stack.</p>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item" open>
+            <summary><i data-lucide="gauge" aria-hidden="true"></i><span>How hard is this to implement?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>It depends entirely on which conformance class you own. An <b>emitter</b> (an ADAS or service that already produces events) adds a small step: wrap its output in the closed instance envelope, bind the declaration digest, and sign it—a few hundred lines against the schema. A <b>renderer</b> (a cluster or IVI supplier) consumes a render plan and returns an authenticated receipt—it does not implement policy at all. Only the <b>runtime</b> class—the party that owns the mediation boundary, typically one team per platform—implements the full lifecycle. The profile is deliberately small (2 node families, 3 renderers, 6 axes) precisely so a first runtime is weeks, not years.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="package" aria-hidden="true"></i><span>What does it actually require on top of my current stack?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Three capabilities most SDV platforms already have: a <b>JSON Schema validator</b>, a <b>signing/verification primitive</b> (ES256, EdDSA, or HMAC—whatever your HSM already exposes), and a <b>canonical serializer</b> (RFC 8785, ~30 lines). No new runtime, no OWL reasoner, no graph database. SIA is a contract and a state machine, not a framework. It sits <em>above</em> your data and service layers (VSS, Kuksa, uProtocol, AUTOSAR) and <em>below</em> your renderers—it replaces none of them.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="factory" aria-hidden="true"></i><span>Are there extra requirements for an OEM or Tier-1 beyond today's frame?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Yes, three that most platforms do not formalise today. <b>1) Key and credential management for interaction authority</b>—actor classes must be attested, so emitters need signing keys and a revocable credential registry (an extension of existing UNECE R155 / ISO 21434 key infrastructure, not a new PKI). <b>2) A signed context authority</b>—the six axes must arrive as an authenticated snapshot with source and confidence, so a trusted component must sign context. <b>3) Deployment-defined policy documents</b>—clock skew, secure-time fallback, attention budgets, and privacy retention are declared and audited, not left implicit. None of these are new hardware; they formalise decisions vehicles already make informally.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="zap" aria-hidden="true"></i><span>What about performance and the safety-critical path?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Every decision is deterministic and O(1) against the catalog: schema validation, a hash, a signature check, and table lookups. No runtime reasoning. The two-tier trust model uses fast symmetric authentication (HMAC) per interaction after an asymmetric session handshake, keeping the critical path cheap. A critical alert is never blocked by an attention-budget calculation—the safety mandate is structural, evaluated before the budget.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="scale" aria-hidden="true"></i><span>Is this an approved standard? Can I ship it in a production vehicle?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>No. SIA 0.4 is a <b>pre-standard draft</b> circulated for review and falsification. It is deliberately small so it can be prototyped, tested, and critiqued before any standardisation. Passing the conformance suite proves contract compliance, not regulatory compliance—that remains the deployment's responsibility, with empirical testing. The recommended path is: prototype on a bench, compare against your existing HMI stack, then decide whether it earns standardisation.</p><a href="https://github.com/yaneczech/SIA/blob/main/VERSIONING.md">How versions evolve <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="git-fork" aria-hidden="true"></i><span>Does adopting SIA lock me into a vendor or ecosystem?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>No. The contracts are plain JSON Schema, the vectors are language-neutral, the signing rule is a public RFC, and the licence is open. Renderers stay external and keep their own visual and acoustic design—SIA standardises the interaction contract, not the look of any surface. There is no SIA runtime you must buy; the repository ships a reference implementation you can replace entirely.</p></div>
+          </details>
+        </div>
+      </section>
+
       <section class="docs-section source-section" id="source-map" data-search="source documentation specification paper threat model authoring guide glossary schemas examples reason codes conformance repository">
         <div class="section-heading">
-          <div><p class="section-index">08 · SOURCE MAP</p><h2>Go from explanation to authority</h2></div>
+          <div><p class="section-index">09 · SOURCE MAP</p><h2>Go from explanation to authority</h2></div>
           <p>This page explains the model; the specification, schemas, registries, and vectors remain the source of truth.</p>
         </div>
         <div class="source-grid">
