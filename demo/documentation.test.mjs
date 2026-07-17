@@ -22,6 +22,7 @@ const documents = [
   'bench/README.md',
   'demo/README.md',
   'figures/REDRAW_REFERENCE.md',
+  'notes/reference-architecture.md',
 ];
 const textByFile = Object.fromEntries(await Promise.all(documents.map(async (file) => [file, await readFile(path.join(root, file), 'utf8')])));
 
@@ -91,6 +92,15 @@ test('normative documentation names both feedback loops and bounded retention', 
   assert.match(core, /Retention storage MUST be bounded/);
   assert.match(core, /not_applicable/);
   assert.match(core, /coalesce/);
+});
+
+test('reference architecture keeps implementation advice inside the evidence boundary', () => {
+  const reference = textByFile['notes/reference-architecture.md'];
+  assert.match(reference, /audit chain is evidence, not a recovery journal/);
+  assert.match(reference, /Session establishment and HMAC provisioning are deployment-defined/);
+  assert.match(reference, /cannot rank whole-vehicle bottlenecks/);
+  assert.match(reference, /receipt is protocol evidence.*not independent/);
+  assert.doesNotMatch(reference, /ranked by real size|The hash-linked audit log is the persistence|Public-key verification belongs in software|ASIL-friendly|few kLOC/);
 });
 
 test('draft 0.4.0 documents orthogonal context and the causally bound lifecycle', () => {
