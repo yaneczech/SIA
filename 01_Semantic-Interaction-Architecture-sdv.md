@@ -265,12 +265,12 @@ Voice is not treated as a separate actor class in this model. Voice is a modalit
 
 ### 6.4 Two-tier verification
 
-Full asymmetric verification on every semantic node may be too expensive for resource-constrained paths. A practical implementation can use two tiers:
+SIA 0.4.0 supports per-interaction public-key signatures and authenticated symmetric evidence. A deployment may choose the following two-tier optimisation only when its measured target profile and deployment-defined session lifecycle justify it:
 
-1. **Session establishment:** asymmetric verification of an external actor, such as a cloud agent or third-party application.
-2. **Per-interaction verification:** short-lived symmetric authentication, such as HMAC, for nodes emitted within the verified session.
+1. **Deployment-defined session establishment:** asymmetric authentication of an external actor, such as a cloud agent or third-party application.
+2. **Per-interaction verification:** short-lived symmetric authentication, such as HMAC, for nodes emitted within that revocable session.
 
-The two-tier split governs how trust is verified, not whether trust is required. Safety-critical nodes still carry strict requirements and fail closed when requirements are not met. The architecture must also support explicit session revocation: an onboard intrusion-detection or policy-monitoring component may invalidate a symmetric session ticket before expiry if an actor begins exhibiting malicious or policy-violating behaviour.
+This is an optional deployment pattern, not the only conforming path. The 0.4.0 profile does not define session establishment or HMAC provisioning; per-interaction ES256 remains supported, and every chosen mechanism requires target-hardware tail-latency and contention evidence. The two-tier split changes how origin is authenticated, not what semantic authority is granted. Safety-critical nodes still fail closed when requirements are not met, and any session used by a deployment must remain explicitly revocable.
 
 ### 6.5 Non-goals of the trust model
 
@@ -563,7 +563,7 @@ JSON Schema 2020-12 is the normative 0.4.0 exchange and conformance contract. YA
 
 ### 13.2 Trust substrate
 
-The precise cryptographic substrate remains open: JWS, COSE, Verifiable Credentials or a domain-specific scheme. The baseline assumption is two-tier verification: asymmetric trust at session establishment and fast symmetric verification per interaction.
+The 0.4.0 algorithm identifiers and canonical signing representation are fixed by the Core Specification, while production key custody, provisioning, verifier placement and hardware integration remain deployment decisions. Per-interaction public-key signatures are supported. A session-bound symmetric authenticator is an optional optimisation only where the deployment defines establishment, provisioning and revocation; a portable session-establishment contract remains future work.
 
 ### 13.3 Attention calibration
 

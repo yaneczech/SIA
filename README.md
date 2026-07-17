@@ -127,6 +127,7 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 - [**Source-of-truth map**](./SOURCE_OF_TRUTH.md) — which artifact owns each concept and how schemas, examples, demo, and documentation are kept aligned.
 - [**Node authoring guide**](./05_Node-Authoring-Guide.md) — the checklist for designing a new interaction node, from meaning to payload.
 - [**Glossary**](./GLOSSARY.md) — every normative term on one page.
+- [**Runtime reference architecture**](./notes/reference-architecture.md) — non-normative implementation guidance for bounded queues, scheduling, authentication placement, and the target-hardware evidence campaign.
 
 ---
 
@@ -142,6 +143,8 @@ npm run benchmark:quick                                     # development-host t
 ```
 
 The [portable benchmark harness](./bench/) measures the repository implementation and burst queue behaviour while target hardware is unavailable. Its results are explicitly non-normative; production latency claims require the same methodology on representative ECU/SoC, HSM, OS, transport, renderer, and mixed-load conditions.
+
+The [runtime reference architecture](./notes/reference-architecture.md) connects those measurements to a bounded implementation shape: isolated traffic classes, reserved critical capacity, deadline-ordered work, pre-authentication admission, explicit overload outcomes, and deployment-owned authentication placement. It remains guidance rather than a second normative contract.
 
 The validator auto-detects the contract, validates it in JSON Schema 2020-12 strict mode, verifies payload digests and signatures made with published test keys, and evaluates cross-artifact authority, time, context, and lifecycle invariants against the published dependency set. Production trust anchors remain deployment-owned. `npm run digest -- <file.json>` prints the RFC 8785 canonical SHA-256 used by every digest binding. The same suite runs in CI on every push.
 

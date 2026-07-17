@@ -96,11 +96,18 @@ test('normative documentation names both feedback loops and bounded retention', 
 
 test('reference architecture keeps implementation advice inside the evidence boundary', () => {
   const reference = textByFile['notes/reference-architecture.md'];
+  const paper = textByFile['01_Semantic-Interaction-Architecture-sdv.md'];
+  const readme = textByFile['README.md'];
   assert.match(reference, /audit chain is evidence, not a recovery journal/);
   assert.match(reference, /Session establishment and HMAC provisioning are deployment-defined/);
   assert.match(reference, /cannot rank whole-vehicle bottlenecks/);
   assert.match(reference, /receipt is protocol evidence.*not independent/);
   assert.doesNotMatch(reference, /ranked by real size|The hash-linked audit log is the persistence|Public-key verification belongs in software|ASIL-friendly|few kLOC/);
+  assert.match(paper, /optional deployment pattern, not the only conforming path/);
+  assert.match(paper, /portable session-establishment contract remains future work/);
+  assert.doesNotMatch(paper, /baseline assumption is two-tier verification/);
+  assert.match(readme, /Runtime reference architecture/);
+  assert.match(readme, /isolated traffic classes, reserved critical capacity/);
 });
 
 test('draft 0.4.0 documents orthogonal context and the causally bound lifecycle', () => {
@@ -154,6 +161,10 @@ test('interactive documentation exposes the complete 0.4.0 learning path', async
   assert.match(html, /npm run benchmark:quick/);
   assert.match(html, /Measure now; claim only on target hardware\./);
   assert.match(html, /forbids production claims/);
+  assert.match(html, /Runtime reference architecture/);
+  assert.match(html, /reserved queue, worker, authentication, transport, and fallback capacity/);
+  assert.match(html, /pre-authentication admission protects that capacity/);
+  assert.match(html, /publishes a development benchmark harness, not a production latency guarantee/);
   assert.match(html, /One release, exact artifact bindings/);
   assert.doesNotMatch(html, /fig4-node-taxonomy|early 0\.3 vocabulary|versions are negotiated separately|evolve separately/);
   assert.match(html, /data-copy-target="contract-code"/);
@@ -181,7 +192,7 @@ test('interactive documentation exposes the complete 0.4.0 learning path', async
   assert.equal([...script.matchAll(/failure: 'TRUST_REJECTED_/g)].length, 8);
   assert.equal([...html.matchAll(/class="faq-item"/g)].length, 15);
   assert.match(html, /Action, State, and Task are reserved for future profiles/);
-  assert.match(html, /session-establishment contract is future work/);
+  assert.match(html, /session establishment remains future work/);
   assert.match(html, /not a production reference runtime/);
   assert.doesNotMatch(html, /weeks, not years|~30 lines|Every decision is deterministic and O\(1\)|ships a reference implementation/);
   assert.match(script, /faqOpenStateBeforeSearch/);
