@@ -100,6 +100,7 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
     'interactive docs must not render explicit text below the 11px annotation floor',
   );
   assert.match(html, /lucide@0\.468\.0/);
+  assert.match(html, /docs\.js\?v=0\.4\.4/);
   assert.match(html, /data-reading-mode="essential"/);
   assert.match(html, /data-reading-mode="technical"/);
   assert.match(html, /id="docs-search"/);
@@ -126,6 +127,13 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
   ]) assert.match(script, new RegExp(`schema: '${schema}\\.schema\\.json'`));
   assert.match(script, /const trustChecks = \[/);
   assert.equal([...script.matchAll(/failure: 'TRUST_REJECTED_/g)].length, 8);
+  assert.equal([...html.matchAll(/class="faq-item"/g)].length, 11);
+  assert.match(html, /Action, State, and Task are reserved for future profiles/);
+  assert.match(html, /session-establishment contract is future work/);
+  assert.match(html, /not a production reference runtime/);
+  assert.doesNotMatch(html, /weeks, not years|~30 lines|Every decision is deterministic and O\(1\)|ships a reference implementation/);
+  assert.match(script, /faqOpenStateBeforeSearch/);
+  assert.match(script, /matchingFaqItems\.includes\(item\)/);
   assert.doesNotMatch(script, /role="listitem"/);
   assert.doesNotMatch(script, /must confirm it within 2 seconds/);
   assert.match(html, /does not claim distributed exactly-once delivery/);

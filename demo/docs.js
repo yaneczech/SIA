@@ -688,9 +688,22 @@ $$('.section-nav a').forEach((link) => link.addEventListener('click', closeSideb
 
 const searchInput = $('#docs-search');
 const searchableSections = $$('.docs-section[data-search]');
+const faqItems = $$('#faq .faq-item');
+let faqOpenStateBeforeSearch = null;
 const updateSearch = () => {
   const query = searchInput.value.trim().toLowerCase();
   const tokens = query.split(/\s+/).filter(Boolean);
+  if (tokens.length > 0 && faqOpenStateBeforeSearch === null) faqOpenStateBeforeSearch = faqItems.map((item) => item.open);
+  if (tokens.length === 0 && faqOpenStateBeforeSearch !== null) {
+    faqItems.forEach((item, index) => { item.open = faqOpenStateBeforeSearch[index]; });
+    faqOpenStateBeforeSearch = null;
+  } else if (tokens.length > 0) {
+    const matchingFaqItems = faqItems.filter((item) => {
+      const text = item.textContent.toLowerCase();
+      return tokens.every((token) => text.includes(token));
+    });
+    if (matchingFaqItems.length > 0) faqItems.forEach((item) => { item.open = matchingFaqItems.includes(item); });
+  }
   let visible = 0;
   searchableSections.forEach((section) => {
     const haystack = `${section.dataset.search} ${section.textContent}`.toLowerCase();

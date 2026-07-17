@@ -519,7 +519,7 @@
         </div>
       </section>
 
-      <section class="docs-section" id="faq" data-search="faq questions how hard implementation cost effort oem tier-1 supplier requirements dependencies replace stack performance latency standard status adopt prototype who owns runtime library language crypto hsm">
+      <section class="docs-section" id="faq" data-search="faq questions implementation effort oem tier-1 supplier dependencies stack performance latency scope non-goals availability fallback privacy retention migration governance conformance standard vendor">
         <div class="section-heading">
           <div><p class="section-index">08 · FAQ</p><h2>The questions an adopter asks first</h2></div>
           <p>Honest answers about effort, dependencies, and what SIA does and does not demand of an existing stack.</p>
@@ -527,19 +527,39 @@
         <div class="faq-list">
           <details class="faq-item" open>
             <summary><i data-lucide="gauge" aria-hidden="true"></i><span>How hard is this to implement?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>It depends entirely on which conformance class you own. An <b>emitter</b> (an ADAS or service that already produces events) adds a small step: wrap its output in the closed instance envelope, bind the declaration digest, and sign it—a few hundred lines against the schema. A <b>renderer</b> (a cluster or IVI supplier) consumes a render plan and returns an authenticated receipt—it does not implement policy at all. Only the <b>runtime</b> class—the party that owns the mediation boundary, typically one team per platform—implements the full lifecycle. The profile is deliberately small (2 node families, 3 renderers, 6 axes) precisely so a first runtime is weeks, not years.</p></div>
+            <div><p>It depends on the conformance class and on capabilities already present in the vehicle platform. An <b>emitter</b> must create a closed instance, bind the installed declaration and catalog, and authenticate it. A <b>renderer</b> declares attested capabilities, consumes an authorised render plan without reinterpreting policy, and returns authenticated, monotonic receipts. The <b>runtime</b> owns the larger job: trust verification, context integrity, retention, deterministic translation, delivery coordination, occupant response, and audit. The repository provides schemas, signed examples, validation tools, and class-scoped vectors so teams can estimate their own integration; SIA 0.4 does not claim a universal line count or delivery schedule.</p></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="package" aria-hidden="true"></i><span>What does it actually require on top of my current stack?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>Three capabilities most SDV platforms already have: a <b>JSON Schema validator</b>, a <b>signing/verification primitive</b> (ES256, EdDSA, or HMAC—whatever your HSM already exposes), and a <b>canonical serializer</b> (RFC 8785, ~30 lines). No new runtime, no OWL reasoner, no graph database. SIA is a contract and a state machine, not a framework. It sits <em>above</em> your data and service layers (VSS, Kuksa, uProtocol, AUTOSAR) and <em>below</em> your renderers—it replaces none of them.</p></div>
+            <div><p>A deployment needs strict JSON Schema validation, RFC 8785 canonicalisation, hashing and an allowed signing or authentication primitive, plus bounded state for replay protection, retention, delivery, and audit. It also needs authenticated catalogs, actor credentials, context policies and snapshots, and renderer capabilities. SIA does <em>not</em> prescribe an application framework, ontology reasoner, graph database, transport, programming language, or HSM product. It sits above data and service layers such as VSS, Kuksa, uProtocol, and AUTOSAR, and below renderers. Existing components may host the required functions, but the mediation and coordination responsibilities still have to be implemented somewhere.</p></div>
           </details>
           <details class="faq-item">
-            <summary><i data-lucide="factory" aria-hidden="true"></i><span>Are there extra requirements for an OEM or Tier-1 beyond today's frame?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>Yes, three that most platforms do not formalise today. <b>1) Key and credential management for interaction authority</b>—actor classes must be attested, so emitters need signing keys and a revocable credential registry (an extension of existing UNECE R155 / ISO 21434 key infrastructure, not a new PKI). <b>2) A signed context authority</b>—the six axes must arrive as an authenticated snapshot with source and confidence, so a trusted component must sign context. <b>3) Deployment-defined policy documents</b>—clock skew, secure-time fallback, attention budgets, and privacy retention are declared and audited, not left implicit. None of these are new hardware; they formalise decisions vehicles already make informally.</p></div>
+            <summary><i data-lucide="factory" aria-hidden="true"></i><span>What must an OEM or Tier-1 define beyond the shared contracts?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>The deployment owns the production trust anchors and credential lifecycle; the authorities that sign catalogs, context, and renderer capabilities; secure-time and clock-skew behaviour; replay and retention quotas; attention calibration; privacy and audit retention; and the certified fallback path for critical interactions. Existing PKI, HSM, and vehicle-context infrastructure may satisfy part of this work, but SIA does not assume that it does and does not promise that no platform or hardware changes are needed.</p></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="zap" aria-hidden="true"></i><span>What about performance and the safety-critical path?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>Every decision is deterministic and O(1) against the catalog: schema validation, a hash, a signature check, and table lookups. No runtime reasoning. The two-tier trust model uses fast symmetric authentication (HMAC) per interaction after an asymmetric session handshake, keeping the critical path cheap. A critical alert is never blocked by an attention-budget calculation—the safety mandate is structural, evaluated before the budget.</p></div>
+            <div><p>The 0.4 path is designed to be deterministic and bounded by deployment limits: closed-schema validation, canonical hashing, signature or authenticator verification, bounded cache and queue operations, and deterministic capability filtering. It requires no open-world reasoning or global optimisation at runtime. SIA does not yet publish a latency guarantee or benchmark; a production profile must measure the chosen encoding, cryptography, catalog size, renderer set, and hardware. HMAC-SHA-256 is allowed, but its session provisioning and revocation are deployment-defined and the session-establishment contract is future work. Critical alerts bypass attention-budget blocking, while deployment-specific safety deadlines and fail-operational behaviour remain part of the safety case.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="scan-line" aria-hidden="true"></i><span>What is inside the 0.4 scope—and what is not?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>The minimal profile emits two event families: <b>Alert</b> and <b>Notification</b>. It exercises six actor classes, three output renderers, six context axes, bounded retention, delivery receipts, occupant responses, and audit. <b>Action, State, and Task are reserved for future profiles</b>; 0.4 must not reuse the output-delivery contract as an input or command-execution contract. SIA also does not decide whether sensor data is true, replace renderer-local safety controls, secure the operating system, or certify the whole vehicle.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="shield-alert" aria-hidden="true"></i><span>What happens if SIA or a renderer is unavailable?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>For an individual attempt, a failed or timed-out primary may trigger the next eligible fallback while the interaction remains semantically valid. SIA deliberately fails closed for unauthorised or unverifiable claims, but that is not the same as fail-operational availability. A production deployment must document and validate its behaviour when the mediation runtime, secure time, trust store, transport, or renderers are unavailable, including any certified legacy path required for critical alerts. Version 0.4 defines the evidence and ordering rules; it does not provide the vehicle's availability architecture.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="database" aria-hidden="true"></i><span>What is recorded, and how is privacy handled?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>SIA records decision-relevant evidence such as bound artifact digests, reason codes, dispatch attempts, renderer receipts, occupant-response outcomes, and a hash-linked audit chain. It does not require arbitrary UI content or raw sensor streams to be retained. Retention is bounded and deployment-defined: memory-only retention is the default for held interactions, while persistent retention requires encryption, integrity protection, access control, and an explicit privacy policy. Deployments must minimise evidence, set deletion periods, and assess whether occupant or context fields are personal data in their jurisdiction.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="workflow" aria-hidden="true"></i><span>Can SIA be adopted incrementally?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Yes, as a prototype and migration strategy: start with one declared interaction, one emitter, and adapters for existing renderers; run the mediation path beside the current HMI path; compare decisions, latency, and evidence; then expand only after the deployment-specific safety case is clear. Spec, profile, and catalog versions are negotiated separately, and unknown or incompatible critical constructs fail closed or enter the documented safety fallback. Incremental coexistence does not remove the need to prove that parallel legacy and SIA paths cannot cause unsafe duplicate or conflicting presentation.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="badge-check" aria-hidden="true"></i><span>What does passing the conformance suite prove?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>It proves that an implementation passes the published positive and adversarial vectors for its <b>emitter</b>, <b>renderer</b>, or <b>runtime</b> class and follows the SIA 0.4 machine-readable contracts and invariants covered by those vectors. It does not prove regulatory compliance, functional safety, production latency, attention-model validity, cryptographic key operations, or whole-vehicle availability. Those remain deployment evidence. The repository currently provides executable examples, validators, a teaching/demo engine, and conformance material—not a production reference runtime.</p></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="scale" aria-hidden="true"></i><span>Is this an approved standard? Can I ship it in a production vehicle?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
@@ -547,7 +567,7 @@
           </details>
           <details class="faq-item">
             <summary><i data-lucide="git-fork" aria-hidden="true"></i><span>Does adopting SIA lock me into a vendor or ecosystem?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>No. The contracts are plain JSON Schema, the vectors are language-neutral, the signing rule is a public RFC, and the licence is open. Renderers stay external and keep their own visual and acoustic design—SIA standardises the interaction contract, not the look of any surface. There is no SIA runtime you must buy; the repository ships a reference implementation you can replace entirely.</p></div>
+            <div><p>No vendor dependency is required by the draft. The contracts use JSON Schema, the vectors are language-neutral, canonicalisation follows a public RFC, and the repository is openly licensed. Renderers remain external and keep their visual and acoustic design; SIA standardises the boundary and evidence, not a GUI toolkit. A deployment supplies or builds its own runtime and may use any language, transport, and cryptographic implementation that preserves the profile's wire contracts and invariants.</p></div>
           </details>
         </div>
       </section>
@@ -578,6 +598,6 @@
   </div>
 
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script type="module" src="./docs.js?v=0.4.3"></script>
+  <script type="module" src="./docs.js?v=0.4.4"></script>
 </body>
 </html>
