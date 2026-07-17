@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/context-snapshot.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/context-snapshot.schema.json",
   "title": "SIA Context Snapshot",
   "type": "object",
   "required": ["context_id", "captured_at_ms", "policy_ref", "policy_version", "policy_sha256", "axes", "integrity"],

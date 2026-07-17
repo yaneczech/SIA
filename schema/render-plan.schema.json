@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/render-plan.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/render-plan.schema.json",
   "title": "SIA Render Plan",
   "type": "object",
   "required": [

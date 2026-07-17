@@ -9,7 +9,7 @@
   "interruptibility": "deferable",
   "semantic_validity_ms": 60000,
   "payload_schema_ref": "sia:payload:collision-sensor-test:1",
-  "payload_schema_sha256": "6c27272f1a9fe2dc07d3add83d7a3fe329f24efcfce587c0905b055b9a0624c6",
+  "payload_schema_sha256": "15f79bf848082f18963b6e70dbf122be8027aeb372aecd4d328914c2cd20ad19",
   "trust_requirements": {
     "signed_origin_required": true,
     "permitted_actor_classes": [

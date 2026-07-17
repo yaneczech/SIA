@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/payloads/collision-sensor-test.v1.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/payloads/collision-sensor-test.v1.schema.json",
   "title": "Payload: Interaction.Event.Notification.Diagnostic.CollisionSensorTest (sia:payload:collision-sensor-test:1)",
   "type": "object",
   "required": ["sensor_id", "result"],

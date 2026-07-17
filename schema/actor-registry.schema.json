@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/actor-registry.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/actor-registry.schema.json",
   "title": "SIA Actor Credential Registry",
   "type": "object",
   "required": ["spec_version", "profile_id", "registry_version", "generated_at_ms", "credentials", "integrity"],

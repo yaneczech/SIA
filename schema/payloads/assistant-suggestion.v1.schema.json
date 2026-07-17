@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/payloads/assistant-suggestion.v1.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/payloads/assistant-suggestion.v1.schema.json",
   "title": "Payload: Interaction.Event.Notification.Assistant.Suggestion (sia:payload:assistant-suggestion:1)",
   "type": "object",
   "required": ["suggestion_text", "category"],

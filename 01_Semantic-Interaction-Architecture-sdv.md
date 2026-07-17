@@ -394,11 +394,11 @@ The output should be explainable in logs: for example, “cluster selected becau
 
 ## 10. Versioning and Evolution
 
-A vehicle may remain in service for 15 years while its software and interaction vocabulary evolve. SIA therefore separates three version axes: `spec_version` for wire contracts and lifecycle, `profile_id` plus `profile_version` for a negotiated conformance subset, and `catalog_version` for the installed semantic vocabulary. Every runtime instance carries all three.
+A vehicle may remain in service for 15 years while its software and interaction vocabulary evolve. SIA therefore records three exact artifact bindings: `spec_version` for the wire contract and lifecycle, `profile_id` plus `profile_version` for the selected conformance subset, and `catalog_version` for the installed semantic vocabulary. Every runtime instance carries all three, while the repository publishes them together under one SIA release version.
 
 Normative runtime envelopes are closed. An unknown field is not presumed harmless, because it may attempt to change priority, rendering, retention or acknowledgement policy. Additive evolution therefore occurs through a compatible profile revision or an explicitly negotiated feature. Breaking required fields or changed semantics require a major profile version. Unknown critical nodes fail closed or enter the deployment's documented safety fallback; non-critical nodes may be rejected or handled only through an explicitly compatible known parent.
 
-Catalog evolution remains independently versioned. New subclasses may strengthen but never weaken inherited safety, attention or trust requirements. Deprecated declarations remain resolvable for a published support window. The full compatibility contract is normative in the Core Specification.
+Deployments may update a catalog only through an explicitly compatible, authenticated binding; that update does not create a second public SIA version. New subclasses may strengthen but never weaken inherited safety, attention or trust requirements. Deprecated declarations remain resolvable for a published support window. The full compatibility contract is normative in the Core Specification.
 
 ---
 

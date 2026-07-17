@@ -21,6 +21,13 @@ const nodeFiles = [
   'now-playing.node.json',
   'assistant-suggestion.node.json',
 ];
+const payloadSchemaByRef = new Map([
+  ['sia:payload:collision-warning:1', 'collision-warning.v1.schema.json'],
+  ['sia:payload:lane-departure-warning:1', 'lane-departure-warning.v1.schema.json'],
+  ['sia:payload:collision-sensor-test:1', 'collision-sensor-test.v1.schema.json'],
+  ['sia:payload:now-playing:1', 'now-playing.v1.schema.json'],
+  ['sia:payload:assistant-suggestion:1', 'assistant-suggestion.v1.schema.json'],
+]);
 
 const readExample = async (file) => JSON.parse(await readFile(path.join(examplesDir, file), 'utf8'));
 const writeExample = async (file, artifact) => writeFile(path.join(examplesDir, file), `${JSON.stringify(artifact, null, 2)}\n`);
@@ -46,6 +53,10 @@ const actorRegistryDigest = canonicalSha256(actorRegistry);
 const nodes = [];
 for (const file of nodeFiles) {
   const node = await readExample(file);
+  const payloadSchemaFile = payloadSchemaByRef.get(node.payload_schema_ref);
+  if (!payloadSchemaFile) throw new Error(`${file}: no published schema for ${node.payload_schema_ref}`);
+  const payloadSchema = JSON.parse(await readFile(path.join(root, 'schema', 'payloads', payloadSchemaFile), 'utf8'));
+  node.payload_schema_sha256 = canonicalSha256(payloadSchema);
   node.context_policy.policy_ref = policy.policy_id;
   node.context_policy.policy_sha256 = policyDigest;
   await writeExample(file, node);

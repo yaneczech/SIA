@@ -16,7 +16,7 @@
       "interruptibility": "non_interruptible",
       "semantic_validity_ms": 500,
       "payload_schema_ref": "sia:payload:collision-warning:1",
-      "payload_schema_sha256": "27fe606fa64047675b649d8d0d71565e99174382e35540304897b8ed55de086f",
+      "payload_schema_sha256": "938adfbbd73a2e0b714882a0af012319c8d7eddb9cb1fe5c8511fb39d7a7159a",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -78,7 +78,7 @@
       "interruptibility": "non_interruptible",
       "semantic_validity_ms": 1000,
       "payload_schema_ref": "sia:payload:lane-departure-warning:1",
-      "payload_schema_sha256": "6adfd61b92638e9ed6d661dea883f32dc04da5d15d6f7e9fe703c6174f053096",
+      "payload_schema_sha256": "7642a6ede8d81146c35f5ade8725b11c3574d1bd0ee6a06d86d7cea3ff361ef6",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -137,7 +137,7 @@
       "interruptibility": "deferable",
       "semantic_validity_ms": 60000,
       "payload_schema_ref": "sia:payload:collision-sensor-test:1",
-      "payload_schema_sha256": "6c27272f1a9fe2dc07d3add83d7a3fe329f24efcfce587c0905b055b9a0624c6",
+      "payload_schema_sha256": "15f79bf848082f18963b6e70dbf122be8027aeb372aecd4d328914c2cd20ad19",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -200,7 +200,7 @@
       "interruptibility": "deferable",
       "semantic_validity_ms": 30000,
       "payload_schema_ref": "sia:payload:now-playing:1",
-      "payload_schema_sha256": "4e8fabb69523d3b7d5e22196c52d1ad5bad1a5996f961551dc0842587893876a",
+      "payload_schema_sha256": "bffee801a20ea273d59b0a62e894619a6292cf4c84d67ccaa49ab9acf52609f0",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -271,7 +271,7 @@
       "interruptibility": "deferable",
       "semantic_validity_ms": 5000,
       "payload_schema_ref": "sia:payload:assistant-suggestion:1",
-      "payload_schema_sha256": "c8e05f29474ff6b4b829f80c66eba9150891e1cf5376cee2495002b9766a7c6a",
+      "payload_schema_sha256": "01f74f8d1b63737f7aa1a04f90c3f893c984e470bad30252acdc12ed3dcac17c",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -324,6 +324,6 @@
     "issuer": "SIA Test Catalog Authority",
     "key_id": "vehicle-hsm:catalog:1",
     "algorithm": "EdDSA",
-    "signature": "FfuqHjs9VF98kRrUCJhl99e_5DHRjclD-u_E8KnW14T11PnbqXZQmOGf41rik3Z75eaBWh3Fi80UZ8vDKJlgDA"
+    "signature": "iaoNVOUGI2q_P0je8YqTzjHOz1QycHFemIpVrqV3lvjqyuqkL9Txb1YFJpAqeVYT8IKQQyRptXtuuUAe6JEoBQ"
   }
 }

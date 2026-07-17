@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/catalog.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/catalog.schema.json",
   "title": "SIA Catalog Manifest",
   "type": "object",
   "required": ["spec_version", "profile_id", "profile_version", "catalog_version", "generated_at_ms", "nodes", "integrity"],
@@ -13,7 +13,7 @@
     "nodes": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "https://github.com/yaneczech/SIA/schema/v0.4/interaction-node.schema.json" }
+      "items": { "$ref": "https://github.com/yaneczech/SIA/schema/v0.4.0/interaction-node.schema.json" }
     },
     "integrity": { "$ref": "#/$defs/integrity" }
   },

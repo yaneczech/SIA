@@ -9,7 +9,7 @@
   "interruptibility": "non_interruptible",
   "semantic_validity_ms": 1000,
   "payload_schema_ref": "sia:payload:lane-departure-warning:1",
-  "payload_schema_sha256": "6adfd61b92638e9ed6d661dea883f32dc04da5d15d6f7e9fe703c6174f053096",
+  "payload_schema_sha256": "7642a6ede8d81146c35f5ade8725b11c3574d1bd0ee6a06d86d7cea3ff361ef6",
   "trust_requirements": {
     "signed_origin_required": true,
     "permitted_actor_classes": [

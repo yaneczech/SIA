@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/payloads/collision-warning.v1.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/payloads/collision-warning.v1.schema.json",
   "title": "Payload: Interaction.Event.Alert.Collision.Warning (sia:payload:collision-warning:1)",
   "type": "object",
   "required": ["time_to_collision_s", "threat_bearing_deg", "threat_range_m", "relative_speed_kmh"],

@@ -4,7 +4,7 @@ export const PROFILE_META = Object.freeze({
   "profile_id": "sia-minimal",
   "profile_version": "0.4.0",
   "catalog_version": "0.4.0",
-  "catalog_sha256": "0f7c950f23c501258a7b21f8af5bcd58a0c7e4373592001918ed90615c655c0c"
+  "catalog_sha256": "1ec08113e44f7c818bd9d70b20b35c52cc7284d846cff43eb179ddc26ed64e23"
 });
 
 export const ACTOR_CLASS_IDS = Object.freeze([
@@ -98,7 +98,7 @@ export const NODE_RECORDS = Object.freeze([
       "interruptibility": "non_interruptible",
       "semantic_validity_ms": 500,
       "payload_schema_ref": "sia:payload:collision-warning:1",
-      "payload_schema_sha256": "27fe606fa64047675b649d8d0d71565e99174382e35540304897b8ed55de086f",
+      "payload_schema_sha256": "938adfbbd73a2e0b714882a0af012319c8d7eddb9cb1fe5c8511fb39d7a7159a",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -149,7 +149,7 @@ export const NODE_RECORDS = Object.freeze([
         "UNECE_R152"
       ]
     },
-    "declaration_sha256": "cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c"
+    "declaration_sha256": "533e5863cdcd2f9d2767bca3a4dbc4e903af7bd5fa076d9a11710d430008e658"
   },
   {
     "declaration": {
@@ -163,7 +163,7 @@ export const NODE_RECORDS = Object.freeze([
       "interruptibility": "non_interruptible",
       "semantic_validity_ms": 1000,
       "payload_schema_ref": "sia:payload:lane-departure-warning:1",
-      "payload_schema_sha256": "6adfd61b92638e9ed6d661dea883f32dc04da5d15d6f7e9fe703c6174f053096",
+      "payload_schema_sha256": "7642a6ede8d81146c35f5ade8725b11c3574d1bd0ee6a06d86d7cea3ff361ef6",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -211,7 +211,7 @@ export const NODE_RECORDS = Object.freeze([
         "UNECE_R79"
       ]
     },
-    "declaration_sha256": "c8579003d085bb33b796f710bca05e1c5b0e6dfa2659b628118eb63b9f202555"
+    "declaration_sha256": "4cb40e3c17c81533f68d2384adf513dda236faba75608d4447c119b0164cdaf2"
   },
   {
     "declaration": {
@@ -225,7 +225,7 @@ export const NODE_RECORDS = Object.freeze([
       "interruptibility": "deferable",
       "semantic_validity_ms": 60000,
       "payload_schema_ref": "sia:payload:collision-sensor-test:1",
-      "payload_schema_sha256": "6c27272f1a9fe2dc07d3add83d7a3fe329f24efcfce587c0905b055b9a0624c6",
+      "payload_schema_sha256": "15f79bf848082f18963b6e70dbf122be8027aeb372aecd4d328914c2cd20ad19",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -277,7 +277,7 @@ export const NODE_RECORDS = Object.freeze([
         "visual"
       ]
     },
-    "declaration_sha256": "c8594ed293f7e78bdb6fb458a6dab23964911da5dceadeaffe96472abe68e689"
+    "declaration_sha256": "cb09b1c039a2f8bb2fa9f390a04158e6c4772eecd06d4b30b4f7682a68a1ecec"
   },
   {
     "declaration": {
@@ -291,7 +291,7 @@ export const NODE_RECORDS = Object.freeze([
       "interruptibility": "deferable",
       "semantic_validity_ms": 30000,
       "payload_schema_ref": "sia:payload:now-playing:1",
-      "payload_schema_sha256": "4e8fabb69523d3b7d5e22196c52d1ad5bad1a5996f961551dc0842587893876a",
+      "payload_schema_sha256": "bffee801a20ea273d59b0a62e894619a6292cf4c84d67ccaa49ab9acf52609f0",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -351,7 +351,7 @@ export const NODE_RECORDS = Object.freeze([
         "auditory"
       ]
     },
-    "declaration_sha256": "f1cd4853e75a0724c039005a58a1a239d573f5d6e223f0cee0fd63c2b58f3c04"
+    "declaration_sha256": "43109dc5336099b762f420ca5e8c3139d0bdf4d3c57ef51e858129d4389919d2"
   },
   {
     "declaration": {
@@ -365,7 +365,7 @@ export const NODE_RECORDS = Object.freeze([
       "interruptibility": "deferable",
       "semantic_validity_ms": 5000,
       "payload_schema_ref": "sia:payload:assistant-suggestion:1",
-      "payload_schema_sha256": "c8e05f29474ff6b4b829f80c66eba9150891e1cf5376cee2495002b9766a7c6a",
+      "payload_schema_sha256": "01f74f8d1b63737f7aa1a04f90c3f893c984e470bad30252acdc12ed3dcac17c",
       "trust_requirements": {
         "signed_origin_required": true,
         "permitted_actor_classes": [
@@ -413,7 +413,7 @@ export const NODE_RECORDS = Object.freeze([
         "auditory"
       ]
     },
-    "declaration_sha256": "909e52074b5af4f2583e722684fc2bfb068d43a0e500e42a0af93b18c5657042"
+    "declaration_sha256": "092938b6c896caecb3424731205e84b25c99805c559011eae864e356bfcf43cc"
   }
 ]);
 
@@ -437,7 +437,7 @@ export const RENDERER_DECLARATIONS = Object.freeze([
       "issuer": "OEM.RendererRegistry",
       "key_id": "vehicle-hsm:renderer-registry:2",
       "algorithm": "ES256",
-      "signature": "gOwli60lOuezV1ulyN8U4m_rBkJEBWkjPp7xkzCjgrhLBInCgDQU68w5LP27bZjYcsv5sxOPYJClE-0scA8ZaQ"
+      "signature": "luQlf7lZ1DMtTAJ1If4kx6pnxVhKMUKgBvjfBlFajh8mdT67lG97Tc9d5GFQBlbX2EyTVcZG9CLYvjO3-O62aw"
     }
   },
   {
@@ -459,7 +459,7 @@ export const RENDERER_DECLARATIONS = Object.freeze([
       "issuer": "OEM.RendererRegistry",
       "key_id": "vehicle-hsm:renderer-registry:2",
       "algorithm": "ES256",
-      "signature": "eDwo55DR91lThYuRWsQtXaMbwfl1Je32HUNnbMxxLA7iT7ZR3PEtFq92DpCZPcUkptuYqxhObHbRGhuiPG7j0Q"
+      "signature": "rxCY38_zOnugpiMWpRCRmzQpe-bFAz-BLptAEVTvrj8JEzcm02RBt1aSsdYN-_3LgZxXIYU2udz3x1U1sJ6xdw"
     }
   },
   {
@@ -481,7 +481,7 @@ export const RENDERER_DECLARATIONS = Object.freeze([
       "issuer": "OEM.RendererRegistry",
       "key_id": "vehicle-hsm:renderer-registry:2",
       "algorithm": "ES256",
-      "signature": "RdnsuivWr-7AlYz95jHbBzKV7g6d5oTYkanDXPOA8-P_NtezqHPdWYDdm81BhVYCF7ReAEQw5v8tNrSOctWtbg"
+      "signature": "4SvidkfXtWHPP8ALyC2ZAUsbKOxLIv5Ujs3k5WCm22Xp2NjhneSMOWj8cHHypxcQrO2diD6OOvgNA-mM49whbw"
     }
   }
 ]);
@@ -611,7 +611,7 @@ export const DOC_EXCERPTS = Object.freeze({
     "interruptibility": "non_interruptible",
     "semantic_validity_ms": 500,
     "payload_schema_ref": "sia:payload:collision-warning:1",
-    "payload_schema_sha256": "27fe606fa64047675b649d8d0d71565e99174382e35540304897b8ed55de086f",
+    "payload_schema_sha256": "938adfbbd73a2e0b714882a0af012319c8d7eddb9cb1fe5c8511fb39d7a7159a",
     "trust_requirements": {
       "signed_origin_required": true,
       "permitted_actor_classes": [
@@ -667,9 +667,9 @@ export const DOC_EXCERPTS = Object.freeze({
     "profile_id": "sia-minimal",
     "profile_version": "0.4.0",
     "catalog_version": "0.4.0",
-    "catalog_sha256": "0f7c950f23c501258a7b21f8af5bcd58a0c7e4373592001918ed90615c655c0c",
+    "catalog_sha256": "1ec08113e44f7c818bd9d70b20b35c52cc7284d846cff43eb179ddc26ed64e23",
     "node_id": "Interaction.Event.Alert.Collision.Warning",
-    "node_schema_sha256": "cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c",
+    "node_schema_sha256": "533e5863cdcd2f9d2767bca3a4dbc4e903af7bd5fa076d9a11710d430008e658",
     "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
     "occurred_at_ms": 1784116800000,
     "valid_until_ms": 1784116800500,
@@ -774,11 +774,11 @@ export const DOC_EXCERPTS = Object.freeze({
     "spec_version": "0.4.0",
     "profile_version": "0.4.0",
     "catalog_version": "0.4.0",
-    "catalog_sha256": "0f7c950f23c501258a7b21f8af5bcd58a0c7e4373592001918ed90615c655c0c",
+    "catalog_sha256": "1ec08113e44f7c818bd9d70b20b35c52cc7284d846cff43eb179ddc26ed64e23",
     "instance_id": "b8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b26",
     "context_id": "2a2b3c4d-1111-4aaa-8bbb-1234567890ac",
     "node_id": "Interaction.Event.Notification.Media.NowPlaying",
-    "node_schema_sha256": "f1cd4853e75a0724c039005a58a1a239d573f5d6e223f0cee0fd63c2b58f3c04",
+    "node_schema_sha256": "43109dc5336099b762f420ca5e8c3139d0bdf4d3c57ef51e858129d4389919d2",
     "policy_ref": "sia:policy:core-context:1",
     "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
     "disposition": "coalesce",
@@ -802,8 +802,8 @@ export const DOC_EXCERPTS = Object.freeze({
     "spec_version": "0.4.0",
     "profile_version": "0.4.0",
     "catalog_version": "0.4.0",
-    "catalog_sha256": "0f7c950f23c501258a7b21f8af5bcd58a0c7e4373592001918ed90615c655c0c",
-    "node_schema_sha256": "cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c",
+    "catalog_sha256": "1ec08113e44f7c818bd9d70b20b35c52cc7284d846cff43eb179ddc26ed64e23",
+    "node_schema_sha256": "533e5863cdcd2f9d2767bca3a4dbc4e903af7bd5fa076d9a11710d430008e658",
     "policy_ref": "sia:policy:core-context:1",
     "policy_version": "0.4.0",
     "policy_sha256": "b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22",
@@ -888,11 +888,11 @@ export const DOC_EXCERPTS = Object.freeze({
     "event_id": "98e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b27",
     "sequence": 0,
     "previous_record_sha256": null,
-    "record_sha256": "22a4944655c0d1e6b0a5698e51bc9f418fee9671bb23a2e32a546e7356a61edf",
+    "record_sha256": "af85e5d61a4f1a2470ec607e0b201bbcd8ffbfd5eed07213cf3e1b9e058dca33",
     "timestamp_ms": 1784116800132,
     "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
-    "node_schema_sha256": "cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c",
-    "catalog_sha256": "0f7c950f23c501258a7b21f8af5bcd58a0c7e4373592001918ed90615c655c0c",
+    "node_schema_sha256": "533e5863cdcd2f9d2767bca3a4dbc4e903af7bd5fa076d9a11710d430008e658",
+    "catalog_sha256": "1ec08113e44f7c818bd9d70b20b35c52cc7284d846cff43eb179ddc26ed64e23",
     "context_id": "1a2b3c4d-1111-4aaa-8bbb-1234567890ab",
     "phase": "delivery",
     "outcome_code": "DELIVERY_PRESENTED",

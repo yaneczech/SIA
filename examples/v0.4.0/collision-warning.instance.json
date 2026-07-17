@@ -3,9 +3,9 @@
   "profile_id": "sia-minimal",
   "profile_version": "0.4.0",
   "catalog_version": "0.4.0",
-  "catalog_sha256": "0f7c950f23c501258a7b21f8af5bcd58a0c7e4373592001918ed90615c655c0c",
+  "catalog_sha256": "1ec08113e44f7c818bd9d70b20b35c52cc7284d846cff43eb179ddc26ed64e23",
   "node_id": "Interaction.Event.Alert.Collision.Warning",
-  "node_schema_sha256": "cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c",
+  "node_schema_sha256": "533e5863cdcd2f9d2767bca3a4dbc4e903af7bd5fa076d9a11710d430008e658",
   "instance_id": "c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21",
   "occurred_at_ms": 1784116800000,
   "valid_until_ms": 1784116800500,
@@ -30,6 +30,6 @@
     "provenance_chain": [
       "ADAS_v2.3.1"
     ],
-    "signature": "DD4XSr6CX8A6Kn7wEcBkT31XvqZbCdOub_neC1OiNJjXlV6uk3JYRlt_GkCBwRvUclo-OAHDp39GTIOWsuNzhQ"
+    "signature": "ClKvTlPyxYUcBsxOfgnQWSdkP74j8tSrh_OEzBZ0a3OKNSyEngNQsbaNoxkI8sF2q0R5E_UQNVVDlMdfHkI_Kg"
   }
 }

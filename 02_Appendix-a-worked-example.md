@@ -103,7 +103,7 @@ attestation:
   signature: ZXhhbXBsZS1zaWduYXR1cmU
 ```
 
-The three version axes are explicit. `catalog_sha256` and `node_schema_sha256` bind the instance to the signed catalog and reviewed declaration; the registry and credential digests bind its claimed identity to current authority and revocation state. `valid_until_ms` may not exceed `occurred_at_ms + semantic_validity_ms`. The attestation timestamp is evaluated against the separate 200 ms ingress-freshness limit.
+The three exact artifact bindings are explicit without creating competing public SIA versions. `catalog_sha256` and `node_schema_sha256` bind the instance to the signed catalog and reviewed declaration; the registry and credential digests bind its claimed identity to current authority and revocation state. `valid_until_ms` may not exceed `occurred_at_ms + semantic_validity_ms`. The attestation timestamp is evaluated against the separate 200 ms ingress-freshness limit.
 
 ---
 

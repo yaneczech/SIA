@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/occupant-response.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/occupant-response.schema.json",
   "title": "SIA Occupant Response",
   "type": "object",
   "required": ["response_id", "decision_id", "instance_id", "context_id", "delivery_receipt_ids", "state", "authority", "subject_role", "opened_at_ms", "deadline_at_ms", "occurred_at_ms", "input_channel", "evidence"],

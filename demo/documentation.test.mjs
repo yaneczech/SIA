@@ -44,10 +44,24 @@ test('published documentation and artifacts expose one exact SIA release version
   for (const schemaFile of await readdir(path.join(root, 'schema'))) {
     if (!schemaFile.endsWith('.json')) continue;
     const schema = await readFile(path.join(root, 'schema', schemaFile), 'utf8');
+    const parsed = JSON.parse(schema);
+    assert.match(parsed.$id, /\/schema\/v0\.4\.0\//, `${schemaFile} does not use the exact release namespace`);
+    assert.doesNotMatch(schema, /\/schema\/v0\.4\//, `${schemaFile} retains the abbreviated release namespace`);
     for (const match of schema.matchAll(/"spec_version"\s*:\s*\{\s*"const"\s*:\s*"([^"]+)"/g)) {
       assert.equal(match[1], releaseVersion, `${schemaFile} exposes a different wire version`);
     }
   }
+
+  for (const schemaFile of await readdir(path.join(root, 'schema', 'payloads'))) {
+    if (!schemaFile.endsWith('.json')) continue;
+    const schema = await readFile(path.join(root, 'schema', 'payloads', schemaFile), 'utf8');
+    assert.match(JSON.parse(schema).$id, /\/schema\/v0\.4\.0\/payloads\//, `${schemaFile} does not use the exact release namespace`);
+    assert.doesNotMatch(schema, /\/schema\/v0\.4\//, `${schemaFile} retains the abbreviated release namespace`);
+  }
+
+  const ci = await readFile(path.join(root, '.github/workflows/ci.yml'), 'utf8');
+  assert.match(ci, /examples\/v0\.4\.0\/\*\.json/);
+  assert.doesNotMatch(ci, /examples\/v0\.4\/\*\.json/);
 });
 
 test('all relative Markdown links and image targets in published docs exist', async () => {
@@ -129,6 +143,8 @@ test('interactive documentation exposes the complete 0.4.0 learning path', async
   assert.match(html, /npm run benchmark:quick/);
   assert.match(html, /Measure now; claim only on target hardware\./);
   assert.match(html, /forbids production claims/);
+  assert.match(html, /One release, exact artifact bindings/);
+  assert.doesNotMatch(html, /fig4-node-taxonomy|early 0\.3 vocabulary|versions are negotiated separately|evolve separately/);
   assert.match(html, /data-copy-target="contract-code"/);
   assert.match(html, /Renderer receipt means/);
   assert.match(html, /Occupant response means/);

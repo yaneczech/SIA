@@ -400,10 +400,6 @@
           </div>
         </div>
 
-        <figure class="paper-figure">
-          <img src="../figures/fig4-node-taxonomy.png" alt="Taxonomy diagram: Interaction branches into Event (Alert and Notification), Action, State, and Task, each with example node identifiers." loading="lazy">
-          <figcaption><b>The full semantic family.</b> Profile 0.4.0 emits only the two <code>Event</code> branches—<code>Alert</code> and <code>Notification</code>; <code>Action</code>, <code>State</code>, and <code>Task</code> are reserved for future input and flow profiles. The per-family labels are early 0.3 vocabulary: acknowledgement became the occupant-response contract, suppression became the declared blocked disposition. <em>Figure 4 of the position paper.</em></figcaption>
-        </figure>
       </section>
 
       <section class="docs-section" id="operations" data-search="operational guarantees limits profile scope alert notification action state task applicability blocking retention drop defer coalesce quotas delivery success policy received presented at least once idempotency monotonic context uncertainty safe worst case fail closed version compatibility secure time watchdog fallback duplicate privacy rate limit audit">
@@ -434,7 +430,7 @@
             <div><p>Unknown or stale context maps to <code>safe_worst_case</code> or <code>fail_closed</code>. Ingress freshness, semantic validity, and retention TTL remain distinct, and each deployment defines clock skew and behaviour when secure time is unavailable.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#7-time-semantics">Normative §7 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
           </details>
           <details class="guarantee-item">
-            <summary><i data-lucide="git-compare-arrows" aria-hidden="true"></i><span><b>Compatibility is explicit</b><small>Spec, profile, and catalog evolve separately</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <summary><i data-lucide="git-compare-arrows" aria-hidden="true"></i><span><b>Compatibility is explicit</b><small>One release, exact artifact bindings</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
             <div><p>SIA has one public release version. Runtime instances still bind the exact contract, profile, and catalog used by a decision, but those identifiers are protocol evidence—not competing SIA release labels. The published bundle keeps them aligned at <code>0.4.0</code>. Unsupported wire contracts are rejected and unknown fields never act as implicit extensions.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#3-version-identifiers">Normative §3 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
           </details>
           <details class="guarantee-item">
@@ -570,7 +566,7 @@
           </details>
           <details class="faq-item">
             <summary><i data-lucide="workflow" aria-hidden="true"></i><span>Can SIA be adopted incrementally?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>Yes, as a prototype and migration strategy: start with one declared interaction, one emitter, and adapters for existing renderers; run the mediation path beside the current HMI path; compare decisions, latency, and evidence; then expand only after the deployment-specific safety case is clear. Spec, profile, and catalog versions are negotiated separately, and unknown or incompatible critical constructs fail closed or enter the documented safety fallback. Incremental coexistence does not remove the need to prove that parallel legacy and SIA paths cannot cause unsafe duplicate or conflicting presentation.</p></div>
+            <div><p>Yes, as a prototype and migration strategy: start with one declared interaction, one emitter, and adapters for existing renderers; run the mediation path beside the current HMI path; compare decisions, latency, and evidence; then expand only after the deployment-specific safety case is clear. The exact contract, profile, and catalog bindings are validated together under one public SIA release version; unknown or incompatible critical constructs fail closed or enter the documented safety fallback. Incremental coexistence does not remove the need to prove that parallel legacy and SIA paths cannot cause unsafe duplicate or conflicting presentation.</p></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="badge-check" aria-hidden="true"></i><span>What does passing the conformance suite prove?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>

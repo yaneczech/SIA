@@ -9,7 +9,7 @@
   "interruptibility": "deferable",
   "semantic_validity_ms": 30000,
   "payload_schema_ref": "sia:payload:now-playing:1",
-  "payload_schema_sha256": "4e8fabb69523d3b7d5e22196c52d1ad5bad1a5996f961551dc0842587893876a",
+  "payload_schema_sha256": "bffee801a20ea273d59b0a62e894619a6292cf4c84d67ccaa49ab9acf52609f0",
   "trust_requirements": {
     "signed_origin_required": true,
     "permitted_actor_classes": [

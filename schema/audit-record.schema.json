@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/audit-record.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/audit-record.schema.json",
   "title": "SIA Audit Record",
   "type": "object",
   "required": [

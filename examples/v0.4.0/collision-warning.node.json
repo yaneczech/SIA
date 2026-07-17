@@ -9,7 +9,7 @@
   "interruptibility": "non_interruptible",
   "semantic_validity_ms": 500,
   "payload_schema_ref": "sia:payload:collision-warning:1",
-  "payload_schema_sha256": "27fe606fa64047675b649d8d0d71565e99174382e35540304897b8ed55de086f",
+  "payload_schema_sha256": "938adfbbd73a2e0b714882a0af012319c8d7eddb9cb1fe5c8511fb39d7a7159a",
   "trust_requirements": {
     "signed_origin_required": true,
     "permitted_actor_classes": [

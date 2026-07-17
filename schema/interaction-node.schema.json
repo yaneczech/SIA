@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/yaneczech/SIA/schema/v0.4/interaction-node.schema.json",
+  "$id": "https://github.com/yaneczech/SIA/schema/v0.4.0/interaction-node.schema.json",
   "title": "SIA Interaction Node Declaration",
   "description": "Normative Alert and Notification declaration contract for SIA v0.4.0. Action, State, and Task require a future profile. Runtime instances use runtime-instance.schema.json.",
   "oneOf": [

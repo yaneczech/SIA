@@ -17,6 +17,6 @@
     "issuer": "OEM.RendererRegistry",
     "key_id": "vehicle-hsm:renderer-registry:2",
     "algorithm": "ES256",
-    "signature": "RdnsuivWr-7AlYz95jHbBzKV7g6d5oTYkanDXPOA8-P_NtezqHPdWYDdm81BhVYCF7ReAEQw5v8tNrSOctWtbg"
+    "signature": "4SvidkfXtWHPP8ALyC2ZAUsbKOxLIv5Ujs3k5WCm22Xp2NjhneSMOWj8cHHypxcQrO2diD6OOvgNA-mM49whbw"
   }
 }
