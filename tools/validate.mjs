@@ -3,10 +3,10 @@
  * SIA artifact validator.
  *
  *   node tools/validate.mjs <file.json> [more.json ...]
- *   npm run validate -- examples/v0.4/collision-warning.instance.json
+ *   npm run validate -- examples/v0.4.0/collision-warning.instance.json
  *
  * Detects the contract from the document shape, validates it against the
- * v0.4 schema set in strict mode, and explains failures in plain language.
+ * v0.4.0 schema set in strict mode, and explains failures in plain language.
  * Node declarations additionally get their payload-schema digest verified
  * when the referenced payload schema ships in this repository.
  */
@@ -144,7 +144,7 @@ for (const file of files) {
   }
   const contract = detectContract(doc);
   if (!contract) {
-    console.error(`✗ ${file}: does not look like any SIA v0.4 artifact.`);
+    console.error(`✗ ${file}: does not look like any SIA v0.4.0 artifact.`);
     failures += 1;
     continue;
   }

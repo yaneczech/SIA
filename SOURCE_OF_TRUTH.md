@@ -6,7 +6,7 @@ SIA keeps normative meaning, executable artifacts, and teaching surfaces separat
 
 1. [`03_Core-Specification.md`](./03_Core-Specification.md) defines normative lifecycle semantics and invariants.
 2. [`schema/`](./schema/) and [`registry/reason-codes.json`](./registry/reason-codes.json) define the machine-readable wire contracts and stable codes.
-3. [`examples/v0.4/`](./examples/v0.4/) defines the signed executable `sia-minimal` profile material: catalog declarations, policy, registry, renderer capabilities, and lifecycle examples.
+3. [`examples/v0.4.0/`](./examples/v0.4.0/) defines the signed executable `sia-minimal` profile material: catalog declarations, policy, registry, renderer capabilities, and lifecycle examples.
 4. [`conformance/`](./conformance/) defines observable positive and adversarial outcomes.
 5. The position paper, appendix, authoring guide, demo, and interactive documentation explain those sources; they do not create new normative values.
 
@@ -18,7 +18,7 @@ If two layers disagree, the earlier layer wins and the downstream layer is a def
 |---|---|---|---|
 | Lifecycle and time semantics | Core Specification | invariant validator and schemas | paper, appendix, demo, docs |
 | Artifact shape and enums | JSON Schema | validated examples | tools, generated demo profile |
-| Node authority and timing values | signed catalog declarations | `examples/v0.4/catalog.json` | engine, Lab, docs excerpts |
+| Node authority and timing values | signed catalog declarations | `examples/v0.4.0/catalog.json` | engine, Lab, docs excerpts |
 | Context axes and modifiers | context schema and signed context policy | `core.context-policy.json` | engine, diagrams, Lab |
 | Renderer capabilities | renderer-capability schema | signed `*.renderer.json` files | engine, diagrams, Lab |
 | Reason codes | reason-code registry | conformance vectors | engine and UI labels |
@@ -38,4 +38,4 @@ npm run check:demo-profile   # fail if the committed projection is stale
 
 ## Version boundary
 
-The `0.4.x` wire contract is frozen. Clarifications may improve terminology, examples, generation, and tests without adding or changing schema fields. Machine-readable deployment latency, overload, session, or real-time wire contracts require a negotiated future minor profile rather than a silent `0.4.x` change.
+The repository publishes one version: **0.4.0 — pre-standard draft**. Clarifications and tooling repairs remain part of that draft until a complete replacement bundle is deliberately released. Documentation, schemas, signed examples, conformance material, and demo MUST NOT advertise independent SIA versions. Machine-readable deployment latency, overload, session, or real-time contracts require a future negotiated release bundle rather than a silent change to 0.4.0.

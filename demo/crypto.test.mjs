@@ -24,7 +24,7 @@ function mergePatch(target, patch) {
 
 test('every cryptographic conformance vector produces its required outcome', async () => {
   for (const vector of vectors) {
-    const base = await loadJson('examples', 'v0.4', vector.base);
+    const base = await loadJson('examples', 'v0.4.0', vector.base);
     const artifact = vector.patch ? mergePatch(base, vector.patch) : base;
     const keyId = vector.verify_with_key_id || artifact[vector.container].key_id;
     const key = keys[keyId];
@@ -41,23 +41,23 @@ test('deterministic algorithms are byte-stable so vectors are reproducible', asy
     ['catalog.json', 'integrity'],
     ['collision.dispatch-attempt.json', 'integrity'],
   ]) {
-    const artifact = await loadJson('examples', 'v0.4', file);
+    const artifact = await loadJson('examples', 'v0.4.0', file);
     const key = keys[artifact[container].key_id];
     assert.equal(signArtifact(artifact, container, key), artifact[container].signature, `${file}: deterministic signature changed`);
     assert.ok(verifyArtifact(artifact, container, key), `${file}: signature does not verify`);
   }
 
-  const snapshot = await loadJson('examples', 'v0.4', 'context-attentive.json');
+  const snapshot = await loadJson('examples', 'v0.4.0', 'context-attentive.json');
   const contextKey = keys['vehicle-hsm:context:3'];
   assert.equal(signArtifact(snapshot, 'integrity', contextKey), snapshot.integrity.signature, 'EdDSA re-signing must reproduce the published signature');
 
-  const receipt = await loadJson('examples', 'v0.4', 'collision.delivery-receipt.json');
+  const receipt = await loadJson('examples', 'v0.4.0', 'collision.delivery-receipt.json');
   const receiptKey = keys['vehicle-hsm:cluster:4'];
   assert.equal(signArtifact(receipt, 'attestation', receiptKey), receipt.attestation.signature, 'HMAC re-signing must reproduce the published signature');
 });
 
 test('ES256 signatures are randomized but always verify under the published public key', async () => {
-  const instance = await loadJson('examples', 'v0.4', 'collision-warning.instance.json');
+  const instance = await loadJson('examples', 'v0.4.0', 'collision-warning.instance.json');
   const key = keys['vehicle-hsm:adas:7'];
   const resigned = structuredClone(instance);
   resigned.attestation.signature = signArtifact(resigned, 'attestation', key);

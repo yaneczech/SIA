@@ -1,9 +1,9 @@
 # Appendix A — Worked Example: `Alert.Collision.Warning` End to End
 
 *Companion to “Toward a Semantic Interaction Architecture for Software-Defined Vehicles” (v0.4.0).*<br>
-*The normative lifecycle and requirements are defined in [`03_Core-Specification.md`](./03_Core-Specification.md). The JSON files in [`examples/v0.4/`](./examples/v0.4/) are executable conformance material.*
+*The normative lifecycle and requirements are defined in [`03_Core-Specification.md`](./03_Core-Specification.md). The JSON files in [`examples/v0.4.0/`](./examples/v0.4.0/) are executable conformance material.*
 
-This appendix follows one safety-critical interaction from declaration through trust, context, translation, renderer delivery and occupant response. The example uses the Minimal SIA Profile 0.4: `Alert` and `Notification`; cluster, IVI and voice output; six actor classes; and six orthogonal context axes. `Action` awaits a future input/execution profile.
+This appendix follows one safety-critical interaction from declaration through trust, context, translation, renderer delivery and occupant response. The example uses the Minimal SIA Profile 0.4.0: `Alert` and `Notification`; cluster, IVI and voice output; six actor classes; and six orthogonal context axes. `Action` awaits a future input/execution profile.
 
 ---
 
@@ -111,7 +111,7 @@ The three version axes are explicit. `catalog_sha256` and `node_schema_sha256` b
 
 ![Figure A.1 — Alert.Collision.Warning trust and translation flow](./figures/figA1-alert-flow.png)
 
-*Figure A.1. Trust verification is a chokepoint before Translation. A failed instance never reaches a renderer, regardless of claimed urgency. The sequence shown is the 0.3 sketch: in 0.4, dispatch is an ordered, deadline-bounded attempt per renderer, the “acknowledgement or timeout” return is split into an authenticated delivery receipt and a separate occupant response, and the response window opens only on `presented` evidence (§A.6–A.7).*
+*Figure A.1. Trust verification is a chokepoint before Translation. A failed instance never reaches a renderer, regardless of claimed urgency. The sequence shown is the 0.3 sketch: in 0.4.0, dispatch is an ordered, deadline-bounded attempt per renderer, the “acknowledgement or timeout” return is split into an authenticated delivery receipt and a separate occupant response, and the response window opens only on `presented` evidence (§A.6–A.7).*
 
 Trust Policy performs these checks before context or rendering:
 
@@ -300,7 +300,7 @@ evidence:
   signature: b2NjdXBhbnQtcmVzcG9uc2U
 ```
 
-The response window opens exactly from the presented receipt. Its subject must be an occupied driver in the bound context. If no valid response arrives within 2000 ms, Coordination Runtime emits `response_timed_out` exactly at the deadline; it must not forge a human action. Presented, noticed, understood and acknowledged are four different claims. Version 0.4 encodes only what can be evidenced.
+The response window opens exactly from the presented receipt. Its subject must be an occupied driver in the bound context. If no valid response arrives within 2000 ms, Coordination Runtime emits `response_timed_out` exactly at the deadline; it must not forge a human action. Presented, noticed, understood and acknowledged are four different claims. Version 0.4.0 encodes only what can be evidenced.
 
 ---
 

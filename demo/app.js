@@ -1,4 +1,4 @@
-import { actorLabel, buildPhaseTrace, coordinateAcknowledgement, coordinateDelivery, evaluateInteraction, nodeCatalog, resolveNode, trustMatrix, RENDERERS } from './sia-engine.js?v=0.4.2';
+import { actorLabel, buildPhaseTrace, coordinateAcknowledgement, coordinateDelivery, evaluateInteraction, nodeCatalog, resolveNode, trustMatrix, RENDERERS } from './sia-engine.js';
 
 const COLLISION_ID = 'Interaction.Event.Alert.Collision.Warning';
 const NOW_PLAYING_ID = 'Interaction.Event.Notification.Media.NowPlaying';

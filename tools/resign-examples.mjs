@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Refreshes every derived digest binding and signature in examples/v0.4.
+ * Refreshes every derived digest binding and signature in examples/v0.4.0.
  * Dependency order is intentional: authorities -> declarations -> catalog ->
  * runtime artifacts. Run after changing a policy, registry, declaration, or
  * signed example.
@@ -12,7 +12,7 @@ import { canonicalSha256 } from './canonical.mjs';
 import { signArtifact, verifyArtifact } from './crypto.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const examplesDir = path.join(root, 'examples', 'v0.4');
+const examplesDir = path.join(root, 'examples', 'v0.4.0');
 const { keys } = JSON.parse(await readFile(path.join(root, 'conformance/crypto/test-keys.json'), 'utf8'));
 const nodeFiles = [
   'collision-warning.node.json',

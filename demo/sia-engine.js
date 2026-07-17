@@ -1,4 +1,4 @@
-import { ACTOR_CLASS_IDS, CONTEXT_AXES, CONTEXT_POLICY, DOC_EXCERPTS, NODE_RECORDS, PROFILE_META, RENDERER_DECLARATIONS } from './generated-profile.js?v=0.4.1';
+import { ACTOR_CLASS_IDS, CONTEXT_AXES, CONTEXT_POLICY, DOC_EXCERPTS, NODE_RECORDS, PROFILE_META, RENDERER_DECLARATIONS } from './generated-profile.js';
 
 const ACTOR_LABELS = Object.freeze({
   human_direct: 'Driver (direct input)', adas: 'ADAS', service: 'Vehicle service', third_party_app: 'Third-party app', agent_local: 'In-vehicle AI assistant', agent_cloud: 'Cloud AI assistant',

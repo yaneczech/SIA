@@ -63,13 +63,13 @@ Renderers remain external to SIA. They declare capabilities into the Translation
 
 ---
 
-## Minimal SIA Profile 0.4
+## Minimal SIA Profile 0.4.0
 
 The paper deliberately separates the full architecture from the first implementable profile.
 
-The proposed **Minimal SIA Profile 0.4** is small enough to implement and test concretely:
+The proposed **Minimal SIA Profile 0.4.0** is small enough to implement and test concretely:
 
-| Area | 0.4 scope |
+| Area | 0.4.0 scope |
 |---|---|
 | Emitted node types | `Alert`, `Notification` (`Action` awaits a complete input/execution profile) |
 | Published reference nodes | Five executable declarations (two Alerts, three Notifications); the catalog remains extensible |
@@ -113,13 +113,13 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 
 ## Read the paper
 
-- [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — motivation, related work, architecture, node taxonomy, policy model, Minimal SIA Profile 0.4, and path forward.
+- [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — motivation, related work, architecture, node taxonomy, policy model, Minimal SIA Profile 0.4.0, and path forward.
 - [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a concrete `Alert.Collision.Warning` traced end-to-end through declaration, trust, context, translation, renderer delivery, occupant response, retention, and adversarial scenarios.
-- [**Core Specification**](./03_Core-Specification.md) — the normative 0.4 lifecycle, retention, delivery, security, compatibility, and conformance requirements.
+- [**Core Specification**](./03_Core-Specification.md) — the normative 0.4.0 lifecycle, retention, delivery, security, compatibility, and conformance requirements.
 - [**JSON Schema contracts**](./schema/) — strict contracts for signed catalogs, policies, actor credentials, declarations, instances, context, capabilities, retention, render plans, dispatch attempts, delivery, occupant response, and audit.
-- [**Validated examples**](./examples/v0.4/) — executable positive conformance material used by automated tests.
-- [**Interactive demo**](./demo/) — a dark-mode visual walkthrough and test lab using the same 0.4 outcomes and feedback loops as the engine tests.
-- [**Threat model**](./04_Threat-Model.md) — the consolidated threat-to-mitigation table, non-goals, and residual risks accepted in 0.4.
+- [**Validated examples**](./examples/v0.4.0/) — executable positive conformance material used by automated tests.
+- [**Interactive demo**](./demo/) — a dark-mode visual walkthrough and test lab using the same 0.4.0 outcomes and feedback loops as the engine tests.
+- [**Threat model**](./04_Threat-Model.md) — the consolidated threat-to-mitigation table, non-goals, and residual risks accepted in 0.4.0.
 - [**Reason-code registry**](./registry/reason-codes.json) — the normative machine-readable codes for trust, context, retention, translation, delivery, and occupant-response outcomes.
 - [**Conformance vectors**](./conformance/) — language-neutral positive and negative test vectors, tagged by conformance class (`emitter`, `renderer`, `runtime`) so a supplier tests only the side of the boundary it owns.
 - [**Cryptographic vectors**](./conformance/crypto/) — published test keys and really-signed examples, so implementers can verify both their signing and their verification code, including tamper and algorithm-confusion rejections.
@@ -136,7 +136,7 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 npm ci
 npm test                                                    # full conformance suite
 npm run check:demo-profile                                  # generated demo data matches canonical artifacts
-npm run validate -- examples/v0.4/collision-warning.instance.json
+npm run validate -- examples/v0.4.0/collision-warning.instance.json
 npm run conformance -- emitter                              # vectors for your conformance class
 ```
 
@@ -160,7 +160,7 @@ This is **v0.4.0 — a pre-standard draft for implementation, critique, and fals
 
 The document is not yet a standard and does not claim that no OEM-internal equivalent exists. Its absence claim is limited to publicly documented standards, open-source SDV projects, published automotive ontology work, and production-facing HMI frameworks available at the time of writing.
 
-Version 0.4 makes the previously illustrative runtime contract executable. The immediate goal is to validate:
+Version 0.4.0 makes the previously illustrative runtime contract executable. The immediate goal is to validate:
 
 - the lifecycle and reason-code vocabulary,
 - the production cryptographic and canonical-encoding profile,
@@ -175,7 +175,7 @@ Version 0.4 makes the previously illustrative runtime contract executable. The i
 The paper intentionally leaves several questions open:
 
 1. **Production encoding** — canonical JSON, deterministic CBOR/COSE, or generated Protobuf for constrained paths.
-2. **Trust-anchor operations** — production key provisioning, HSM integration, rollover, recovery, and algorithm agility; the artifact and revocation bindings are defined in 0.4.
+2. **Trust-anchor operations** — production key provisioning, HSM integration, rollover, recovery, and algorithm agility; the artifact and revocation bindings are defined in 0.4.0.
 3. **Attention validation** — calibration against occlusion testing, eye-glance measurement, and simulator studies.
 4. **Safety case** — bounded latency, fail-operational fallback, and coexistence with certified legacy alert paths.
 5. **Reference implementation** — likely prototype path on Eclipse Kuksa or adjacent SDV infrastructure.
@@ -192,7 +192,7 @@ Feedback is especially useful in the following forms:
 - attention-model critique,
 - schema and interoperability counterexamples,
 - minimal implementation proposals,
-- candidate nodes and conformance vectors for Minimal SIA Profile 0.4.
+- candidate nodes and conformance vectors for Minimal SIA Profile 0.4.0.
 
 Feedback, counter-positions, and collaboration offers are welcome: **dizencz@gmail.com**
 

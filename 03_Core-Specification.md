@@ -10,11 +10,11 @@ This document is the normative implementer contract for the Semantic Interaction
 
 The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **NOT RECOMMENDED**, **MAY**, and **OPTIONAL** are to be interpreted as described in BCP 14 when, and only when, they appear in capitals.
 
-An implementation conforms to SIA 0.4 only if it validates the applicable contracts in `schema/`, implements the lifecycle and invariants below, and passes the published conformance vectors.
+An implementation conforms to SIA 0.4.0 only if it validates the applicable contracts in `schema/`, implements the lifecycle and invariants below, and passes the published conformance vectors.
 
 ## 2. Scope and profiles
 
-SIA 0.4 standardises a narrow mediation boundary for typed interactions. The `sia-minimal` profile contains:
+SIA 0.4.0 standardises a narrow mediation boundary for typed interactions. The `sia-minimal` profile contains:
 
 - node families: `Event.Alert` and `Event.Notification`;
 - actor classes: `human_direct`, `adas`, `service`, `third_party_app`, `agent_local`, and `agent_cloud`;
@@ -23,11 +23,11 @@ SIA 0.4 standardises a narrow mediation boundary for typed interactions. The `si
 - signed catalogs, context policies, and actor-credential registries;
 - dispatch attempts, renderer delivery receipts, retention records, occupant responses, and audit records.
 
-`Action`, `State`, and `Task` remain architectural types for future profiles and MUST NOT be emitted by a `sia-minimal` 0.4 implementation. In particular, 0.4 does not reuse the output-renderer delivery contract as a substitute for an input/execution contract for `Action`.
+`Action`, `State`, and `Task` remain architectural types for future profiles and MUST NOT be emitted by a `sia-minimal` 0.4.0 implementation. In particular, 0.4.0 does not reuse the output-renderer delivery contract as a substitute for an input/execution contract for `Action`.
 
 ## 3. Version identifiers
 
-Three version axes are intentionally separate:
+Artifacts carry separate identifiers so a decision can bind the exact contract, profile, and catalog it used:
 
 | Identifier | Meaning |
 |---|---|
@@ -37,11 +37,13 @@ Three version axes are intentionally separate:
 
 Runtime instances MUST carry all three. An implementation MUST reject an unsupported `spec_version`. A profile MAY accept an older catalog only when its compatibility table proves that every referenced node and required feature is understood.
 
+These identifiers are protocol bindings, not separate public SIA release labels. The published `sia-minimal` 0.4.0 bundle fixes every release-owned version to `0.4.0`; its documentation, schemas, signed examples, conformance material, and demo form one atomic release. A deployment MAY revise its catalog or signed authorities independently only when it preserves exact bindings and documents compatibility. It MUST NOT present such a deployment revision as another SIA version.
+
 Unknown fields are not a compatibility mechanism. Normative runtime envelopes use closed schemas. New behaviour-changing fields require a compatible profile revision or an explicitly negotiated feature.
 
 ## 4. Contract set
 
-SIA 0.4 defines the following machine-readable contracts:
+SIA 0.4.0 defines the following machine-readable contracts:
 
 | Contract | Purpose |
 |---|---|
@@ -114,7 +116,7 @@ Replay protection is scoped: a nonce MUST be unique per `(actor_id, key_id)` wit
 
 The canonical signing representation is RFC 8785 (JSON Canonicalization Scheme). The signing input for an artifact is its JCS serialization with the `signature` member removed from its evidence block (`attestation.signature`, `integrity.signature`, or `evidence.signature`); the signature is computed over the UTF-8 bytes of that serialization. The algorithm profile is fixed to the identifiers enumerated by the schemas (`ES256` in JOSE raw `r||s` encoding, `EdDSA`, `HMAC-SHA-256`). A deployment MAY restrict this set further, but MUST NOT accept algorithm identifiers outside it, and MUST NOT accept `none` for any artifact other than a runtime-issued timeout event.
 
-Every signed example in `examples/v0.4/` carries a real signature verifiable with the published test keys; the cryptographic conformance vectors — including tamper, wrong-key, and algorithm-confusion rejections — are in [`conformance/crypto/`](./conformance/crypto/).
+Every signed example in `examples/v0.4.0/` carries a real signature verifiable with the published test keys; the cryptographic conformance vectors — including tamper, wrong-key, and algorithm-confusion rejections — are in [`conformance/crypto/`](./conformance/crypto/).
 
 ## 7. Time semantics
 
@@ -221,7 +223,7 @@ SIA MUST NOT become an undocumented single point of failure for a safety-relevan
 
 ## 14. Abuse resistance and privacy
 
-The consolidated threat-to-mitigation mapping, non-goals, and residual risks accepted in 0.4 are published in [`04_Threat-Model.md`](./04_Threat-Model.md).
+The consolidated threat-to-mitigation mapping, non-goals, and residual risks accepted in 0.4.0 are published in [`04_Threat-Model.md`](./04_Threat-Model.md).
 
 Implementations MUST rate-limit emitters, bound nonce caches and retained queues, and audit repeated policy violations. Session authentication does not grant semantic authority and MUST remain revocable.
 
@@ -229,7 +231,7 @@ Audit details MUST follow data minimisation. Payloads classified as personal or 
 
 ## 15. Compatibility
 
-The 0.4 draft intentionally breaks the illustrative 0.3 schema:
+The 0.4.0 draft intentionally breaks the illustrative 0.3 schema:
 
 - declaration key `node` becomes the canonical `id`;
 - ambiguous `suppression_class`, `merges_with`, `requires_ack`, and `ack_kind` fields are replaced by structured contracts;
@@ -264,7 +266,7 @@ A conforming `runtime` implementation MUST:
 
 `emitter` and `renderer` implementations MUST pass every conformance vector tagged with their class in [`conformance/vectors.json`](./conformance/vectors.json); the vector format is language-neutral and documented in [`conformance/README.md`](./conformance/README.md).
 
-The reference examples in `examples/v0.4/` are executable conformance material. Continuous integration validates every schema and example in JSON Schema 2020-12 strict mode, evaluates cross-artifact authority, time, context, and lifecycle invariants, recomputes canonical digests, verifies example signatures, and checks that every reason code used on the wire is registered. The same checks are available locally: `npm test` for the full suite, `npm run validate -- <file>` for schema plus semantic validation of one artifact against the published dependency set, and `npm run conformance` for the language-neutral vectors.
+The reference examples in `examples/v0.4.0/` are executable conformance material. Continuous integration validates every schema and example in JSON Schema 2020-12 strict mode, evaluates cross-artifact authority, time, context, and lifecycle invariants, recomputes canonical digests, verifies example signatures, and checks that every reason code used on the wire is registered. The same checks are available locally: `npm test` for the full suite, `npm run validate -- <file>` for schema plus semantic validation of one artifact against the published dependency set, and `npm run conformance` for the language-neutral vectors.
 
 ---
 

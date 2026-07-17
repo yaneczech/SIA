@@ -17,9 +17,9 @@
 
 As vehicles become multimodal, AI-augmented, software-defined platforms, the interaction layer has become one of the most volatile and least consistently abstracted parts of the in-vehicle stack. Abstraction has scaled below interaction — hardware, signals, middleware and services — but only narrowly within interaction itself. A long tradition of automotive ontology and HMI research has produced valuable component contributions, yet we found no public, vendor-neutral framework that treats the vehicle’s interaction surface as a typed, measurable, trust-aware semantic vocabulary.
 
-We propose a **Semantic Interaction Architecture** (SIA): a narrow mediation layer in which interactions are described by their meaning, attention demand, contextual fitness and authority of origin, rather than by buttons, screens or widgets. SIA sits above existing SDV data and service abstractions — such as COVESA VSS, Eclipse Kuksa, Eclipse uProtocol and AUTOSAR Adaptive — and below concrete renderers, which remain external consumers of a verified semantic stream. Its contribution is second-wave integration, not first-wave invention: it combines renderers as external consumers, actor-class trust with requirement-vs-attestation separation, attention metrics aligned with distraction-guideline axes, deterministic capability negotiation, bounded context retention, authenticated delivery receipts and a separate occupant-response contract. We describe the architecture and a deliberately small 0.4 profile suitable for reference implementation and standardisation discussion.
+We propose a **Semantic Interaction Architecture** (SIA): a narrow mediation layer in which interactions are described by their meaning, attention demand, contextual fitness and authority of origin, rather than by buttons, screens or widgets. SIA sits above existing SDV data and service abstractions — such as COVESA VSS, Eclipse Kuksa, Eclipse uProtocol and AUTOSAR Adaptive — and below concrete renderers, which remain external consumers of a verified semantic stream. Its contribution is second-wave integration, not first-wave invention: it combines renderers as external consumers, actor-class trust with requirement-vs-attestation separation, attention metrics aligned with distraction-guideline axes, deterministic capability negotiation, bounded context retention, authenticated delivery receipts and a separate occupant-response contract. We describe the architecture and a deliberately small 0.4.0 profile suitable for reference implementation and standardisation discussion.
 
-This position paper is explanatory. The normative implementer contract, lifecycle and conformance requirements are defined in [`03_Core-Specification.md`](./03_Core-Specification.md); machine-readable contracts and executable examples are published in [`schema/`](./schema/) and [`examples/v0.4/`](./examples/v0.4/).
+This position paper is explanatory. The normative implementer contract, lifecycle and conformance requirements are defined in [`03_Core-Specification.md`](./03_Core-Specification.md); machine-readable contracts and executable examples are published in [`schema/`](./schema/) and [`examples/v0.4.0/`](./examples/v0.4.0/).
 
 ---
 
@@ -37,9 +37,9 @@ A natural objection is that any additional boundary creates additional complexit
 
 ![Figure 1 — complexity comparison](./figures/fig1-complexity-comparison.png)
 
-*Figure 1. Without SIA, cross-cutting interaction logic is duplicated across emitter–renderer pairs. With SIA, this logic is consolidated at a mediation boundary; renderers become thinner consumers and adding new emitters or renderers becomes linear rather than multiplicative. The concern labels inside the illustration reflect the 0.3 draft: 0.4 expands trust verification to eight checks, adds bounded context retention, and splits renderer delivery receipts from the occupant response.*
+*Figure 1. Without SIA, cross-cutting interaction logic is duplicated across emitter–renderer pairs. With SIA, this logic is consolidated at a mediation boundary; renderers become thinner consumers and adding new emitters or renderers becomes linear rather than multiplicative. The concern labels inside the illustration reflect the 0.3 draft: 0.4.0 expands trust verification to eight checks, adds bounded context retention, and splits renderer delivery receipts from the occupant response.*
 
-The first version of such a boundary should be deliberately narrow. We scope SIA 0.4 to three cores:
+The first version of such a boundary should be deliberately narrow. We scope SIA 0.4.0 to three cores:
 
 1. **Interaction meaning** for high-value commands, alerts and notifications.
 2. **Attention policy** for priority, interruptibility and driving context.
@@ -132,7 +132,7 @@ Renderers and input devices are external to SIA. They declare measurable capabil
 
 ![Figure 3 — Mediation architecture](./figures/fig3-mediation-architecture.png)
 
-*Figure 3. SIA contains three functional components and two policies. Emitters submit nodes through Trust Policy; renderers register capabilities and consume modality decisions. The illustration predates the 0.4 contract in three details: the core context axes are now `motion_state`, `operating_mode`, `energy_state`, `road_type`, `driver_state`, and `occupancy`; Trust Policy verifies eight requirements; and the single “render / input / ack” arrow is now two separate authenticated loops — a renderer delivery receipt and an independent occupant response.*
+*Figure 3. SIA contains three functional components and two policies. Emitters submit nodes through Trust Policy; renderers register capabilities and consume modality decisions. The illustration predates the 0.4.0 contract in three details: the core context axes are now `motion_state`, `operating_mode`, `energy_state`, `road_type`, `driver_state`, and `occupancy`; Trust Policy verifies eight requirements; and the single “render / input / ack” arrow is now two separate authenticated loops — a renderer delivery receipt and an independent occupant response.*
 
 ---
 
@@ -142,9 +142,9 @@ A common failure mode in interaction schemas is treating all interactions as gen
 
 ![Figure 4 — Node taxonomy](./figures/fig4-node-taxonomy.png)
 
-*Figure 4. Four architectural semantic types. In the 0.4 minimal profile, only two concrete `Event` subtypes — `Alert` and `Notification` — are emitted. The per-family metadata labels shown are illustrative 0.3 vocabulary: in 0.4, acknowledgement fields became the `occupant_response` contract and suppression/merging became the declared blocked disposition (`drop`, `defer`, `coalesce`).*
+*Figure 4. Four architectural semantic types. In the 0.4.0 minimal profile, only two concrete `Event` subtypes — `Alert` and `Notification` — are emitted. The per-family metadata labels shown are illustrative 0.3 vocabulary: in 0.4.0, acknowledgement fields became the `occupant_response` contract and suppression/merging became the declared blocked disposition (`drop`, `defer`, `coalesce`).*
 
-**Action.** Occupant-initiated. May be discrete (`Action.Navigate.Back`), sustained (`Action.Media.Volume.Increase`) or continuous (`Action.Map.Zoom`). A complete input authentication, execution-result and cancellation contract is deferred from 0.4; the output-renderer delivery contract must not be reused as a shortcut.
+**Action.** Occupant-initiated. May be discrete (`Action.Navigate.Back`), sustained (`Action.Media.Volume.Increase`) or continuous (`Action.Map.Zoom`). A complete input authentication, execution-result and cancellation contract is deferred from 0.4.0; the output-renderer delivery contract must not be reused as a shortcut.
 
 **Alert.** System-initiated and safety-relevant. May be non-suppressible and may require acknowledgement. Carries priority, interruptibility, trust requirements, regulatory basis and attention metrics.
 
@@ -152,7 +152,7 @@ A common failure mode in interaction schemas is treating all interactions as gen
 
 **State.** Runtime-internal focus, mode or context transition. Usually not user-facing on its own.
 
-**Task.** A composed multi-step flow over actions and states. Deferred from the minimal 0.4 profile.
+**Task.** A composed multi-step flow over actions and states. Deferred from the minimal 0.4.0 profile.
 
 Each node declaration carries an `inherits_from` reference to its parent in the hierarchy. Subclasses may strengthen, but not weaken, safety, attention or trust requirements. Unknown subclasses must resolve to their known parent where safe or fail closed where critical.
 
@@ -174,7 +174,7 @@ This is an ergonomics requirement as much as a technical one. A schema that is t
 
 ## 5. Metadata Contracts
 
-Every emitted node carries a typed declarative contract. Runtime instances carry identity, payload, timing and attestation only; they cannot override declaration-owned policy. The 0.4 profile emits only `Alert` and `Notification`.
+Every emitted node carries a typed declarative contract. Runtime instances carry identity, payload, timing and attestation only; they cannot override declaration-owned policy. The 0.4.0 profile emits only `Alert` and `Notification`.
 
 | Contract family | Alert | Notification |
 | --- | --- | --- |
@@ -226,7 +226,7 @@ Alert.Collision.Warning:
     replay_protection: required
 ```
 
-This example reflects the Minimal SIA Profile 0.4, which includes only `adas` as a permitted class for collision warnings.
+This example reflects the Minimal SIA Profile 0.4.0, which includes only `adas` as a permitted class for collision warnings.
 
 Authority is expressed through `permitted_actor_classes`. A generic scalar such as `min_trust_level` is intentionally avoided because it duplicates and obscures the actor taxonomy.
 
@@ -250,7 +250,7 @@ Trust Policy verifies that the attestation satisfies the declared requirements a
 
 ### 6.3 Actor classes
 
-The Minimal SIA Profile 0.4 uses six actor classes. A future profile may add more, but an unknown class cannot inherit authority from a superficially similar known class.
+The Minimal SIA Profile 0.4.0 uses six actor classes. A future profile may add more, but an unknown class cannot inherit authority from a superficially similar known class.
 
 | Class | Description | Example |
 | --- | --- | --- |
@@ -349,7 +349,7 @@ Each core observation carries source, observation time, and confidence and binds
 
 ## 9. Capability Negotiation
 
-Renderers and input devices declare measurable capabilities rather than informal labels. The examples below illustrate the broader architecture; the Minimal SIA Profile 0.4 restricts the active output-renderer set to cluster, IVI and voice, and defers HUD, haptic and AR surfaces. Steering-wheel input may provide an authenticated occupant response without becoming an output renderer.
+Renderers and input devices declare measurable capabilities rather than informal labels. The examples below illustrate the broader architecture; the Minimal SIA Profile 0.4.0 restricts the active output-renderer set to cluster, IVI and voice, and defers HUD, haptic and AR surfaces. Steering-wheel input may provide an authenticated occupant response without becoming an output renderer.
 
 ```yaml
 Renderer.Cluster:
@@ -402,7 +402,7 @@ Catalog evolution remains independently versioned. New subclasses may strengthen
 
 ---
 
-## 11. Minimal SIA Profile 0.4
+## 11. Minimal SIA Profile 0.4.0
 
 The full architecture is intentionally broader than the first implementation target. A first conformance profile should be small enough to implement, test and discuss in a standards forum, while still exercising every load-bearing mechanism.
 
@@ -423,7 +423,7 @@ The full architecture is intentionally broader than the first implementation tar
 
 ### 11.2 Example node declaration
 
-A 0.4 declaration for a collision warning looks like this (the JSON source in `examples/v0.4/` is executable conformance material):
+A 0.4.0 declaration for a collision warning looks like this (the JSON source in `examples/v0.4.0/` is executable conformance material):
 
 ```yaml
 id: Interaction.Event.Alert.Collision.Warning
@@ -525,7 +525,7 @@ A profile of two emitted node families, five reference nodes, three renderers, s
 - catalog, declaration, policy, registry, dispatch, receipt, and response bindings can be tested as one causal chain;
 - fallback behaviour and terminal outcomes can be audited.
 
-This makes 0.4 a practical falsification target. If the architecture cannot be made useful at this scale, it should not be expanded.
+This makes 0.4.0 a practical falsification target. If the architecture cannot be made useful at this scale, it should not be expanded.
 
 ---
 
@@ -555,11 +555,11 @@ This makes 0.4 a practical falsification target. If the architecture cannot be m
 
 ## 13. Open Questions and Path Forward
 
-SIA remains a pre-standard proposal. Version 0.4 resolves the minimum interoperable lifecycle and JSON contract; the following deployment and validation questions remain open.
+SIA remains a pre-standard proposal. Version 0.4.0 resolves the minimum interoperable lifecycle and JSON contract; the following deployment and validation questions remain open.
 
 ### 13.1 Runtime and authoring encodings
 
-JSON Schema 2020-12 is the normative 0.4 exchange and conformance contract. YAML or a `.vspec`-style DSL may be used as an authoring surface only when it compiles deterministically to the canonical JSON model. CBOR or Protobuf may become future transport profiles, but must preserve closed-envelope validation, canonical signing, reason codes and lifecycle semantics. OWL or SHACL may remain useful for authoring-time consistency checking; runtime open-world reasoning is not proposed for safety-relevant paths.
+JSON Schema 2020-12 is the normative 0.4.0 exchange and conformance contract. YAML or a `.vspec`-style DSL may be used as an authoring surface only when it compiles deterministically to the canonical JSON model. CBOR or Protobuf may become future transport profiles, but must preserve closed-envelope validation, canonical signing, reason codes and lifecycle semantics. OWL or SHACL may remain useful for authoring-time consistency checking; runtime open-world reasoning is not proposed for safety-relevant paths.
 
 ### 13.2 Trust substrate
 
@@ -576,7 +576,7 @@ The proposed attention metrics require empirical calibration. A staged path is a
 
 A useful next step is a reference implementation over Eclipse Kuksa or a comparable SDV substrate. The implementation should include:
 
-- the minimal 0.4 node set and schema validator;
+- the minimal 0.4.0 node set and schema validator;
 - a trust gate with actor-class permissions;
 - a three-renderer arbitration matrix;
 - bounded drop, defer and coalescing stores;
@@ -606,7 +606,7 @@ SIA is not proposed as another large vehicle operating system, GUI toolkit or da
 
 The core claim is simple: software-defined vehicles need a stable layer where interaction meaning, attention demand, contextual fitness and semantic authority are explicit before rendering occurs. Without that layer, the same cross-cutting logic is repeatedly reimplemented across emitters and renderers. With it, interaction behaviour becomes more consistent, more auditable and easier to evolve.
 
-The proposal is intentionally modest in its first step. A minimal 0.4 profile with five reference nodes, three renderers, six actor classes and six orthogonal context axes should be enough to test whether the architecture is useful. Its bounded retention and two distinct feedback loops also make the uncomfortable cases explicit: a message may be held without being lost, presented without being acknowledged, or rejected before rendering. If the architecture is useful, the vocabulary can grow. If it is not, it should be narrowed or rejected. That falsifiability is a feature: SIA should earn its complexity by reducing duplicated complexity elsewhere.
+The proposal is intentionally modest in its first step. A minimal 0.4.0 profile with five reference nodes, three renderers, six actor classes and six orthogonal context axes should be enough to test whether the architecture is useful. Its bounded retention and two distinct feedback loops also make the uncomfortable cases explicit: a message may be held without being lost, presented without being acknowledged, or rejected before rendering. If the architecture is useful, the vocabulary can grow. If it is not, it should be narrowed or rejected. That falsifiability is a feature: SIA should earn its complexity by reducing duplicated complexity elsewhere.
 
 ---
 

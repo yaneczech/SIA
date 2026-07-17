@@ -94,7 +94,7 @@ if (selected.length === 0) {
 
 let failures = 0;
 for (const vector of selected) {
-  const base = vector.base ? await loadJson('examples', 'v0.4', vector.base) : vector.artifact;
+  const base = vector.base ? await loadJson('examples', 'v0.4.0', vector.base) : vector.artifact;
   const patched = vector.patch ? mergePatch(base, vector.patch) : base;
   const artifact = applyOperations(patched, vector.operations);
   const validate = ajv.getSchema(schemaIds[vector.contract]);

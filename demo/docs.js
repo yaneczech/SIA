@@ -1,4 +1,4 @@
-import { CONTEXT_AXES, DOC_EXCERPTS, evaluateInteraction, coordinateDelivery, coordinateAcknowledgement, RENDERERS, resolveNode } from './sia-engine.js?v=0.4.2';
+import { CONTEXT_AXES, DOC_EXCERPTS, evaluateInteraction, coordinateDelivery, coordinateAcknowledgement, RENDERERS, resolveNode } from './sia-engine.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];

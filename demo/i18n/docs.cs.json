@@ -2,7 +2,7 @@
   "lang": "cs",
   "$comment": "Sample partial translation proving the i18n pipeline. Untranslated keys keep their English text. See README.md in this directory.",
   "selectors": {
-    "#overview .hero-content .eyebrow": "SÉMANTICKÁ INTERAKČNÍ ARCHITEKTURA · 0.4",
+    "#overview .hero-content .eyebrow": "SÉMANTICKÁ INTERAKČNÍ ARCHITEKTURA · 0.4.0",
     "#overview .hero-content h1": "Kdo smí co říkat lidem v autě—a jak to dokážete?",
     "#overview .hero-content .hero-copy": "Moderní auto má desítky softwarových systémů, několik obrazovek, hlasového asistenta—a brzy i aplikace třetích stran a AI agenty. Všichni chtějí vaši pozornost za jízdy. SIA je navrhovaná mediační vrstva, která rozhoduje, které zprávy projdou, kde se smějí zobrazit, a uchovává provázané důkazy o každém výsledku životního cyklu.",
     "#overview .problem-card:nth-child(1) .problem-step": "CO SE DNES ROZBÍJÍ",

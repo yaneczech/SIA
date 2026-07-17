@@ -32,7 +32,7 @@ test('the diagram context axes exactly match the context-snapshot schema', async
   const diagramAxes = [...generatedAxes].sort();
 
   assert.deepEqual(diagramAxes, schemaAxes, 'diagram axes must equal the schema axes');
-  assert.equal(diagramAxes.length, 6, 'the 0.4 core profile has six context axes');
+  assert.equal(diagramAxes.length, 6, 'the 0.4.0 core profile has six context axes');
 });
 
 test('every trust-check failure code the diagram shows is registered', async () => {
@@ -52,13 +52,15 @@ test('the diagram output surfaces match the engine renderer set', async () => {
   const engineRenderers = Object.keys(RENDERERS).sort();
 
   // The diagram lists surfaces via Object.keys(RENDERERS) at runtime; assert the
-  // engine still exposes the three 0.4 surfaces the diagram narrates.
-  assert.deepEqual(engineRenderers, ['cluster', 'ivi', 'voice'], 'engine must expose the three v0.4 renderer surfaces');
+  // engine still exposes the three 0.4.0 surfaces the diagram narrates.
+  assert.deepEqual(engineRenderers, ['cluster', 'ivi', 'voice'], 'engine must expose the three v0.4.0 renderer surfaces');
 });
 
 test('the engine contains presentation labels but no hand-copied normative profile values', () => {
-  assert.match(engineSource, /generated-profile\.js\?v=0\.4\.1/);
-  assert.match(docsSource, /sia-engine\.js\?v=0\.4\.2/);
+  assert.match(engineSource, /from '\.\/generated-profile\.js'/);
+  assert.match(docsSource, /from '\.\/sia-engine\.js'/);
+  assert.doesNotMatch(engineSource, /[?&]v=/, 'asset cache keys must not masquerade as SIA versions');
+  assert.doesNotMatch(docsSource, /[?&]v=/, 'asset cache keys must not masquerade as SIA versions');
   assert.doesNotMatch(engineSource, /semanticValidityMs:\s*\d|maxIngressAgeMs:\s*\d|deliveryTimeoutMs:\s*\d|maxGlanceBudgetMs:\s*\d/);
 });
 

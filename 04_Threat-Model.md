@@ -4,7 +4,7 @@
 
 **Version 0.4.0 — companion to the [Core Specification](./03_Core-Specification.md) · July 2026**
 
-SIA defends one property: **interaction integrity** — the meaning, priority, and origin of an occupant-facing interaction is what it claims to be. This document consolidates the threats the 0.4 contracts are designed to stop, where each defence lives, and which conformance vector exercises it.
+SIA defends one property: **interaction integrity** — the meaning, priority, and origin of an occupant-facing interaction is what it claims to be. This document consolidates the threats the 0.4.0 contracts are designed to stop, where each defence lives, and which conformance vector exercises it.
 
 ## Threats and mitigations
 
@@ -39,7 +39,7 @@ layer (UNECE R155 / ISO 21434 territory), and factual correctness of verified
 content. A correctly attested but factually wrong warning is a sensing fault,
 not an interaction-integrity failure.
 
-## Residual risks accepted in 0.4
+## Residual risks accepted in 0.4.0
 
 - **HMAC session provisioning is deployment-defined.** The symmetric per-interaction
   tier assumes a session established out of band; a session-establishment contract

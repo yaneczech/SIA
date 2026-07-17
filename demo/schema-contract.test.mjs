@@ -10,7 +10,7 @@ import { collectInvariantViolations } from '../tools/invariants.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const schemaDir = path.join(root, 'schema');
-const examplesDir = path.join(root, 'examples', 'v0.4');
+const examplesDir = path.join(root, 'examples', 'v0.4.0');
 
 const loadJson = async (file) => JSON.parse(await readFile(file, 'utf8'));
 const schemaFiles = [
@@ -86,11 +86,11 @@ function assertCanonicalInvariants({ catalog, instance, context, plan, retention
   if (audit) assert.equal(audit.previous_record_sha256 === null, audit.sequence === 0, 'only the first audit record may omit its predecessor hash');
 }
 
-test('every v0.4 schema compiles under JSON Schema 2020-12 strict mode', () => {
+test('every v0.4.0 schema compiles under JSON Schema 2020-12 strict mode', () => {
   for (const schema of Object.values(schemas)) assert.doesNotThrow(() => ajv.getSchema(schema.$id));
 });
 
-test('every published v0.4 example validates against its declared contract', () => {
+test('every published v0.4.0 example validates against its declared contract', () => {
   for (const [exampleFile, schemaFile] of Object.entries(exampleContracts)) assertValid(schemaFile, examples[exampleFile]);
 });
 
@@ -219,7 +219,7 @@ test('untyped Event subclasses are rejected', () => {
   assert.equal(validate(invalid), false);
 });
 
-test('Action declarations and instances are deferred from the 0.4 profile', () => {
+test('Action declarations and instances are deferred from the 0.4.0 profile', () => {
   const declaration = structuredClone(examples['collision-warning.node.json']);
   declaration.id = 'Interaction.Action.Media.Control';
   declaration.inherits_from = 'Interaction.Action';

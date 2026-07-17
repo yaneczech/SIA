@@ -1,6 +1,6 @@
 # SIA Cryptographic Conformance Vectors
 
-Interop material for the signing rules in [Core Specification §6](../../03_Core-Specification.md): every published signed example carries a **real, verifiable signature** produced with the test keys in [`test-keys.json`](./test-keys.json).
+Interop material for the SIA 0.4.0 signing rules in [Core Specification §6](../../03_Core-Specification.md): every published signed example carries a **real, verifiable signature** produced with the test keys in [`test-keys.json`](./test-keys.json).
 
 > **TEST KEYS ONLY.** The keys are published — including private halves — so you can test both your signing and your verification code. They carry no authority anywhere. Production keys come from your HSM and PKI.
 

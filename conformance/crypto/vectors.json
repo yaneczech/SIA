@@ -85,7 +85,7 @@
       "name": "crypto-tampered-catalog-rejected",
       "base": "catalog.json",
       "container": "integrity",
-      "patch": { "catalog_version": "0.4.1" },
+      "patch": { "catalog_version": "9.9.9" },
       "expect": "reject",
       "reason": "A catalog version or declaration set cannot change without a new catalog signature."
     },

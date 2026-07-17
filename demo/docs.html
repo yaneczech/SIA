@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090a12">
-  <meta name="description" content="Interactive documentation for the Semantic Interaction Architecture 0.4 draft.">
+  <meta name="description" content="Interactive documentation for the Semantic Interaction Architecture 0.4.0 draft.">
   <title>SIA — Interactive Documentation</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://use.typekit.net/cyy0vwc.css">
-  <link rel="stylesheet" href="./docs.css?v=0.4.8">
+  <link rel="stylesheet" href="./docs.css">
 </head>
 <body class="mode-essential">
   <a class="skip-link" href="#content">Skip to documentation</a>
@@ -80,7 +80,7 @@
       <section class="docs-section hero-section" id="overview" data-search="overview architecture meaning mediation ontology translator renderer occupant semantic contract profile">
         <div class="hero-grid">
           <div class="hero-content">
-            <p class="eyebrow">SEMANTIC INTERACTION ARCHITECTURE · 0.4</p>
+            <p class="eyebrow">SEMANTIC INTERACTION ARCHITECTURE · 0.4.0</p>
             <h1>Who may say what to the people in a car – and how do you prove it?</h1>
             <p class="hero-copy">A modern car has dozens of software systems, several screens, a voice assistant – and soon third-party apps and AI agents. All of them want your attention while you drive. SIA is a proposed mediation layer that decides which messages get through, where they may appear, and preserves bound evidence for each lifecycle outcome.</p>
             <div class="hero-actions">
@@ -365,7 +365,7 @@
       <section class="docs-section" id="contracts" data-search="contract explorer json schema catalog registry policy node instance context renderer capability retention render plan dispatch attempt delivery receipt occupant response audit code example artifact">
         <div class="section-heading">
           <div><p class="section-index">05 · CONTRACT EXPLORER</p><h2>Inspect the complete contract set</h2></div>
-          <p>SIA 0.4 defines thirteen top-level machine-readable contracts, plus node-specific payload schemas. Pick any contract to inspect a representative excerpt derived from the validated repository examples.</p>
+          <p>SIA 0.4.0 defines thirteen top-level machine-readable contracts, plus node-specific payload schemas. Pick any contract to inspect a representative excerpt derived from the validated repository examples.</p>
         </div>
 
         <div class="contract-explorer">
@@ -402,7 +402,7 @@
 
         <figure class="paper-figure">
           <img src="../figures/fig4-node-taxonomy.png" alt="Taxonomy diagram: Interaction branches into Event (Alert and Notification), Action, State, and Task, each with example node identifiers." loading="lazy">
-          <figcaption><b>The full semantic family.</b> Profile 0.4 emits only the two <code>Event</code> branches—<code>Alert</code> and <code>Notification</code>; <code>Action</code>, <code>State</code>, and <code>Task</code> are reserved for future input and flow profiles. The per-family labels are early 0.3 vocabulary: acknowledgement became the occupant-response contract, suppression became the declared blocked disposition. <em>Figure 4 of the position paper.</em></figcaption>
+          <figcaption><b>The full semantic family.</b> Profile 0.4.0 emits only the two <code>Event</code> branches—<code>Alert</code> and <code>Notification</code>; <code>Action</code>, <code>State</code>, and <code>Task</code> are reserved for future input and flow profiles. The per-family labels are early 0.3 vocabulary: acknowledgement became the occupant-response contract, suppression became the declared blocked disposition. <em>Figure 4 of the position paper.</em></figcaption>
         </figure>
       </section>
 
@@ -415,7 +415,7 @@
         <div class="guarantee-grid">
           <details class="guarantee-item">
             <summary><i data-lucide="shapes" aria-hidden="true"></i><span><b>Minimal profile scope</b><small>Alerts and Notifications only</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p><code>sia-minimal 0.4</code> standardises system-to-occupant Alert and Notification emissions. Action, State, and Task remain architectural types for future profiles and cannot be emitted under this profile.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#2-scope-and-profiles">Normative §2 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+            <div><p><code>sia-minimal 0.4.0</code> standardises system-to-occupant Alert and Notification emissions. Action, State, and Task remain architectural types for future profiles and cannot be emitted under this profile.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#2-scope-and-profiles">Normative §2 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
           </details>
           <details class="guarantee-item">
             <summary><i data-lucide="archive-restore" aria-hidden="true"></i><span><b>Applicability and retention</b><small>Not applicable is not suppressed</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
@@ -435,7 +435,7 @@
           </details>
           <details class="guarantee-item">
             <summary><i data-lucide="git-compare-arrows" aria-hidden="true"></i><span><b>Compatibility is explicit</b><small>Spec, profile, and catalog evolve separately</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>Runtime instances bind all three version axes. Unsupported wire contracts are rejected; older catalogs are accepted only through a compatibility table. Unknown fields never act as an implicit extension mechanism.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#3-version-identifiers">Normative §3 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+            <div><p>SIA has one public release version. Runtime instances still bind the exact contract, profile, and catalog used by a decision, but those identifiers are protocol evidence—not competing SIA release labels. The published bundle keeps them aligned at <code>0.4.0</code>. Unsupported wire contracts are rejected and unknown fields never act as implicit extensions.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#3-version-identifiers">Normative §3 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
           </details>
           <details class="guarantee-item">
             <summary><i data-lucide="shield-plus" aria-hidden="true"></i><span><b>Fail closed and fail operational</b><small>Security gate plus certified safety path</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
@@ -467,7 +467,7 @@
             <div class="panel-heading"><span><i data-lucide="square-terminal" aria-hidden="true"></i><b>Validate in two minutes</b></span><span>Node.js</span></div>
             <div class="command-block"><span>01</span><code>npm ci</code><button type="button" data-copy-text="npm ci" aria-label="Copy npm ci"><i data-lucide="copy" aria-hidden="true"></i></button></div>
             <div class="command-block"><span>02</span><code>npm test</code><button type="button" data-copy-text="npm test" aria-label="Copy npm test"><i data-lucide="copy" aria-hidden="true"></i></button></div>
-            <div class="command-block"><span>03</span><code>npm run validate -- examples/v0.4/collision-warning.instance.json</code><button type="button" data-copy-text="npm run validate -- examples/v0.4/collision-warning.instance.json" aria-label="Copy validation command"><i data-lucide="copy" aria-hidden="true"></i></button></div>
+            <div class="command-block"><span>03</span><code>npm run validate -- examples/v0.4.0/collision-warning.instance.json</code><button type="button" data-copy-text="npm run validate -- examples/v0.4.0/collision-warning.instance.json" aria-label="Copy validation command"><i data-lucide="copy" aria-hidden="true"></i></button></div>
             <div class="command-block"><span>04</span><code>npm run conformance -- runtime</code><button type="button" data-copy-text="npm run conformance -- runtime" aria-label="Copy conformance command"><i data-lucide="copy" aria-hidden="true"></i></button></div>
           </div>
           <div class="conformance-panel">
@@ -485,8 +485,8 @@
           <article>
             <span class="detail-kicker">WHERE THE EXAMPLES COME FROM</span>
             <h3>Signed reference artifacts ship in the repository.</h3>
-            <p><code>examples/v0.4/</code> holds one validated, cryptographically signed instance of every contract—the same collision-warning story this page tells. You do not write them; you clone the repo and point the validator at them, or copy one as the starting template for your own node.</p>
-            <a href="https://github.com/yaneczech/SIA/tree/main/examples/v0.4">Browse the examples <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+            <p><code>examples/v0.4.0/</code> holds one validated, cryptographically signed instance of every contract—the same collision-warning story this page tells. You do not write them; you clone the repo and point the validator at them, or copy one as the starting template for your own node.</p>
+            <a href="https://github.com/yaneczech/SIA/tree/main/examples/v0.4.0">Browse the examples <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
           </article>
           <article>
             <span class="detail-kicker">WHAT VALIDATION CHECKS</span>
@@ -501,7 +501,7 @@
         </div>
 
         <div class="impl-sample">
-          <div class="code-toolbar"><span><i data-lucide="terminal" aria-hidden="true"></i><b>npm run validate -- examples/v0.4/collision-warning.instance.json</b></span></div>
+          <div class="code-toolbar"><span><i data-lucide="terminal" aria-hidden="true"></i><b>npm run validate -- examples/v0.4.0/collision-warning.instance.json</b></span></div>
           <pre><code><span class="json-string">✓</span> collision-warning.instance.json <span class="json-null">(runtime-instance)</span>
   envelope: closed, no reserved fields
   declaration digest: matches installed catalog
@@ -516,7 +516,7 @@
 
         <aside class="scope-note">
           <i data-lucide="info" aria-hidden="true"></i>
-          <div><b>This is SIA's own conformance suite, not an external certification.</b><p>Passing it proves an implementation obeys the SIA 0.4 contracts—not that a vehicle complies with ISO, UNECE, NHTSA, or JAMA. SIA references those standards (attention axes, forward-collision families, RFC 8785 signing, JSON Schema) but tests against its own machine-readable contracts. Regulatory compliance is proven separately, by the deployment, with empirical testing.</p></div>
+          <div><b>This is SIA's own conformance suite, not an external certification.</b><p>Passing it proves an implementation obeys the SIA 0.4.0 contracts—not that a vehicle complies with ISO, UNECE, NHTSA, or JAMA. SIA references those standards (attention axes, forward-collision families, RFC 8785 signing, JSON Schema) but tests against its own machine-readable contracts. Regulatory compliance is proven separately, by the deployment, with empirical testing.</p></div>
         </aside>
 
         <div class="quality-row" aria-label="Implementation qualities">
@@ -535,7 +535,7 @@
         <div class="faq-list">
           <details class="faq-item" open>
             <summary><i data-lucide="gauge" aria-hidden="true"></i><span>How hard is this to implement?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>It depends on the conformance class and on capabilities already present in the vehicle platform. An <b>emitter</b> must create a closed instance, bind the installed declaration and catalog, and authenticate it. A <b>renderer</b> declares attested capabilities, consumes an authorised render plan without reinterpreting policy, and returns authenticated, monotonic receipts. The <b>runtime</b> owns the larger job: trust verification, context integrity, retention, deterministic translation, delivery coordination, occupant response, and audit. The repository provides schemas, signed examples, validation tools, and class-scoped vectors so teams can estimate their own integration; SIA 0.4 does not claim a universal line count or delivery schedule.</p></div>
+            <div><p>It depends on the conformance class and on capabilities already present in the vehicle platform. An <b>emitter</b> must create a closed instance, bind the installed declaration and catalog, and authenticate it. A <b>renderer</b> declares attested capabilities, consumes an authorised render plan without reinterpreting policy, and returns authenticated, monotonic receipts. The <b>runtime</b> owns the larger job: trust verification, context integrity, retention, deterministic translation, delivery coordination, occupant response, and audit. The repository provides schemas, signed examples, validation tools, and class-scoped vectors so teams can estimate their own integration; SIA 0.4.0 does not claim a universal line count or delivery schedule.</p></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="package" aria-hidden="true"></i><span>What does it actually require on top of my current stack?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
@@ -547,15 +547,15 @@
           </details>
           <details class="faq-item">
             <summary><i data-lucide="zap" aria-hidden="true"></i><span>What about performance and the safety-critical path?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>The 0.4 path is designed to be deterministic and bounded by deployment limits: closed-schema validation, canonical hashing, signature or authenticator verification, bounded cache and queue operations, and deterministic capability filtering. It requires no open-world reasoning or global optimisation at runtime. SIA does not yet publish a latency guarantee or benchmark; a production profile must measure the chosen encoding, cryptography, catalog size, renderer set, and hardware. HMAC-SHA-256 is allowed, but its session provisioning and revocation are deployment-defined and the session-establishment contract is future work. Critical alerts bypass attention-budget blocking, while deployment-specific safety deadlines and fail-operational behaviour remain part of the safety case.</p></div>
+            <div><p>The 0.4.0 path is designed to be deterministic and bounded by deployment limits: closed-schema validation, canonical hashing, signature or authenticator verification, bounded cache and queue operations, and deterministic capability filtering. It requires no open-world reasoning or global optimisation at runtime. SIA does not yet publish a latency guarantee or benchmark; a production profile must measure the chosen encoding, cryptography, catalog size, renderer set, and hardware. HMAC-SHA-256 is allowed, but its session provisioning and revocation are deployment-defined and the session-establishment contract is future work. Critical alerts bypass attention-budget blocking, while deployment-specific safety deadlines and fail-operational behaviour remain part of the safety case.</p></div>
           </details>
           <details class="faq-item">
-            <summary><i data-lucide="scan-line" aria-hidden="true"></i><span>What is inside the 0.4 scope—and what is not?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>The minimal profile emits two event families: <b>Alert</b> and <b>Notification</b>. It exercises six actor classes, three output renderers, six context axes, bounded retention, delivery receipts, occupant responses, and audit. <b>Action, State, and Task are reserved for future profiles</b>; 0.4 must not reuse the output-delivery contract as an input or command-execution contract. SIA also does not decide whether sensor data is true, replace renderer-local safety controls, secure the operating system, or certify the whole vehicle.</p></div>
+            <summary><i data-lucide="scan-line" aria-hidden="true"></i><span>What is inside the 0.4.0 scope—and what is not?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>The minimal profile emits two event families: <b>Alert</b> and <b>Notification</b>. It exercises six actor classes, three output renderers, six context axes, bounded retention, delivery receipts, occupant responses, and audit. <b>Action, State, and Task are reserved for future profiles</b>; 0.4.0 must not reuse the output-delivery contract as an input or command-execution contract. SIA also does not decide whether sensor data is true, replace renderer-local safety controls, secure the operating system, or certify the whole vehicle.</p></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="shield-alert" aria-hidden="true"></i><span>What happens if SIA or a renderer is unavailable?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>For an individual attempt, a failed or timed-out primary may trigger the next eligible fallback while the interaction remains semantically valid. SIA deliberately fails closed for unauthorised or unverifiable claims, but that is not the same as fail-operational availability. A production deployment must document and validate its behaviour when the mediation runtime, secure time, trust store, transport, or renderers are unavailable, including any certified legacy path required for critical alerts. Version 0.4 defines the evidence and ordering rules; it does not provide the vehicle's availability architecture.</p></div>
+            <div><p>For an individual attempt, a failed or timed-out primary may trigger the next eligible fallback while the interaction remains semantically valid. SIA deliberately fails closed for unauthorised or unverifiable claims, but that is not the same as fail-operational availability. A production deployment must document and validate its behaviour when the mediation runtime, secure time, trust store, transport, or renderers are unavailable, including any certified legacy path required for critical alerts. Version 0.4.0 defines the evidence and ordering rules; it does not provide the vehicle's availability architecture.</p></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="database" aria-hidden="true"></i><span>What is recorded, and how is privacy handled?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
@@ -567,11 +567,11 @@
           </details>
           <details class="faq-item">
             <summary><i data-lucide="badge-check" aria-hidden="true"></i><span>What does passing the conformance suite prove?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>It proves that an implementation passes the published positive and adversarial vectors for its <b>emitter</b>, <b>renderer</b>, or <b>runtime</b> class and follows the SIA 0.4 machine-readable contracts and invariants covered by those vectors. It does not prove regulatory compliance, functional safety, production latency, attention-model validity, cryptographic key operations, or whole-vehicle availability. Those remain deployment evidence. The repository currently provides executable examples, validators, a teaching/demo engine, and conformance material—not a production reference runtime.</p></div>
+            <div><p>It proves that an implementation passes the published positive and adversarial vectors for its <b>emitter</b>, <b>renderer</b>, or <b>runtime</b> class and follows the SIA 0.4.0 machine-readable contracts and invariants covered by those vectors. It does not prove regulatory compliance, functional safety, production latency, attention-model validity, cryptographic key operations, or whole-vehicle availability. Those remain deployment evidence. The repository currently provides executable examples, validators, a teaching/demo engine, and conformance material—not a production reference runtime.</p></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="scale" aria-hidden="true"></i><span>Is this an approved standard? Can I ship it in a production vehicle?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>No. SIA 0.4 is a <b>pre-standard draft</b> circulated for review and falsification. It is deliberately small so it can be prototyped, tested, and critiqued before any standardisation. Passing the conformance suite proves contract compliance, not regulatory compliance—that remains the deployment's responsibility, with empirical testing. The recommended path is: prototype on a bench, compare against your existing HMI stack, then decide whether it earns standardisation.</p><a href="https://github.com/yaneczech/SIA/blob/main/VERSIONING.md">How versions evolve <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+            <div><p>No. SIA 0.4.0 is a <b>pre-standard draft</b> circulated for review and falsification. It is deliberately small so it can be prototyped, tested, and critiqued before any standardisation. Passing the conformance suite proves contract compliance, not regulatory compliance—that remains the deployment's responsibility, with empirical testing. The recommended path is: prototype on a bench, compare against your existing HMI stack, then decide whether it earns standardisation.</p><a href="https://github.com/yaneczech/SIA/blob/main/VERSIONING.md">How versions evolve <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="git-fork" aria-hidden="true"></i><span>Does adopting SIA lock me into a vendor or ecosystem?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
@@ -606,7 +606,7 @@
           <a href="https://github.com/yaneczech/SIA/blob/main/04_Threat-Model.md"><span><i data-lucide="shield-alert" aria-hidden="true"></i><small>SECURITY</small></span><h3>Threat Model</h3><p>Threats, mitigations, non-goals, and residual risk.</p><em>Inspect threats <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
           <a href="https://github.com/yaneczech/SIA/blob/main/05_Node-Authoring-Guide.md"><span><i data-lucide="pen-tool" aria-hidden="true"></i><small>DESIGN</small></span><h3>Node Authoring Guide</h3><p>A meaning-first checklist for new semantic nodes.</p><em>Author a node <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
           <a href="https://github.com/yaneczech/SIA/tree/main/schema"><span><i data-lucide="braces" aria-hidden="true"></i><small>MACHINE-READABLE</small></span><h3>Schema Contracts</h3><p>Strict JSON Schema 2020-12 runtime contracts.</p><em>Browse schemas <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
-          <a href="https://github.com/yaneczech/SIA/tree/main/examples/v0.4"><span><i data-lucide="file-check-2" aria-hidden="true"></i><small>EXECUTABLE</small></span><h3>Validated Examples</h3><p>Signed end-to-end artifacts for profile 0.4.</p><em>Browse examples <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
+          <a href="https://github.com/yaneczech/SIA/tree/main/examples/v0.4.0"><span><i data-lucide="file-check-2" aria-hidden="true"></i><small>EXECUTABLE</small></span><h3>Validated Examples</h3><p>Signed end-to-end artifacts for profile 0.4.0.</p><em>Browse examples <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
           <a href="https://github.com/yaneczech/SIA/blob/main/GLOSSARY.md"><span><i data-lucide="book-marked" aria-hidden="true"></i><small>REFERENCE</small></span><h3>Glossary</h3><p>Normative vocabulary in one compact reference.</p><em>Look up a term <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
           <a href="https://github.com/yaneczech/SIA/blob/main/SOURCE_OF_TRUTH.md"><span><i data-lucide="git-compare-arrows" aria-hidden="true"></i><small>TRACEABILITY</small></span><h3>Source-of-truth map</h3><p>Authority order and generated consumers for every layer.</p><em>Trace a concept <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
         </div>
@@ -623,6 +623,6 @@
   </div>
 
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script type="module" src="./docs.js?v=0.4.7"></script>
+  <script type="module" src="./docs.js"></script>
 </body>
 </html>

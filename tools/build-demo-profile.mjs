@@ -11,18 +11,18 @@ import { canonicalSha256 } from './canonical.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const readJson = async (...parts) => JSON.parse(await readFile(path.join(root, ...parts), 'utf8'));
-const catalog = await readJson('examples', 'v0.4', 'catalog.json');
-const contextPolicy = await readJson('examples', 'v0.4', 'core.context-policy.json');
+const catalog = await readJson('examples', 'v0.4.0', 'catalog.json');
+const contextPolicy = await readJson('examples', 'v0.4.0', 'core.context-policy.json');
 const instanceSchema = await readJson('schema', 'runtime-instance.schema.json');
 const contextSchema = await readJson('schema', 'context-snapshot.schema.json');
 const rendererFiles = ['cluster.renderer.json', 'ivi.renderer.json', 'voice.renderer.json'];
-const renderers = await Promise.all(rendererFiles.map((file) => readJson('examples', 'v0.4', file)));
+const renderers = await Promise.all(rendererFiles.map((file) => readJson('examples', 'v0.4.0', file)));
 const exampleFiles = [
   'actor-registry.json', 'collision-warning.instance.json', 'context-attentive.json',
   'now-playing.retention-record.json', 'collision.render-plan.json', 'collision.dispatch-attempt.json',
   'collision.delivery-receipt.json', 'collision.occupant-response.json', 'collision.audit-record.json',
 ];
-const examples = Object.fromEntries(await Promise.all(exampleFiles.map(async (file) => [file, await readJson('examples', 'v0.4', file)])));
+const examples = Object.fromEntries(await Promise.all(exampleFiles.map(async (file) => [file, await readJson('examples', 'v0.4.0', file)])));
 
 const actorClasses = instanceSchema.$defs.attestation.properties.actor_class.enum;
 const contextAxes = Object.keys(contextSchema.properties.axes.properties);

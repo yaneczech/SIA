@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,12 +23,29 @@ const documents = [
 ];
 const textByFile = Object.fromEntries(await Promise.all(documents.map(async (file) => [file, await readFile(path.join(root, file), 'utf8')])));
 
-test('published documentation identifies the 0.4 contract consistently', () => {
-  for (const file of documents.slice(0, 5)) {
-    assert.match(textByFile[file], /0\.4\.0/, `${file} does not identify version 0.4.0`);
-  }
+test('published documentation and artifacts expose one exact SIA release version', async () => {
+  const releaseVersion = '0.4.0';
   for (const [file, contents] of Object.entries(textByFile)) {
+    assert.match(contents, new RegExp(releaseVersion.replaceAll('.', '\\.')), `${file} does not identify version ${releaseVersion}`);
+    assert.doesNotMatch(contents, /(?<![.\d])0\.4(?![.\/\d])/, `${file} abbreviates the public release version`);
+    assert.doesNotMatch(contents, /0\.4\.(?!0\b|x\b)/, `${file} abbreviates the public release version before punctuation`);
+    assert.doesNotMatch(contents, /0\.4\.(?!0\b)\d+/, `${file} advertises a competing 0.4.x version`);
     assert.doesNotMatch(contents, /Minimal SIA Profile v1|Version:\s*0\.3\.1|\(v0\.3\.1\)/, `${file} still presents the retired contract as current`);
+  }
+
+  const exampleRoot = path.join(root, 'examples');
+  assert.deepEqual((await readdir(exampleRoot)).sort(), [`v${releaseVersion}`]);
+  const catalog = JSON.parse(await readFile(path.join(exampleRoot, `v${releaseVersion}`, 'catalog.json'), 'utf8'));
+  assert.equal(catalog.spec_version, releaseVersion);
+  assert.equal(catalog.profile_version, releaseVersion);
+  assert.equal(catalog.catalog_version, releaseVersion);
+
+  for (const schemaFile of await readdir(path.join(root, 'schema'))) {
+    if (!schemaFile.endsWith('.json')) continue;
+    const schema = await readFile(path.join(root, 'schema', schemaFile), 'utf8');
+    for (const match of schema.matchAll(/"spec_version"\s*:\s*\{\s*"const"\s*:\s*"([^"]+)"/g)) {
+      assert.equal(match[1], releaseVersion, `${schemaFile} exposes a different wire version`);
+    }
   }
 });
 
@@ -60,7 +77,7 @@ test('normative documentation names both feedback loops and bounded retention', 
   assert.match(core, /coalesce/);
 });
 
-test('draft 0.4 documents orthogonal context and the causally bound lifecycle', () => {
+test('draft 0.4.0 documents orthogonal context and the causally bound lifecycle', () => {
   const core = textByFile['03_Core-Specification.md'];
   for (const axis of ['motion_state', 'operating_mode', 'energy_state', 'road_type', 'driver_state', 'occupancy']) assert.match(core, new RegExp(`\\b${axis}\\b`));
   assert.match(core, /Collision\.Warning` is `always`/);
@@ -78,7 +95,7 @@ test('walkthrough keeps six core scenarios and points advanced cases to the Test
   assert.match(html, /<section class="lab" id="lab"/);
 });
 
-test('interactive documentation exposes the complete 0.4 learning path', async () => {
+test('interactive documentation exposes the complete 0.4.0 learning path', async () => {
   const [html, script, css, demoHtml, demoCss] = await Promise.all([
     readFile(path.join(root, 'demo/docs.html'), 'utf8'),
     readFile(path.join(root, 'demo/docs.js'), 'utf8'),
@@ -101,7 +118,9 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
     'interactive docs must not render explicit text below the 11px annotation floor',
   );
   assert.match(html, /lucide@0\.468\.0/);
-  assert.match(html, /docs\.js\?v=0\.4\.7/);
+  assert.match(html, /src="\.\/docs\.js"/);
+  assert.doesNotMatch(html, /[?&]v=/, 'asset cache keys must not masquerade as SIA versions');
+  assert.doesNotMatch(demoHtml, /[?&]v=/, 'asset cache keys must not masquerade as SIA versions');
   assert.match(html, /data-reading-mode="essential"/);
   assert.match(html, /data-reading-mode="technical"/);
   assert.match(html, /id="docs-search"/);

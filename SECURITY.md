@@ -1,6 +1,6 @@
 # Security Policy
 
-SIA is a pre-standard draft. Its trust model is the core of the proposal, so
+This policy applies to **SIA 0.4.0 — pre-standard draft**. Its trust model is the core of the proposal, so
 security review is explicitly invited.
 
 ## Reporting

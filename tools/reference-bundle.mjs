@@ -15,9 +15,9 @@ const exampleFiles = Object.freeze({
   audit: 'collision.audit-record.json',
 });
 
-/** Load the repository's published v0.4 dependency set. */
+/** Load the repository's published v0.4.0 dependency set. */
 export async function loadReferenceBundle(root) {
-  const directory = path.join(root, 'examples', 'v0.4');
+  const directory = path.join(root, 'examples', 'v0.4.0');
   const entries = await Promise.all(Object.entries(exampleFiles).map(async ([key, file]) => [
     key,
     JSON.parse(await readFile(path.join(directory, file), 'utf8')),

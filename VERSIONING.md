@@ -1,31 +1,50 @@
 # SIA Versioning Policy
 
-SIA separates three version axes ([Core Specification §3](./03_Core-Specification.md#3-version-identifiers)). This document defines how each one is allowed to change, so an adopter can predict the cost of staying current.
+## One public version
 
-## `spec_version` — the wire contract
+The repository publishes one SIA release version. The current release is **0.4.0 — pre-standard draft**.
 
-Semantic versioning with wire-frozen patches:
+That same version MUST identify the README, Core Specification, schemas, published `sia-minimal` profile, catalog, policies, registries, renderer capabilities, examples, conformance material, demo, and interactive documentation. A commit may clarify or repair the current draft without inventing another public version. A new version exists only when the complete release bundle is updated, validated, signed, documented, and tagged together.
 
-- **Patch (0.4.0 → 0.4.1):** clarifications and tooling only. No schema field is added, removed, or re-typed; every artifact valid before is valid after, and vice versa. Implementations MAY accept any patch within their supported minor.
-- **Minor (0.4 → 0.5):** additive, explicitly negotiated capability. Because runtime envelopes are closed, new fields never arrive silently: a 0.5 feature is used only after both sides prove support. A 0.4 implementation never receives a 0.5 envelope it cannot parse — it rejects the unsupported `spec_version` and the sender falls back or does not send.
-- **Major:** reserved for changes that alter the meaning of existing fields or lifecycle states. Avoided by design; none is planned.
+Asset cache keys, build numbers, commit IDs, and documentation revisions are implementation details. They MUST NOT use SIA-shaped semantic versions in public URLs or UI because they can be mistaken for protocol versions.
 
-Pre-1.0 caveat: 0.x minors may still break, as 0.4 broke the illustrative 0.3 schema ([§15](./03_Core-Specification.md#15-compatibility)). The rules above are the discipline 0.x is converging toward and become binding at 1.0.
+## Artifact identifiers
 
-## `catalog_version` — the semantic vocabulary
+SIA artifacts carry several identifiers because a runtime must bind the exact material used for a decision:
 
-Follows the evolution rules of the position paper (§10):
+| Identifier | Purpose |
+|---|---|
+| `spec_version` | Exact wire contract and lifecycle rules. |
+| `profile_id` + `profile_version` | Exact bounded conformance profile. |
+| `catalog_version` | Exact installed semantic vocabulary. |
+| policy, registry, and capability versions | Exact signed deployment authorities used by the decision. |
 
-1. New nodes and new optional declaration fields are additive.
+These are protocol bindings, not competing public product versions. In the repository's published `sia-minimal` bundle, every release-owned version is **0.4.0**. Production deployments may evolve catalogs or authorities independently, but they MUST preserve every exact binding and document their compatibility policy; those deployment revisions do not rename the SIA release.
+
+An artifact set MUST NOT mix release-owned versions. Changing any signed artifact requires regenerated digests and signatures for every dependent artifact.
+
+## Compatibility and future releases
+
+`spec_version` is an exact negotiated contract identifier. Implementations MUST reject an unsupported value; they MUST NOT infer compatibility from a shared major or minor number. Supporting more than one contract means explicitly installing and negotiating each complete contract bundle.
+
+- A correction that does not require a new contract remains part of the current draft and does not create a patch-labelled wire version.
+- An additive capability that changes machine-readable contracts requires a new, explicitly negotiated release bundle.
+- A change to the meaning of an existing field or lifecycle state is breaking and requires a new release bundle.
+
+Pre-1.0 releases may break earlier drafts. The release notes for any future version MUST list compatibility, migration, and fallback behaviour before that version appears in schemas or examples.
+
+## Catalog evolution
+
+Within a deployment:
+
+1. New nodes and optional declaration fields are additive only when the installed contract supports them.
 2. A subclass may strengthen, never weaken, safety, attention, or trust requirements.
 3. Deprecated nodes remain resolvable for a declared support window (`deprecated_since`, `replaced_by`).
-4. Every unknown node fails closed in the Minimal 0.4 profile. Parent fallback requires a future negotiated profile with an explicit, signed compatibility mapping; a runtime never infers it from an ID prefix.
+4. Every unknown node fails closed in the Minimal 0.4.0 profile. Parent fallback requires an explicitly negotiated profile with a signed compatibility mapping; a runtime never infers it from an ID prefix.
 5. A profile accepts an older catalog only when its compatibility table proves every referenced node is understood.
 
-## Registries
+## Registries and conformance vectors
 
 Reason codes ([`registry/reason-codes.json`](./registry/reason-codes.json)) are append-only: a code is never reused with a different meaning and is deprecated rather than deleted. Unknown codes are treated as the failure outcome for their phase.
 
-## Conformance vectors
-
-Vectors are only added or corrected, never silently changed in meaning. A vector whose expectation changes gets a new `name`; the old one is removed in the same minor release that changes the underlying normative rule.
+Vectors are only added or corrected, never silently changed in meaning. A vector whose expectation changes gets a new `name`; the old vector remains associated with the release bundle whose behaviour it tests.

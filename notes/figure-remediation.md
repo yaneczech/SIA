@@ -1,10 +1,10 @@
-# Figure remediation plan (0.3 → 0.4)
+# Figure remediation plan (0.3 → 0.4.0)
 
 Working note, not part of the published specification. Tracks what each figure in
-[`../figures/`](../figures/) needs to match the 0.4 contract, and proposes an
+[`../figures/`](../figures/) needs to match the 0.4.0 contract, and proposes an
 interactive diagram that cannot drift from the spec again.
 
-Status legend: ✅ accurate · ⚠️ structure fine, labels stale · ❌ conceptually behind 0.4.
+Status legend: ✅ accurate · ⚠️ structure fine, labels stale · ❌ conceptually behind 0.4.0.
 
 ## Per-figure verdict and fix
 
@@ -16,7 +16,7 @@ current. No change needed. Already embedded in the interactive docs overview.
 
 ### fig4-node-taxonomy.png — ⚠️ swap two family labels
 Taxonomy tree (Interaction → Event{Alert, Notification}, Action, State, Task) is
-correct; 0.4 emits only Alert and Notification. Only the per-family metadata
+correct; 0.4.0 emits only Alert and Notification. Only the per-family metadata
 callouts are 0.3 vocabulary:
 - Alert box: `requires_ack` → replace with `occupant_response` (kind · authority · timeout).
 - Notification box: `suppression_class · merges_with` → replace with `context_policy.on_blocked`
@@ -25,24 +25,24 @@ callouts are 0.3 vocabulary:
 
 ### fig1-complexity-comparison.png — ⚠️ redraw the box contents, keep the layout
 The N×M vs N+M story is timeless; only the "With SIA" column's inner labels are stale.
-- Trust box shows 4 checks → 0.4 has **eight** (envelope+payload, declaration digest,
+- Trust box shows 4 checks → 0.4.0 has **eight** (envelope+payload, declaration digest,
   actor authority, signature, ingress freshness, nonce replay, revocation, semantic validity).
 - Add a **Retention** concern (bounded hold: drop/defer/coalesce) — absent in 0.3.
 - Split the single feedback concept into **delivery receipt** (machine) and
   **occupant response** (human), two loops.
-- Context Policy axis list → 0.4 core axes (see fig3 fix).
+- Context Policy axis list → 0.4.0 core axes (see fig3 fix).
 
 ### fig3-mediation-architecture.png — ❌ three substantive corrections
 Most out of date. Redraw:
 1. **Context axes.** Replace `SAE level · Vehicle state · Market jurisdiction` with the
-   0.4 core six: `motion_state · operating_mode · energy_state · road_type · driver_state · occupancy`.
+   0.4.0 core six: `motion_state · operating_mode · energy_state · road_type · driver_state · occupancy`.
 2. **Trust Policy.** Now verifies eight requirements (list or "8 checks · fail-closed").
 3. **Feedback.** The single `render / input / ack` arrow becomes **two authenticated
    return loops**: renderer → Coordination Runtime = *delivery receipt*; occupant →
    Coordination Runtime = *occupant response* (opens only on `presented`).
    Add the intermediate **dispatch attempt** (ordered, deadline-bounded) on the outbound path.
 
-### figA1-alert-flow.png — ❌ conceptually behind 0.4
+### figA1-alert-flow.png — ❌ conceptually behind 0.4.0
 The sequence "ADAS → Trust → Translation → Runtime → Renderers, ack/timeout straight back"
 predates the split. Redraw as:
 - Trust gate still the chokepoint before Translation (keep).
@@ -78,7 +78,7 @@ axes", making figure drift a build failure rather than a manual review catch.
 ### Option B — regenerate PNGs from a checked-in vector source
 If static images are still wanted for the paper/PDF, keep a single editable source
 (`figures/src/*.svg` or a small D3/mermaid definition) checked in, and export PNGs from it.
-At minimum, add a test that greps the figure **captions** for the 0.4 terms so a stale
+At minimum, add a test that greps the figure **captions** for the 0.4.0 terms so a stale
 caption fails CI (cheap interim guard until the redraw lands).
 
 ### Done — Option A shipped for fig3 + figA1
@@ -93,7 +93,7 @@ diverge from the context-snapshot schema, a trust code is unregistered, or the r
 changes — so this diagram cannot drift.
 
 Still open: static PNG redraw of fig1 (inner labels) and fig4 (two labels) for the
-paper/PDF, per the specs above. The paper/appendix captions already flag their 0.3→0.4
+paper/PDF, per the specs above. The paper/appendix captions already flag their 0.3→0.4.0
 deltas in the interim.
 
 ## Suggested sequence

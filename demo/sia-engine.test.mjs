@@ -75,7 +75,7 @@ test('demo catalog uses the canonical digests of the published declarations', as
     'diagnostic.node.json',
     'now-playing.node.json',
     'assistant-suggestion.node.json',
-  ].map(async (file) => JSON.parse(await readFile(new URL(`../examples/v0.4/${file}`, import.meta.url), 'utf8'))));
+  ].map(async (file) => JSON.parse(await readFile(new URL(`../examples/v0.4.0/${file}`, import.meta.url), 'utf8'))));
   const catalogById = new Map(nodeCatalog().map((node) => [node.id, node]));
 
   for (const declaration of declarations) {

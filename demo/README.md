@@ -1,8 +1,8 @@
 # SIA Interaction Lab
 
-Interactive dark-mode explainer and test harness for the five-node Minimal SIA Profile 0.4 catalog: collision and lane-departure Alerts plus three Notifications.
+Interactive dark-mode explainer and test harness for the five-node Minimal SIA Profile 0.4.0 catalog: collision and lane-departure Alerts plus three Notifications.
 
-The demo exercises the normative SIA 0.4 lifecycle: applicability, bounded retention, context-change re-evaluation, renderer delivery receipts, delivery-success policies, and their separation from occupant response.
+The demo exercises the normative SIA 0.4.0 lifecycle: applicability, bounded retention, context-change re-evaluation, renderer delivery receipts, delivery-success policies, and their separation from occupant response.
 
 ```bash
 cd demo

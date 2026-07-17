@@ -9,7 +9,7 @@ Language-neutral test vectors for SIA 0.4.0. Each vector is one entry in
 | `contract` | Schema file in [`../schema/`](../schema/) the artifact is validated against. |
 | `classes` | Conformance classes that MUST pass this vector: `emitter`, `renderer`, `runtime`. |
 | `expect` | `valid` or `invalid` — the required validation outcome. |
-| `base` | Optional file in [`../examples/v0.4/`](../examples/v0.4/) used as the starting artifact. |
+| `base` | Optional file in [`../examples/v0.4.0/`](../examples/v0.4.0/) used as the starting artifact. |
 | `patch` | Optional [RFC 7386 JSON Merge Patch](https://www.rfc-editor.org/rfc/rfc7386) applied to `base`. |
 | `operations` | Optional RFC 6902 `replace` or `copy` operations for addressable array mutations. |
 | `artifact` | Inline artifact, used when there is no `base`. |
