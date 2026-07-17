@@ -329,7 +329,7 @@ A correctly signed third-party application is still rejected when it emits `Aler
 
 ### A.9.2 Stale or replayed warning
 
-An otherwise valid warning arriving after `max_ingress_age_ms: 200`, outside `valid_until_ms`, or with a reused nonce is rejected before Translation. These are separate failure reasons because transport delay, stale meaning and replay are different faults.
+An otherwise valid warning whose signed attestation is more than `max_ingress_age_ms: 200` old at Trust Policy acceptance, which is outside `valid_until_ms`, or which reuses a nonce is rejected before Translation. These are separate failure reasons because attestation age, stale meaning, and replay are different faults. Signing, HSM queueing, transport, validation, and verification performed after the attestation timestamp all consume the freshness window.
 
 ### A.9.3 Priority injection
 

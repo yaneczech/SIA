@@ -120,13 +120,15 @@ Every signed example in `examples/v0.4/` carries a real signature verifiable wit
 
 SIA separates three clocks:
 
-- **Ingress freshness** limits transport delay between attestation and Trust Policy acceptance.
+- **Ingress freshness** limits total age between the signed attestation timestamp and Trust Policy acceptance. Any signing, HSM queueing, transport, validation, and verification performed after that timestamp consumes this window; it is not a pure network allowance.
 - **Semantic validity** defines the latest instant at which the interaction still represents useful current meaning.
 - **Retention TTL** limits how long a context-blocked instance may remain held.
 
 `valid_until_ms` MUST be later than `occurred_at_ms` and MUST NOT exceed `occurred_at_ms + declaration.semantic_validity_ms`. The attestation timestamp MUST be between occurrence and semantic expiry. Acceptance MUST be no later than semantic expiry and MUST reject timestamps beyond the permitted future skew. A retention expiry and every dispatch-attempt deadline MUST NOT be later than `valid_until_ms`. Re-evaluation MUST check semantic validity, policy version and digest, actor/session revocation, and a fresh current context snapshot before release.
 
 Timeout arithmetic SHOULD use a monotonic local clock. Wall-clock timestamps remain REQUIRED for correlation and audit. The RECOMMENDED default permitted clock skew between attestor and verifier is ±50 ms for in-vehicle emitters; a deployment that overrides this value MUST document it, and off-board emitters MUST have an explicitly documented skew and freshness budget. Deployments MUST define behaviour when secure time is unavailable.
+
+Ingress freshness, semantic validity, delivery timeout, occupant-response timeout, and attention metrics are independent contracts. Their numeric values MUST NOT be presented as one additive end-to-end guarantee. A deployment safety case must prove that its worst-case authentication, queueing, decision, dispatch, renderer time-to-indication, and required fallback reserve fit inside semantic validity.
 
 ## 8. Applicability, blocking, and retention
 
@@ -212,6 +214,8 @@ SIA security gates fail closed for unauthorised claims. Safety-relevant delivery
 - behaviour when Context Policy, capability registry, secure time, or audit storage is unavailable;
 - the certified fallback or legacy safety path for critical alerts;
 - how duplicate presentation is prevented when normal and fallback paths overlap.
+
+The documented latency bound MUST include bounded queue residence and contention for shared CPU, HSM, transport, storage, and renderer resources. Overload MUST produce an explicit, audited outcome or enter the declared safety fallback; it MUST NOT silently extend freshness or semantic validity. Audit persistence MUST NOT become an unbounded prerequisite for critical dispatch.
 
 SIA MUST NOT become an undocumented single point of failure for a safety-relevant indication.
 

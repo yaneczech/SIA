@@ -44,6 +44,8 @@ const exampleContracts = {
   'collision-warning.instance.json': 'runtime-instance.schema.json',
   'context-attentive.json': 'context-snapshot.schema.json',
   'cluster.renderer.json': 'renderer-capability.schema.json',
+  'ivi.renderer.json': 'renderer-capability.schema.json',
+  'voice.renderer.json': 'renderer-capability.schema.json',
   'collision.render-plan.json': 'render-plan.schema.json',
   'collision.delivery-receipt.json': 'delivery-receipt.schema.json',
   'collision.dispatch-attempt.json': 'dispatch-attempt.schema.json',

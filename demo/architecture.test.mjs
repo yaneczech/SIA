@@ -17,14 +17,19 @@ const read = async (...p) => readFile(path.join(root, ...p), 'utf8');
 const readJson = async (...p) => JSON.parse(await read(...p));
 
 const docsSource = await read('demo', 'docs.js');
+const engineSource = await read('demo', 'sia-engine.js');
+
+test('the generated demo profile exactly matches its canonical sources', async () => {
+  const { execFile } = await import('node:child_process');
+  const { promisify } = await import('node:util');
+  await promisify(execFile)(process.execPath, [path.join(root, 'tools', 'build-demo-profile.mjs'), '--check']);
+});
 
 test('the diagram context axes exactly match the context-snapshot schema', async () => {
   const schema = await readJson('schema', 'context-snapshot.schema.json');
   const schemaAxes = Object.keys(schema.properties.axes.properties).sort();
-
-  const match = docsSource.match(/const CORE_AXES = \[([^\]]*)\]/);
-  assert.ok(match, 'CORE_AXES array not found in docs.js');
-  const diagramAxes = [...match[1].matchAll(/'([^']+)'/g)].map((m) => m[1]).sort();
+  const { CONTEXT_AXES: generatedAxes } = await import('./generated-profile.js');
+  const diagramAxes = [...generatedAxes].sort();
 
   assert.deepEqual(diagramAxes, schemaAxes, 'diagram axes must equal the schema axes');
   assert.equal(diagramAxes.length, 6, 'the 0.4 core profile has six context axes');
@@ -43,12 +48,24 @@ test('every trust-check failure code the diagram shows is registered', async () 
 });
 
 test('the diagram output surfaces match the engine renderer set', async () => {
-  const engineSource = await read('demo', 'sia-engine.js');
-  const rendererBlock = engineSource.match(/export const RENDERERS = Object\.freeze\(\{([\s\S]*?)\}\);/);
-  assert.ok(rendererBlock, 'RENDERERS export not found in sia-engine.js');
-  const engineRenderers = [...rendererBlock[1].matchAll(/^\s*(\w+):\s*\{/gm)].map((m) => m[1]).sort();
+  const { RENDERERS } = await import('./sia-engine.js');
+  const engineRenderers = Object.keys(RENDERERS).sort();
 
   // The diagram lists surfaces via Object.keys(RENDERERS) at runtime; assert the
   // engine still exposes the three 0.4 surfaces the diagram narrates.
   assert.deepEqual(engineRenderers, ['cluster', 'ivi', 'voice'], 'engine must expose the three v0.4 renderer surfaces');
+});
+
+test('the engine contains presentation labels but no hand-copied normative profile values', () => {
+  assert.match(engineSource, /generated-profile\.js\?v=0\.4\.1/);
+  assert.match(docsSource, /sia-engine\.js\?v=0\.4\.2/);
+  assert.doesNotMatch(engineSource, /semanticValidityMs:\s*\d|maxIngressAgeMs:\s*\d|deliveryTimeoutMs:\s*\d|maxGlanceBudgetMs:\s*\d/);
+});
+
+test('interactive documentation renders generated artifact excerpts', () => {
+  const contractsBlock = docsSource.match(/const contracts = \{([\s\S]*?)\n\};\n\n\/\/ Documentation metadata/);
+  assert.ok(contractsBlock, 'documentation contract metadata block not found');
+  assert.doesNotMatch(contractsBlock[1], /^\s+value:/m, 'contract metadata must not contain hand-copied artifact values');
+  assert.match(docsSource, /Object\.entries\(DOC_EXCERPTS\)/);
+  assert.match(docsSource, /lifecycle\[0\]\.code = DOC_EXCERPTS\.node/);
 });

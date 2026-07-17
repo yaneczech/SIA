@@ -28,6 +28,7 @@ SIA defends one property: **interaction integrity** — the meaning, priority, a
 | 16 | Occupant retargeting | Driver-only warning instance changes `target_role` to a passenger or response claims an absent driver | Runtime role may only preserve or narrow declaration authority; response role must be occupied in the bound context | semantic invariants · vector `emitter-target-role-escalation-rejected` |
 | 17 | Renderer bypass | Runtime dispatches directly to an IVI omitted from the verified render plan | Each signed attempt binds an eligible selected renderer and exact declaration-owned deadline | `dispatch-attempt` · vector `runtime-dispatch-to-unselected-renderer-rejected` |
 | 18 | Retention resurrection | Held notification outlives semantic meaning, policy, or authority | Retention expiry is bounded by semantic validity; release rechecks validity, policy digest, revocation, and fresh context | `retention-record` · vector `runtime-retention-past-semantic-validity-rejected` |
+| 19 | Shared-resource latency exhaustion | Valid-looking traffic or unrelated workloads saturate HSM, CPU, transport, audit, or renderer queues until a critical interaction expires | Bounded per-actor/per-key admission, priority isolation, explicit overload outcome, measured queue residence, and deployment-defined fail-operational fallback | Spec §13–14 · deployment performance and safety case |
 
 ## Non-goals
 

@@ -1,0 +1,22 @@
+{
+  "renderer_id": "Renderer.IVI.Primary",
+  "kind": "ivi",
+  "capability_version": "0.4.0",
+  "safety_assurance": {
+    "level": "general",
+    "evidence_ref": null
+  },
+  "capabilities": {
+    "max_simultaneous_elements": 12,
+    "text_max_chars": 160,
+    "max_glance_budget_ms": 2200,
+    "supports_animation": true,
+    "glance_optimized": false
+  },
+  "attestation": {
+    "issuer": "OEM.RendererRegistry",
+    "key_id": "vehicle-hsm:renderer-registry:2",
+    "algorithm": "ES256",
+    "signature": "eDwo55DR91lThYuRWsQtXaMbwfl1Je32HUNnbMxxLA7iT7ZR3PEtFq92DpCZPcUkptuYqxhObHbRGhuiPG7j0Q"
+  }
+}

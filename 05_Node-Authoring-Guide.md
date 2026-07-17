@@ -16,7 +16,7 @@ A declaration is a safety and policy artifact, not a message format. Work throug
 ## 2. Who may say it
 
 - `permitted_actor_classes`: smallest set that has legitimate business emitting this meaning. Start with one. Adding a class later is additive; removing one is not.
-- `max_ingress_age_ms`: how stale may transport make this before it is a lie? Safety: low hundreds of ms. Ambient status: seconds.
+- `max_ingress_age_ms`: how old may the signed attestation be when Trust Policy accepts it? Include signing/HSM queueing, transport, validation, and verification performed after the timestamp. Safety values require measurement on the target deployment; they are not transport-only estimates.
 - Keep `session_revocation_required: true` unless you can argue why mid-session revocation may be ignored.
 
 ## 3. What it costs the driver
@@ -37,6 +37,7 @@ A declaration is a safety and policy artifact, not a message format. Work throug
 - `preferred_renderers` in preference order; `required_renderers` only for regulatory must-show surfaces.
 - `delivery_success_policy`: default `any_selected_presented`; use `primary_presented` when only one surface is meaningful; `all_required_presented` only with non-empty `required_renderers`.
 - `delivery_timeout_ms`: how long may the vehicle try before delivery counts as failed? For critical alerts this is small (hundreds of ms) — the fallback path must have time to run within semantic validity.
+- Check feasibility as a deployment invariant: worst-case authentication + queueing + SIA decision + renderer time-to-indication + required fallback reserve must fit inside `semantic_validity_ms`. Declaration values are not evidence that the target hardware meets them.
 - A fallback is ordered standby, not concurrent presentation. Mark a renderer `concurrent` only when it is intentionally dispatched at the same time as the primary.
 
 ## 6. What closes it

@@ -1,4 +1,4 @@
-import { evaluateInteraction, coordinateDelivery, coordinateAcknowledgement, RENDERERS, resolveNode } from './sia-engine.js';
+import { CONTEXT_AXES, DOC_EXCERPTS, evaluateInteraction, coordinateDelivery, coordinateAcknowledgement, RENDERERS, resolveNode } from './sia-engine.js?v=0.4.2';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -8,6 +8,7 @@ const setText = (selector, value) => { const el = $(selector); if (el) el.textCo
 
 const refreshIcons = () => window.lucide?.createIcons({ attrs: { width: 18, height: 18, 'stroke-width': 1.8 } });
 const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+const collisionNode = resolveNode('Interaction.Event.Alert.Collision.Warning');
 
 const highlightJson = (element, value) => {
   const plain = JSON.stringify(value, null, 2);
@@ -33,7 +34,7 @@ const lifecycle = [
     kicker: 'PHASE 01 · ONTOLOGY',
     title: 'Declare the meaning once.',
     summary: 'Long before any warning fires, engineers write one small machine-readable card: what a collision warning means, who may send it, how urgent it is, where it may appear, and what must happen afterwards. That card is called a node—one entry in the vehicle’s dictionary of everything it is allowed to say to people.',
-    story: 'The card says: “A collision warning is critical. Only the driver-assistance system (ADAS) may send it. It must arrive within 200 ms and appear on the instrument cluster or by voice. Once delivery succeeds, acknowledgement or a runtime timeout closes the 2-second response window.”',
+    story: `The card says: “A collision warning is critical. Only the driver-assistance system (ADAS) may send it. Trust Policy may accept it only while its ${collisionNode.trustRequirements.maxIngressAgeMs} ms ingress-freshness window and ${collisionNode.semanticValidityMs} ms semantic-validity window are both open. Once presentation succeeds, acknowledgement or a runtime timeout closes the ${collisionNode.occupantResponse.timeoutMs / 1000}-second response window.”`,
     why: 'Because the rules live on this card and shared policy—not inside each screen’s code—the mediation boundary evaluates the same rule set before any eligible output is asked to present. Nothing can talk its way into higher importance later: if the card says the priority, the priority is settled.',
     icon: 'book-open',
     outputBadge: 'Signed node declaration',
@@ -45,22 +46,7 @@ const lifecycle = [
     output: ['Trust requirements', 'Attention + context policy', 'Delivery + response contract'],
     codeIntro: 'This representative excerpt uses the format machines read (JSON). Don’t read every line—notice permitted_actor_classes: the complete list of who may send this warning, and priority, decided here, once.',
     codeLabel: 'collision-warning.node.json',
-    code: {
-      id: 'Interaction.Event.Alert.Collision.Warning',
-      since_version: '0.4.0',
-      priority: 'critical',
-      trust_requirements: {
-        permitted_actor_classes: ['adas'],
-        max_ingress_age_ms: 200,
-        replay_protection: 'required',
-      },
-      context_policy: { applicability: 'always', on_blocked: { disposition: 'never_block' } },
-      presentation_contract: {
-        preferred_renderers: ['cluster', 'voice'],
-        delivery_success_policy: 'any_selected_presented',
-      },
-      occupant_response: { kind: 'explicit_or_timeout', authority: 'driver_only', timeout_ms: 2000 },
-    },
+    code: null,
   },
   {
     kicker: 'PHASE 02 · EMITTER',
@@ -78,22 +64,12 @@ const lifecycle = [
     output: ['No priority override', 'No renderer request', 'No acknowledgement override'],
     codeIntro: 'An excerpt of the signed message. Notice what is missing: no priority, no screen choice, no styling. payload holds the measured facts; attestation holds the proof of who sent it and when.',
     codeLabel: 'collision-warning.instance.json',
-    code: {
-      spec_version: '0.4.0',
-      profile_id: 'sia-minimal',
-      node_id: 'Interaction.Event.Alert.Collision.Warning',
-      node_schema_sha256: 'cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c',
-      instance_id: 'c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21',
-      occurred_at_ms: 1784116800000,
-      valid_until_ms: 1784116800500,
-      payload: { time_to_collision_s: 1.4, threat_bearing_deg: 12, threat_range_m: 18 },
-      attestation: { actor_class: 'adas', key_id: 'vehicle-hsm:adas:7', algorithm: 'ES256', nonce: 'cmFuZG9tLW5vbmNlLTE' },
-    },
+    code: null,
   },
   {
     kicker: 'PHASE 03 · TRUST POLICY',
     title: 'Verify all eight trust requirements.',
-    summary: 'Before any screen even knows the message exists, SIA interrogates it: Is it well-formed? Does it reference the exact card we have installed? Is ADAS allowed to say this? Does the signature verify? Is it fresh—younger than the 200 ms the card demands? Have we seen it before? Is the sender’s key still valid? Is the warning still meaningful right now?',
+    summary: `Before any screen even knows the message exists, SIA interrogates it: Is it well-formed? Does it reference the exact card we have installed? Is ADAS allowed to say this? Does the signature verify? Is its attestation-to-acceptance age within the declared ${collisionNode.trustRequirements.maxIngressAgeMs} ms window? Have we seen it before? Is the sender’s key still valid? Is the warning still meaningful right now?`,
     story: 'Eight questions, all mandatory. One “no” stops everything—the message never reaches a screen, no matter how urgent it claims to be.',
     why: 'Under the declared trust model, this gate makes a fake warning from a music app fail closed: a valid login is not enough, because authority to speak comes from the card, not from authentication alone. The full list of checks is explored one by one in section 02 below.',
     icon: 'shield-check',
@@ -137,17 +113,7 @@ const lifecycle = [
     output: ['Exactly one primary', 'Ordered fallbacks', 'Reason for every rejection'],
     codeIntro: 'The render plan. Both halves matter: selected says where the warning goes; rejected shows the center screen refused with a reason code—not silently skipped.',
     codeLabel: 'collision.render-plan.json',
-    code: {
-      decision_id: 'd8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22',
-      context_id: '1a2b3c4d-1111-4aaa-8bbb-1234567890ab',
-      selected: [
-        { renderer_id: 'Renderer.Cluster.Primary', role: 'primary' },
-        { renderer_id: 'Renderer.Voice.Primary', role: 'fallback' },
-      ],
-      rejected: [{ renderer_id: 'Renderer.IVI.Primary', reason_code: 'SAFETY_PROFILE_INELIGIBLE' }],
-      delivery_timeout_ms: 300,
-      reason_code: 'PRIMARY_WITH_FALLBACK_STANDBY',
-    },
+    code: null,
   },
   {
     kicker: 'PHASE 05 · COORDINATION RUNTIME',
@@ -165,17 +131,7 @@ const lifecycle = [
     output: ['Attempt sequence', 'Bound decision + instance', 'Authenticated runtime evidence'],
     codeIntro: 'One dispatch attempt. sequence and previous_attempt_id make the order provable; deadline_at_ms is bounded by the warning’s own expiry.',
     codeLabel: 'collision.dispatch-attempt.json',
-    code: {
-      attempt_id: 'a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20',
-      decision_id: 'd8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22',
-      renderer_id: 'Renderer.Cluster.Primary',
-      role: 'primary',
-      sequence: 0,
-      previous_attempt_id: null,
-      dispatched_at_ms: 1784116800060,
-      deadline_at_ms: 1784116800360,
-      state: 'dispatched',
-    },
+    code: null,
   },
   {
     kicker: 'PHASE 06 · FEEDBACK + CLOSURE',
@@ -193,21 +149,7 @@ const lifecycle = [
     output: ['Delivery outcome', 'Occupant outcome', 'Hash-linked audit record'],
     codeIntro: 'A combined teaching view of two separate records: the renderer’s receipt and the occupant’s response. Each has its own authority and schema; neither can impersonate the other.',
     codeLabel: 'feedback-outcome.view.json',
-    code: {
-      delivery: {
-        receipt_id: 'e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23',
-        attempt_id: 'a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20',
-        renderer_id: 'Renderer.Cluster.Primary',
-        state: 'presented',
-        elapsed_ms: 72,
-      },
-      occupant_response: {
-        response_id: 'f8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b24',
-        delivery_receipt_ids: ['e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23'],
-        state: 'acknowledged',
-        subject_role: 'driver',
-      },
-    },
+    code: null,
   },
 ];
 
@@ -216,7 +158,7 @@ const trustChecks = [
   { title: 'Declaration digest', short: 'Instance → exact node', icon: 'fingerprint', stops: 'Binding an instance to altered declaration rules', failure: 'TRUST_REJECTED_DECLARATION_DIGEST', guarantee: 'The runtime evaluates the exact installed declaration the instance names.', description: 'Compare the instance node digest with the canonical digest of the signed catalog declaration.' },
   { title: 'Actor authority', short: 'Class + identity permitted', icon: 'badge-check', stops: 'An app or assistant impersonating ADAS', failure: 'TRUST_REJECTED_ACTOR', guarantee: 'A credential proves identity and the declaration grants semantic authority.', description: 'Resolve the current credential and verify both actor identity and actor class against the node declaration.' },
   { title: 'Signature / authenticator', short: 'Origin evidence verifies', icon: 'key-round', stops: 'Tampering and unattributed emission', failure: 'TRUST_REJECTED_SIGNATURE', guarantee: 'The accepted bytes are attributable to the bound key or session.', description: 'Verify the configured algorithm over the RFC 8785 canonical signing representation.' },
-  { title: 'Ingress freshness', short: 'Transport is recent', icon: 'timer', stops: 'Delayed-but-still-signed messages', failure: 'TRUST_REJECTED_FRESHNESS', guarantee: 'Acceptance occurs inside the declaration-owned transport budget.', description: 'Compare acceptance time with the attestation timestamp and max_ingress_age_ms.' },
+  { title: 'Ingress freshness', short: 'Attestation is recent', icon: 'timer', stops: 'Delayed-but-still-signed messages', failure: 'TRUST_REJECTED_FRESHNESS', guarantee: 'Acceptance occurs inside the declaration-owned age limit.', description: 'Compare acceptance time with the signed attestation timestamp and max_ingress_age_ms; signing, HSM queueing, transport, validation, and verification after that timestamp all consume the window.' },
   { title: 'Nonce replay protection', short: 'Fresh message, first use', icon: 'copy-x', stops: 'Replaying a valid recent warning', failure: 'TRUST_REJECTED_REPLAY', guarantee: 'A nonce is unique per actor and key for the bounded replay window.', description: 'Check the scoped nonce cache. Cache overflow fails closed instead of forgetting earlier nonces.' },
   { title: 'Revocation status', short: 'Credential is current', icon: 'shield-x', stops: 'Use of a compromised or withdrawn credential', failure: 'TRUST_REJECTED_REVOKED', guarantee: 'A mathematically valid signature from a revoked key has no authority.', description: 'Evaluate current key and session status from the authenticated actor registry at acceptance time.' },
   { title: 'Semantic validity', short: 'Meaning has not expired', icon: 'hourglass', stops: 'Presenting facts that are no longer useful now', failure: 'TRUST_REJECTED_EXPIRED', guarantee: 'The interaction is accepted no later than its declaration-bounded expiry.', description: 'Verify valid_until_ms against occurrence, declaration maximum, acceptance time, and secure-time policy.' },
@@ -277,203 +219,92 @@ const contracts = {
     title: 'Catalog manifest',
     description: 'The versioned, integrity-protected collection of semantic declarations installed for one SIA profile.',
     schema: 'catalog.schema.json', identity: 'catalog version + canonical SHA-256', owner: 'Catalog authority', file: 'catalog.json',
-    value: {
-      spec_version: '0.4.0',
-      profile_id: 'sia-minimal',
-      profile_version: '0.4.0',
-      catalog_version: '0.4.0',
-      generated_at_ms: 1784116800000,
-      nodes: [
-        { id: 'Interaction.Event.Alert.Collision.Warning', priority: 'critical' },
-        { id: 'Interaction.Event.Alert.Lane.Departure.Warning', priority: 'high' },
-        { id: 'Interaction.Event.Notification.Media.NowPlaying', priority: 'low' },
-      ],
-      integrity: { issuer: 'SIA Test Catalog Authority', key_id: 'vehicle-hsm:catalog:1', algorithm: 'EdDSA' },
-    },
   },
   registry: {
     kicker: 'TRUST STORE',
     title: 'Actor registry',
     description: 'The current credential, actor-class, validity, and revocation authority used by the trust gate.',
     schema: 'actor-registry.schema.json', identity: 'registry version + credential ID', owner: 'Actor authority', file: 'actor-registry.json',
-    value: {
-      spec_version: '0.4.0',
-      profile_id: 'sia-minimal',
-      registry_version: '0.4.0',
-      credentials: [{
-        credential_id: '11111111-1111-4111-8111-111111111111',
-        actor_id: 'ADAS_v2.3.1',
-        actor_class: 'adas',
-        key_id: 'vehicle-hsm:adas:7',
-        valid_until_ms: 1900000000000,
-        status: 'active',
-      }],
-      integrity: { issuer: 'SIA Test Actor Authority', key_id: 'vehicle-hsm:actor-registry:1', algorithm: 'EdDSA' },
-    },
   },
   policy: {
     kicker: 'POLICY AUTHORITY',
     title: 'Context policy',
     description: 'Signed freshness, confidence, uncertainty, and attention rules for every independent context axis.',
     schema: 'context-policy.schema.json', identity: 'policy reference + canonical SHA-256', owner: 'Context Policy authority', file: 'core.context-policy.json',
-    value: {
-      spec_version: '0.4.0',
-      policy_id: 'sia:policy:core-context:1',
-      policy_version: '0.4.0',
-      axis_requirements: {
-        motion_state: { max_age_ms: 100, min_confidence: 95, unknown_handling: 'safe_worst_case' },
-        driver_state: { max_age_ms: 250, min_confidence: 70, unknown_handling: 'safe_worst_case' },
-        occupancy: { max_age_ms: 1000, min_confidence: 80, unknown_handling: 'fail_closed' },
-      },
-      integrity: { issuer: 'SIA Test Policy Authority', key_id: 'vehicle-hsm:policy:1', algorithm: 'EdDSA' },
-    },
   },
   node: {
     kicker: 'DECLARATION',
     title: 'Interaction node',
     description: 'The source of authority for meaning, trust, attention, context, delivery, and response behaviour.',
     schema: 'interaction-node.schema.json', identity: 'node ID + canonical SHA-256', owner: 'Catalog author', file: 'collision-warning.node.json',
-    value: lifecycle[0].code,
   },
   instance: {
     kicker: 'EMISSION',
     title: 'Runtime instance',
     description: 'One immutable occurrence containing observed facts, exact declaration bindings, a validity window, and actor attestation.',
     schema: 'runtime-instance.schema.json', identity: 'instance_id + node digest', owner: 'Authorised emitter', file: 'collision-warning.instance.json',
-    value: lifecycle[1].code,
   },
   context: {
     kicker: 'DECISION INPUT',
     title: 'Context snapshot',
     description: 'A signed, immutable set of orthogonal observations. Each axis carries its own source, timestamp, and confidence.',
     schema: 'context-snapshot.schema.json', identity: 'context_id + policy digest', owner: 'Vehicle Context Authority', file: 'context-attentive.json',
-    value: {
-      context_id: '1a2b3c4d-1111-4aaa-8bbb-1234567890ab',
-      captured_at_ms: 1784116800040,
-      policy_ref: 'sia:policy:core-context:1',
-      policy_sha256: 'b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22',
-      axes: {
-        motion_state: { value: 'moving', source_id: 'Vehicle.SpeedState', observed_at_ms: 1784116800036, confidence: 100 },
-        operating_mode: { value: 'driving', source_id: 'Vehicle.OperatingMode', observed_at_ms: 1784116800036, confidence: 100 },
-        energy_state: { value: 'not_charging', source_id: 'Vehicle.ChargeState', observed_at_ms: 1784116800030, confidence: 100 },
-        road_type: { value: 'highway', source_id: 'Navigation.RoadClass', observed_at_ms: 1784116799800, confidence: 96 },
-        driver_state: { value: 'attentive', source_id: 'DMS.AttentionState', observed_at_ms: 1784116800028, confidence: 92 },
-      },
-      integrity: { issuer: 'Vehicle Context Authority', key_id: 'vehicle-hsm:context:3', algorithm: 'EdDSA' },
-    },
   },
   renderer: {
     kicker: 'CAPABILITY EVIDENCE',
     title: 'Renderer capability',
     description: 'An attested statement of what one output can safely present, including its assurance and glance constraints.',
     schema: 'renderer-capability.schema.json', identity: 'renderer ID + capability version', owner: 'Renderer registry', file: 'cluster.renderer.json',
-    value: {
-      renderer_id: 'Renderer.Cluster.Primary',
-      kind: 'cluster',
-      capability_version: '0.4.0',
-      safety_assurance: { level: 'safety_relevant', evidence_ref: 'urn:oem:assurance:cluster-primary:2026-07' },
-      capabilities: {
-        max_simultaneous_elements: 6,
-        text_max_chars: 48,
-        max_glance_budget_ms: 1000,
-        supports_animation: true,
-        glance_optimized: true,
-      },
-      attestation: { issuer: 'OEM.RendererRegistry', key_id: 'vehicle-hsm:renderer-registry:2', algorithm: 'ES256' },
-    },
   },
   retention: {
     kicker: 'BOUNDED RUNTIME STATE',
     title: 'Retention record',
     description: 'Evidence that an applicable interaction was dropped, held, coalesced, superseded, expired, or released under declaration-owned policy.',
     schema: 'retention-record.schema.json', identity: 'retention ID + bound instance', owner: 'Coordination Runtime', file: 'now-playing.retention-record.json',
-    value: {
-      retention_id: 'a8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b25',
-      instance_id: 'b8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b26',
-      context_id: '2a2b3c4d-1111-4aaa-8bbb-1234567890ac',
-      node_id: 'Interaction.Event.Notification.Media.NowPlaying',
-      disposition: 'coalesce',
-      state: 'held',
-      retained_at_ms: 1784116800100,
-      expires_at_ms: 1784116830000,
-      valid_until_ms: 1784116830000,
-      reevaluate_on: ['driver_state_change', 'motion_state_change', 'operating_mode_change'],
-      reason_code: 'CONTEXT_COALESCED_DISTRACTED',
-    },
   },
   plan: {
     kicker: 'TRANSLATION OUTPUT',
     title: 'Render plan',
     description: 'A deterministic, context-bound choice of one primary, optional fallbacks, and stable reasons for every rejected renderer.',
     schema: 'render-plan.schema.json', identity: 'decision_id + bound inputs', owner: 'Translation Layer', file: 'collision.render-plan.json',
-    value: lifecycle[3].code,
   },
   dispatch: {
     kicker: 'DELIVERY INPUT',
     title: 'Dispatch attempt',
     description: 'An authenticated, causally ordered request to one renderer with a deadline bounded by semantic validity.',
     schema: 'dispatch-attempt.schema.json', identity: 'attempt_id + predecessor', owner: 'Coordination Runtime', file: 'collision.dispatch-attempt.json',
-    value: lifecycle[4].code,
   },
   receipt: {
     kicker: 'MACHINE FEEDBACK',
     title: 'Delivery receipt',
     description: 'Renderer evidence for received, presented, or failed output—or a runtime-issued delivery timeout.',
     schema: 'delivery-receipt.schema.json', identity: 'receipt_id + attempt sequence', owner: 'Renderer or runtime', file: 'collision.delivery-receipt.json',
-    value: {
-      receipt_id: 'e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23',
-      attempt_id: 'a0e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b20',
-      receipt_sequence: 0,
-      decision_id: 'd8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22',
-      instance_id: 'c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21',
-      renderer_id: 'Renderer.Cluster.Primary',
-      issuer: 'renderer',
-      state: 'presented',
-      observed_at_ms: 1784116800132,
-      elapsed_ms: 72,
-      attestation: { key_id: 'vehicle-hsm:cluster:4', algorithm: 'HMAC-SHA-256' },
-    },
   },
   response: {
     kicker: 'HUMAN FEEDBACK',
     title: 'Occupant response',
     description: 'A separate response bound to the decision, context, and presented receipt IDs that opened the response window.',
     schema: 'occupant-response.schema.json', identity: 'response_id + presented receipts', owner: 'Input authority or runtime', file: 'collision.occupant-response.json',
-    value: {
-      response_id: 'f8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b24',
-      decision_id: 'd8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b22',
-      instance_id: 'c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21',
-      context_id: '1a2b3c4d-1111-4aaa-8bbb-1234567890ab',
-      delivery_receipt_ids: ['e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23'],
-      state: 'acknowledged',
-      authority: 'driver_only',
-      subject_role: 'driver',
-      opened_at_ms: 1784116800132,
-      deadline_at_ms: 1784116802132,
-      occurred_at_ms: 1784116800552,
-      input_channel: 'InputDevice.SteeringWheel.Right.Press',
-      evidence: { kind: 'verified_input', key_id: 'vehicle-hsm:input:5', algorithm: 'HMAC-SHA-256' },
-    },
   },
   audit: {
     kicker: 'TERMINAL EVIDENCE',
     title: 'Audit record',
     description: 'A hash-linked outcome record binding the exact instance, declaration, catalog, policy, context, phase, and stable reason code.',
     schema: 'audit-record.schema.json', identity: 'event ID + sequence + previous hash', owner: 'Coordination Runtime', file: 'collision.audit-record.json',
-    value: {
-      event_id: '98e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b27',
-      sequence: 0,
-      previous_record_sha256: null,
-      record_sha256: '22a4944655c0d1e6b0a5698e51bc9f418fee9671bb23a2e32a546e7356a61edf',
-      timestamp_ms: 1784116800132,
-      instance_id: 'c8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b21',
-      context_id: '1a2b3c4d-1111-4aaa-8bbb-1234567890ab',
-      phase: 'delivery',
-      outcome_code: 'DELIVERY_PRESENTED',
-      details: { renderer_id: 'Renderer.Cluster.Primary', receipt_id: 'e8e1f4b2-7bd0-4c44-9a8e-0a9c7c2c4b23' },
-    },
   },
 };
+
+// Documentation metadata above controls teaching labels and descriptions.
+// Every machine-readable value comes from a deterministic excerpt generated
+// from the signed examples; no hand-copied contract value exists here.
+for (const [name, value] of Object.entries(DOC_EXCERPTS)) {
+  if (contracts[name]) contracts[name].value = value;
+}
+lifecycle[0].code = DOC_EXCERPTS.node;
+lifecycle[1].code = DOC_EXCERPTS.instance;
+lifecycle[3].code = DOC_EXCERPTS.plan;
+lifecycle[4].code = DOC_EXCERPTS.dispatch;
+lifecycle[5].code = { delivery: DOC_EXCERPTS.receipt, occupant_response: DOC_EXCERPTS.response };
 
 const renderList = (selector, items) => {
   const el = $(selector);
@@ -796,7 +627,6 @@ setReadingMode(storedMode === 'technical' ? 'technical' : 'essential');
 // --- Architecture explorer (engine-bound, replaces the static figures) ----
 // The six core context axes are the source of truth for the diagram; the
 // architecture.test.mjs suite asserts these match the context-snapshot schema.
-const CORE_AXES = ['motion_state', 'operating_mode', 'energy_state', 'road_type', 'driver_state', 'occupancy'];
 const ARCH_SCENARIO = { nodeId: 'Interaction.Event.Alert.Collision.Warning', actorClass: 'adas', signatureValid: true, ageMs: 80, replayed: false, vehicleState: 'moving', roadType: 'highway', driverState: 'attentive', renderers: { cluster: true, voice: true, ivi: true } };
 let archToken = 0;
 
@@ -804,7 +634,7 @@ const archLabel = (name) => RENDERERS[name]?.label || name;
 
 function buildArchitecture() {
   const axes = $('#arch-axes');
-  if (axes) axes.innerHTML = CORE_AXES.map((axis) => `<li>${axis}</li>`).join('');
+  if (axes) axes.innerHTML = CONTEXT_AXES.map((axis) => `<li>${axis}</li>`).join('');
   const trustCount = $('#arch-trust-count');
   if (trustCount) trustCount.textContent = `${trustChecks.length} checks · fail-closed`;
   const surfaces = $('#arch-surfaces');

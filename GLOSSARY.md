@@ -10,9 +10,11 @@ Terms as used normatively in the [Core Specification](./03_Core-Specification.md
 | **Actor registry / credential** | Signed authority state mapping a credential and key to one actor identity/class, validity interval, and active or revoked status. |
 | **Actor class** | The semantic authority category of an emitter (`adas`, `service`, `third_party_app`, `agent_local`, `agent_cloud`, `human_direct`). Authentication proves identity; actor class bounds what identity may say. |
 | **Attestation** | The evidence block on an instance: actor identity, key, algorithm, timestamp, nonce, signature over the canonical form. |
-| **Ingress freshness** | Maximum transport age between attestation and Trust Policy acceptance (`max_ingress_age_ms`). One of three separate clocks. |
+| **Ingress freshness** | Maximum total age between the signed attestation timestamp and Trust Policy acceptance (`max_ingress_age_ms`). Signing, HSM queueing, transport, validation, and verification after that timestamp consume the window. |
 | **Semantic validity** | The latest instant at which the interaction still represents useful current meaning (`valid_until_ms`). Second clock. |
 | **Retention TTL** | How long a context-blocked instance may stay held before deterministic expiry. Third clock. |
+| **Attention metric** | An estimated occupant-facing glance or cognitive cost used during renderer eligibility. It is not a protocol execution deadline and is empirically calibrated by the deployment. |
+| **Delivery timeout** | The bounded lifetime of one dispatch attempt. It is independent of ingress freshness and is capped by remaining semantic validity. |
 | **Applicability** | Whether a node is meaningful in the current context at all (`moving_only` lane-departure warning while charging → `not_applicable`; collision warning remains applicable). Not the same as blocking. |
 | **Blocking** | An applicable interaction that context does not allow to present right now. Resolved by exactly one declared disposition. |
 | **Disposition** | The declared answer to blocking: `never_block`, `drop`, `defer`, or `coalesce`. |
@@ -29,5 +31,6 @@ Terms as used normatively in the [Core Specification](./03_Core-Specification.md
 | **Reason code** | Stable machine identifier of a transition outcome, allocated in [`registry/reason-codes.json`](./registry/reason-codes.json). Unknown code = failure outcome, never relaxation. |
 | **Audit record** | Hash-linked evidence of one decision, binding instance, phase, outcome code, and all policy versions. |
 | **Fail closed** | On any verification failure the interaction stops before renderers; criticality never overrides trust failure. |
+| **Fail operational** | Deployment-owned ability to preserve a required safety indication when SIA or a dependency is unavailable, without creating duplicate presentation. |
 | **Conformance class** | The subset of duties an implementation claims: `emitter`, `renderer`, or `runtime`. |
 | **Interaction integrity** | The property SIA defends: meaning, priority, and origin of an occupant-facing interaction are what they claim to be. |

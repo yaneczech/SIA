@@ -1,4 +1,4 @@
-import { actorLabel, buildPhaseTrace, coordinateAcknowledgement, coordinateDelivery, evaluateInteraction, nodeCatalog, resolveNode, trustMatrix, RENDERERS } from './sia-engine.js';
+import { actorLabel, buildPhaseTrace, coordinateAcknowledgement, coordinateDelivery, evaluateInteraction, nodeCatalog, resolveNode, trustMatrix, RENDERERS } from './sia-engine.js?v=0.4.2';
 
 const COLLISION_ID = 'Interaction.Event.Alert.Collision.Warning';
 const NOW_PLAYING_ID = 'Interaction.Event.Notification.Media.NowPlaying';
@@ -509,6 +509,7 @@ function updateLab() {
   $('[data-mini="ack"]').classList.toggle('is-failed', ack.state === 'not_started' && delivery.final);
   $('[data-mini="ack"]').classList.toggle('is-pending', ack.state === 'pending');
 
+  renderTimingReadout(node, ageMs);
   renderAttentionReadout(node, result);
 
   highlightJson('#audit-log', {
@@ -551,6 +552,12 @@ function renderAttentionReadout(node, result) {
     }
     return `<div class="attention-budget ${cls}"><b>${cap.label}</b><small>${text}</small></div>`;
   }).join('');
+}
+
+function renderTimingReadout(node, ageMs) {
+  $('#timing-ingress').textContent = `${ageMs} / ${node.trustRequirements.maxIngressAgeMs} ms`;
+  $('#timing-validity').textContent = `${node.semanticValidityMs} ms`;
+  $('#timing-delivery').textContent = `${node.presentationContract.deliveryTimeoutMs} ms`;
 }
 
 function rendererLabel(name) { return RENDERERS[name]?.label || name; }

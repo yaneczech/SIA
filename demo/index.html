@@ -7,7 +7,7 @@
   <title>SIA — Interactive Demo</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://use.typekit.net/cyy0vwc.css">
-  <link rel="stylesheet" href="./styles.css?v=0.4.4">
+  <link rel="stylesheet" href="./styles.css?v=0.4.5">
 </head>
 <body>
   <a class="skip-link" href="#demo">Skip to the demo</a>
@@ -300,8 +300,16 @@
               <div data-mini="delivery"><span>4</span><b>Delivery</b><small id="mini-delivery">presented</small></div><i>→</i>
               <div data-mini="ack"><span>5</span><b>Occupant</b><small id="mini-ack">acknowledged</small></div>
             </div>
+            <div class="timing-readout" aria-label="Independent protocol timing windows">
+              <div class="attention-sum"><small>PROTOCOL TIMING · INDEPENDENT WINDOWS</small><p>Freshness, semantic validity, and renderer delivery are different clocks. They are not one additive latency guarantee.</p></div>
+              <div class="timing-budgets">
+                <div><b id="timing-ingress">—</b><small>attestation → acceptance</small></div>
+                <div><b id="timing-validity">—</b><small>occurrence → semantic expiry</small></div>
+                <div><b id="timing-delivery">—</b><small>dispatch attempt timeout</small></div>
+              </div>
+            </div>
             <div class="attention-readout" id="attention-readout">
-              <div class="attention-sum"><small>ATTENTION BUDGET</small><p id="attention-formula">—</p></div>
+              <div class="attention-sum"><small>VISUAL ATTENTION COST</small><p id="attention-formula">—</p></div>
               <div class="attention-budgets" id="attention-budgets"></div>
             </div>
             <details>
@@ -321,6 +329,6 @@
 
   <footer><span>SIA · Semantic Interaction Architecture</span><span class="footer-links"><a href="./docs.html">Interactive documentation</a><a href="https://github.com/yaneczech/SIA">Architecture proposal →</a></span></footer>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script type="module" src="./app.js?v=0.4.2"></script>
+  <script type="module" src="./app.js?v=0.4.5"></script>
 </body>
 </html>

@@ -124,6 +124,7 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 - [**Conformance vectors**](./conformance/) — language-neutral positive and negative test vectors, tagged by conformance class (`emitter`, `renderer`, `runtime`) so a supplier tests only the side of the boundary it owns.
 - [**Cryptographic vectors**](./conformance/crypto/) — published test keys and really-signed examples, so implementers can verify both their signing and their verification code, including tamper and algorithm-confusion rejections.
 - [**Versioning policy**](./VERSIONING.md) — how the wire contract, the node catalog, registries, and vectors are allowed to evolve.
+- [**Source-of-truth map**](./SOURCE_OF_TRUTH.md) — which artifact owns each concept and how schemas, examples, demo, and documentation are kept aligned.
 - [**Node authoring guide**](./05_Node-Authoring-Guide.md) — the checklist for designing a new interaction node, from meaning to payload.
 - [**Glossary**](./GLOSSARY.md) — every normative term on one page.
 
@@ -134,6 +135,7 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 ```bash
 npm ci
 npm test                                                    # full conformance suite
+npm run check:demo-profile                                  # generated demo data matches canonical artifacts
 npm run validate -- examples/v0.4/collision-warning.instance.json
 npm run conformance -- emitter                              # vectors for your conformance class
 ```

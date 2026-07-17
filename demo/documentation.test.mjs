@@ -16,6 +16,7 @@ const documents = [
   'GLOSSARY.md',
   'SECURITY.md',
   'VERSIONING.md',
+  'SOURCE_OF_TRUTH.md',
   'conformance/README.md',
   'conformance/crypto/README.md',
   'demo/README.md',
@@ -100,10 +101,11 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
     'interactive docs must not render explicit text below the 11px annotation floor',
   );
   assert.match(html, /lucide@0\.468\.0/);
-  assert.match(html, /docs\.js\?v=0\.4\.4/);
+  assert.match(html, /docs\.js\?v=0\.4\.7/);
   assert.match(html, /data-reading-mode="essential"/);
   assert.match(html, /data-reading-mode="technical"/);
   assert.match(html, /id="docs-search"/);
+  assert.match(html, /Source-of-truth map/);
   assert.match(html, /data-copy-target="contract-code"/);
   assert.match(html, /Renderer receipt means/);
   assert.match(html, /Occupant response means/);
@@ -147,4 +149,7 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
   assert.match(demoCss, /--content-max:\s*1440px/);
   assert.match(demoCss, /\.explainer > \*, \.matrix-section > \*, \.lab > \*/);
   assert.match(demoHtml, /href="\.\/docs\.html"/);
+  assert.match(demoHtml, /PROTOCOL TIMING · INDEPENDENT WINDOWS/);
+  assert.match(demoHtml, /VISUAL ATTENTION COST/);
+  assert.doesNotMatch(demoHtml, /<small>ATTENTION BUDGET<\/small>/);
 });

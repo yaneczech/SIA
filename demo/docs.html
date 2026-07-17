@@ -298,7 +298,7 @@
         </div>
 
         <div class="clock-grid" aria-label="SIA time semantics">
-          <article><span class="clock-number" aria-hidden="true">01</span><i data-lucide="timer" aria-hidden="true"></i><h3>Ingress freshness</h3><p>How long transport took before Trust Policy accepted the message.</p><span class="technical-only"><code>acceptance − attestation ≤ max_ingress_age_ms</code></span></article>
+          <article><span class="clock-number" aria-hidden="true">01</span><i data-lucide="timer" aria-hidden="true"></i><h3>Ingress freshness</h3><p>Total age from the signed attestation timestamp until Trust Policy acceptance—including work performed after that timestamp.</p><span class="technical-only"><code>acceptance − attestation ≤ max_ingress_age_ms</code></span></article>
           <article><span class="clock-number" aria-hidden="true">02</span><i data-lucide="hourglass" aria-hidden="true"></i><h3>Semantic validity</h3><p>How long the message still describes useful current meaning.</p><span class="technical-only"><code>now ≤ valid_until_ms</code></span></article>
           <article><span class="clock-number" aria-hidden="true">03</span><i data-lucide="archive" aria-hidden="true"></i><h3>Retention TTL</h3><p>How long an applicable but blocked interaction may remain held.</p><span class="technical-only"><code>retention_expiry ≤ valid_until_ms</code></span></article>
         </div>
@@ -596,7 +596,7 @@
         </div>
       </section>
 
-      <section class="docs-section source-section" id="source-map" data-search="source documentation specification paper threat model authoring guide glossary schemas examples reason codes conformance repository">
+      <section class="docs-section source-section" id="source-map" data-search="source documentation specification paper threat model authoring guide glossary schemas examples reason codes conformance repository truth traceability generated">
         <div class="section-heading">
           <div><p class="section-index">09 · SOURCE MAP</p><h2>Go from explanation to authority</h2></div>
           <p>This page explains the model; the specification, schemas, registries, and vectors remain the source of truth.</p>
@@ -608,6 +608,7 @@
           <a href="https://github.com/yaneczech/SIA/tree/main/schema"><span><i data-lucide="braces" aria-hidden="true"></i><small>MACHINE-READABLE</small></span><h3>Schema Contracts</h3><p>Strict JSON Schema 2020-12 runtime contracts.</p><em>Browse schemas <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
           <a href="https://github.com/yaneczech/SIA/tree/main/examples/v0.4"><span><i data-lucide="file-check-2" aria-hidden="true"></i><small>EXECUTABLE</small></span><h3>Validated Examples</h3><p>Signed end-to-end artifacts for profile 0.4.</p><em>Browse examples <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
           <a href="https://github.com/yaneczech/SIA/blob/main/GLOSSARY.md"><span><i data-lucide="book-marked" aria-hidden="true"></i><small>REFERENCE</small></span><h3>Glossary</h3><p>Normative vocabulary in one compact reference.</p><em>Look up a term <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
+          <a href="https://github.com/yaneczech/SIA/blob/main/SOURCE_OF_TRUTH.md"><span><i data-lucide="git-compare-arrows" aria-hidden="true"></i><small>TRACEABILITY</small></span><h3>Source-of-truth map</h3><p>Authority order and generated consumers for every layer.</p><em>Trace a concept <i data-lucide="arrow-up-right" aria-hidden="true"></i></em></a>
         </div>
       </section>
 
@@ -622,6 +623,6 @@
   </div>
 
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script type="module" src="./docs.js?v=0.4.4"></script>
+  <script type="module" src="./docs.js?v=0.4.7"></script>
 </body>
 </html>

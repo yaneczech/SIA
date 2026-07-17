@@ -1,0 +1,22 @@
+{
+  "renderer_id": "Renderer.Voice.Primary",
+  "kind": "voice",
+  "capability_version": "0.4.0",
+  "safety_assurance": {
+    "level": "safety_relevant",
+    "evidence_ref": "urn:oem:assurance:voice-primary:2026-07"
+  },
+  "capabilities": {
+    "max_simultaneous_elements": 1,
+    "text_max_chars": null,
+    "max_glance_budget_ms": null,
+    "supports_animation": false,
+    "glance_optimized": true
+  },
+  "attestation": {
+    "issuer": "OEM.RendererRegistry",
+    "key_id": "vehicle-hsm:renderer-registry:2",
+    "algorithm": "ES256",
+    "signature": "RdnsuivWr-7AlYz95jHbBzKV7g6d5oTYkanDXPOA8-P_NtezqHPdWYDdm81BhVYCF7ReAEQw5v8tNrSOctWtbg"
+  }
+}

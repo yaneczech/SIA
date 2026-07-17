@@ -1,90 +1,54 @@
-export const ACTOR_CLASSES = [
-  { id: 'human_direct', label: 'Driver (direct input)' },
-  { id: 'adas', label: 'ADAS' },
-  { id: 'service', label: 'Vehicle service' },
-  { id: 'third_party_app', label: 'Third-party app' },
-  { id: 'agent_local', label: 'In-vehicle AI assistant' },
-  { id: 'agent_cloud', label: 'Cloud AI assistant' },
-];
+import { ACTOR_CLASS_IDS, CONTEXT_AXES, CONTEXT_POLICY, DOC_EXCERPTS, NODE_RECORDS, PROFILE_META, RENDERER_DECLARATIONS } from './generated-profile.js?v=0.4.1';
 
-export const RENDERERS = Object.freeze({
-  cluster: { label: 'Cluster', glanceOptimized: true, safetyProfile: 'safety_relevant_visual', maxGlanceBudgetMs: 1000, maxSimultaneousElements: 6, textMaxChars: 48 },
-  ivi: { label: 'Center display', glanceOptimized: false, safetyProfile: 'general_interactive_visual', maxGlanceBudgetMs: 2200, maxSimultaneousElements: 12, textMaxChars: 160 },
-  voice: { label: 'Voice', glanceOptimized: true, safetyProfile: 'audio_eyes_free', maxGlanceBudgetMs: null, maxSimultaneousElements: 1, textMaxChars: null },
+const ACTOR_LABELS = Object.freeze({
+  human_direct: 'Driver (direct input)', adas: 'ADAS', service: 'Vehicle service', third_party_app: 'Third-party app', agent_local: 'In-vehicle AI assistant', agent_cloud: 'Cloud AI assistant',
+});
+const NODE_LABELS = Object.freeze({
+  'Interaction.Event.Alert.Collision.Warning': 'Collision warning',
+  'Interaction.Event.Alert.Lane.Departure.Warning': 'Lane departure warning',
+  'Interaction.Event.Notification.Diagnostic.CollisionSensorTest': 'Collision-sensor diagnostic',
+  'Interaction.Event.Notification.Media.NowPlaying': 'Now playing',
+  'Interaction.Event.Notification.Assistant.Suggestion': 'Assistant suggestion',
+});
+const RENDERER_LABELS = Object.freeze({ cluster: 'Cluster', ivi: 'Center display', voice: 'Voice' });
+
+export { CONTEXT_AXES, DOC_EXCERPTS, PROFILE_META };
+export const ACTOR_CLASSES = ACTOR_CLASS_IDS.map((id) => ({ id, label: ACTOR_LABELS[id] || id }));
+export const CONTEXT_MODIFIERS = CONTEXT_POLICY.attention_modifiers;
+export const RENDERERS = Object.freeze(Object.fromEntries(RENDERER_DECLARATIONS.map((renderer) => [renderer.kind, {
+  id: renderer.renderer_id,
+  label: RENDERER_LABELS[renderer.kind] || renderer.kind,
+  glanceOptimized: renderer.capabilities.glance_optimized,
+  safetyProfile: renderer.kind === 'voice' ? 'audio_eyes_free' : renderer.safety_assurance.level === 'safety_relevant' ? 'safety_relevant_visual' : 'general_interactive_visual',
+  maxGlanceBudgetMs: renderer.capabilities.max_glance_budget_ms ?? null,
+  maxSimultaneousElements: renderer.capabilities.max_simultaneous_elements,
+  textMaxChars: renderer.capabilities.text_max_chars ?? null,
+}])));
+
+const mapBlockedPolicy = (policy) => ({
+  disposition: policy.disposition,
+  ttlMs: policy.ttl_ms,
+  coalescingKeyFields: policy.coalescing_key_fields,
+  reevaluateOn: policy.reevaluate_on,
+  onExpiry: policy.on_expiry,
+  maxPending: policy.max_pending,
+  maxPendingPerKey: policy.max_pending_per_key,
+  auditRequired: policy.audit_required,
 });
 
-export const CONTEXT_MODIFIERS = Object.freeze({
-  road_type: { urban: 1.0, rural: 0.9, highway: 1.2, off_road: 1.3, unknown: 1.3 },
-  driver_state: { attentive: 1.0, drowsy: 1.3, distracted: 1.5, not_monitoring: 1.5, unknown: 1.5 },
-});
-
-const CONTEXT_POLICY_REF = 'sia:policy:core-context:1';
-const CONTEXT_POLICY_SHA256 = 'b614a38045ea31e2abd6b82ef88b43b158b54aa30078b90bf78708cfeb798e22';
-
-export const NODES = Object.freeze({
-  'Interaction.Event.Alert.Collision.Warning': {
-    type: 'Alert',
-    label: 'Collision warning',
-    priority: 'critical',
-    schemaDigest: 'cd8cbd4fccf056e8315c962eaad3c123178c445b6cf322d40b462475fdf1cc7c',
-    semanticValidityMs: 500,
-    trustRequirements: { permittedActorClasses: ['adas'], maxIngressAgeMs: 200 },
-    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'never_block' } },
-    presentationContract: { preferredRenderers: ['cluster', 'voice'], requiredRenderers: [], deliverySuccessPolicy: 'any_selected_presented', deliveryTimeoutMs: 300, degradationPolicy: 'next_eligible' },
-    occupantResponse: { kind: 'explicit_or_timeout', authority: 'driver_only', timeoutMs: 2000 },
-    attention: { glanceTimeMs: 800, meanGlanceMs: 300, taskSteps: 0, voiceAlt: true, cognitiveLoad: 'minimal' },
-    regulatoryBasis: ['ISO 15623', 'UNECE R152'],
-  },
-  'Interaction.Event.Alert.Lane.Departure.Warning': {
-    type: 'Alert',
-    label: 'Lane departure warning',
-    priority: 'high',
-    schemaDigest: 'c8579003d085bb33b796f710bca05e1c5b0e6dfa2659b628118eb63b9f202555',
-    semanticValidityMs: 1000,
-    trustRequirements: { permittedActorClasses: ['adas'], maxIngressAgeMs: 300 },
-    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'moving_only', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'never_block' } },
-    presentationContract: { preferredRenderers: ['cluster', 'voice'], requiredRenderers: [], deliverySuccessPolicy: 'any_selected_presented', deliveryTimeoutMs: 400, degradationPolicy: 'next_eligible' },
-    occupantResponse: { kind: 'none' },
-    attention: { glanceTimeMs: 600, meanGlanceMs: 250, taskSteps: 0, voiceAlt: true, cognitiveLoad: 'minimal' },
-    regulatoryBasis: ['UNECE R79'],
-  },
-  'Interaction.Event.Notification.Diagnostic.CollisionSensorTest': {
-    type: 'Notification',
-    label: 'Collision-sensor diagnostic',
-    priority: 'normal',
-    schemaDigest: 'c8594ed293f7e78bdb6fb458a6dab23964911da5dceadeaffe96472abe68e689',
-    semanticValidityMs: 60000,
-    trustRequirements: { permittedActorClasses: ['adas', 'service'], maxIngressAgeMs: 5000 },
-    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'defer', ttlMs: 60000, reevaluateOn: ['driver_state_change', 'motion_state_change', 'operating_mode_change'], onExpiry: 'drop', maxPending: 10 } },
-    presentationContract: { preferredRenderers: ['ivi'], requiredRenderers: [], deliverySuccessPolicy: 'primary_presented', deliveryTimeoutMs: 1200, degradationPolicy: 'no_degradation' },
-    occupantResponse: { kind: 'none' },
-    attention: { glanceTimeMs: 1200, meanGlanceMs: 500, taskSteps: 2, voiceAlt: false, cognitiveLoad: 'moderate' },
-  },
-  'Interaction.Event.Notification.Media.NowPlaying': {
-    type: 'Notification',
-    label: 'Now playing',
-    priority: 'low',
-    schemaDigest: 'f1cd4853e75a0724c039005a58a1a239d573f5d6e223f0cee0fd63c2b58f3c04',
-    semanticValidityMs: 30000,
-    trustRequirements: { permittedActorClasses: ['service', 'third_party_app'], maxIngressAgeMs: 5000 },
-    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'coalesce', ttlMs: 30000, coalescingKeyFields: ['node_id', 'target_role', 'actor_id', 'payload.session_id'], reevaluateOn: ['driver_state_change', 'motion_state_change', 'operating_mode_change'], onExpiry: 'drop', maxPendingPerKey: 1 } },
-    presentationContract: { preferredRenderers: ['ivi', 'voice'], requiredRenderers: [], deliverySuccessPolicy: 'any_selected_presented', deliveryTimeoutMs: 1200, degradationPolicy: 'next_eligible' },
-    occupantResponse: { kind: 'none' },
-    attention: { glanceTimeMs: 1500, meanGlanceMs: 450, taskSteps: 1, voiceAlt: true, cognitiveLoad: 'minimal' },
-  },
-  'Interaction.Event.Notification.Assistant.Suggestion': {
-    type: 'Notification',
-    label: 'Assistant suggestion',
-    priority: 'low',
-    schemaDigest: '909e52074b5af4f2583e722684fc2bfb068d43a0e500e42a0af93b18c5657042',
-    semanticValidityMs: 5000,
-    trustRequirements: { permittedActorClasses: ['agent_local', 'agent_cloud', 'service'], maxIngressAgeMs: 2000 },
-    contextPolicy: { policyRef: CONTEXT_POLICY_REF, policySha256: CONTEXT_POLICY_SHA256, applicability: 'always', unknownContext: 'safe_worst_case', onBlocked: { disposition: 'drop', auditRequired: true } },
-    presentationContract: { preferredRenderers: ['ivi', 'voice'], requiredRenderers: [], deliverySuccessPolicy: 'any_selected_presented', deliveryTimeoutMs: 1200, degradationPolicy: 'drop_with_audit' },
-    occupantResponse: { kind: 'none' },
-    attention: { glanceTimeMs: 1000, meanGlanceMs: 400, taskSteps: 1, voiceAlt: true, cognitiveLoad: 'minimal' },
-  },
-});
+export const NODES = Object.freeze(Object.fromEntries(NODE_RECORDS.map(({ declaration: node, declaration_sha256: schemaDigest }) => [node.id, {
+  type: node.inherits_from.split('.').at(-1),
+  label: NODE_LABELS[node.id] || node.id,
+  priority: node.priority,
+  schemaDigest,
+  semanticValidityMs: node.semantic_validity_ms,
+  trustRequirements: { permittedActorClasses: node.trust_requirements.permitted_actor_classes, maxIngressAgeMs: node.trust_requirements.max_ingress_age_ms },
+  contextPolicy: { policyRef: node.context_policy.policy_ref, policySha256: node.context_policy.policy_sha256, applicability: node.context_policy.applicability, unknownContext: node.context_policy.unknown_context, onBlocked: mapBlockedPolicy(node.context_policy.on_blocked) },
+  presentationContract: { preferredRenderers: node.presentation_contract.preferred_renderers, requiredRenderers: node.presentation_contract.required_renderers, deliverySuccessPolicy: node.presentation_contract.delivery_success_policy, deliveryTimeoutMs: node.presentation_contract.delivery_timeout_ms, degradationPolicy: node.presentation_contract.degradation_policy },
+  occupantResponse: { kind: node.occupant_response.kind, authority: node.occupant_response.authority, timeoutMs: node.occupant_response.timeout_ms },
+  attention: { glanceTimeMs: node.attention_metrics.glance_time_estimated_ms, meanGlanceMs: node.attention_metrics.mean_single_glance_ms, taskSteps: node.attention_metrics.task_steps, voiceAlt: node.attention_metrics.voice_alt_available, cognitiveLoad: node.attention_metrics.cognitive_load },
+  regulatoryBasis: node.regulatory_basis || [],
+}])));
 
 export const DEFAULT_NODE_ID = 'Interaction.Event.Alert.Collision.Warning';
 

@@ -129,7 +129,9 @@ audit.record_sha256 = canonicalSha256(hashInput);
 await writeExample('collision.audit-record.json', audit);
 
 await signAndWrite('collision.dispatch-attempt.json', 'integrity');
-await signAndWrite('cluster.renderer.json', 'attestation');
+for (const file of ['cluster.renderer.json', 'ivi.renderer.json', 'voice.renderer.json']) {
+  await signAndWrite(file, 'attestation');
+}
 await signAndWrite('collision.delivery-receipt.json', 'attestation');
 await signAndWrite('collision.occupant-response.json', 'evidence');
 

@@ -21,7 +21,7 @@
         "kicker": "FÁZE 01 · ONTOLOGIE",
         "title": "Deklarujte význam jednou.",
         "summary": "Dávno předtím, než jakékoli varování vystřelí, napíší inženýři jednu malou strojově čitelnou kartu: co kolizní varování znamená, kdo ho smí poslat, jak je naléhavé, kde se smí objevit a co musí následovat. Té kartě se říká node—jeden záznam ve slovníku všeho, co smí vozidlo říkat lidem.",
-        "story": "Karta říká: „Kolizní varování je kritické. Smí ho poslat pouze asistenční systém (ADAS). Musí dorazit do 200 ms a zobrazit se na přístrojovém štítu nebo hlasem. Po úspěšném doručení uzavře dvousekundové okno odpovědi potvrzení nebo timeout runtime.“",
+        "story": "Karta říká: „Kolizní varování je kritické. Smí ho poslat pouze asistenční systém (ADAS). Trust Policy ho smí přijmout jen tehdy, když jsou stále otevřená jak dvousetmilisekundová ingress-freshness lhůta, tak pětisetmilisekundová semantic-validity lhůta. Po prokázané prezentaci uzavře dvousekundové okno odpovědi potvrzení nebo timeout runtime.“",
         "why": "Protože pravidla žijí na této kartě a ve sdílené politice—ne v kódu každé obrazovky—vyhodnotí mediační hranice stejnou sadu pravidel dříve, než požádá způsobilý výstup o prezentaci. Nic si nemůže později vymluvit vyšší důležitost: když prioritu určuje karta, je priorita rozhodnutá."
       }
     }
