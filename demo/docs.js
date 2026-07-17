@@ -683,7 +683,7 @@ async function runArchitecture() {
   const steps = [
     () => { setState('emitter', `emits ${node.label}`); light('emitter', 'is-pass', 0); if (status) status.textContent = `${node.label}: ADAS emits a signed instance.`; $('.arch-wire-in')?.classList.add('is-live'); },
     () => { setState('trust', decision.accepted ? `verified · ${trustChecks.length}/${trustChecks.length}` : 'rejected'); light('trust', decision.accepted ? 'is-pass' : 'is-fail', 0); if (status) status.textContent = `Trust Policy: ${decision.accepted ? `all ${trustChecks.length} checks pass` : decision.auditCode}.`; },
-    () => { setState('context', `${decision.context.motionState} · applicable`); light('context', 'is-pass', 0); if (status) status.textContent = `Context: ${CORE_AXES.length} signed axes — applicable while ${decision.context.motionState}.`; },
+    () => { setState('context', `${decision.context.motionState} · applicable`); light('context', 'is-pass', 0); if (status) status.textContent = `Context: ${CONTEXT_AXES.length} signed axes — applicable while ${decision.context.motionState}.`; },
     () => { setState('translation', decision.primary ? `${decision.auditCode}` : decision.auditCode); light('translation', decision.primary ? 'is-pass' : 'is-fail', 0); if (status) status.textContent = `Translation: primary ${archLabel(decision.primary)}${decision.concurrent.length ? ` + ${decision.concurrent.map(archLabel).join(', ')}` : ''}.`; $('.arch-wire-out')?.classList.add('is-live'); },
     () => { setState('runtime', 'ordered dispatch'); light('runtime', 'is-pass', 0); if (status) status.textContent = 'Coordination Runtime dispatches one deadline-bounded attempt.'; },
     () => { light('renderers', 'is-pass', 0); selected.forEach((name) => $(`[data-arch-surface="${name}"]`)?.classList.add('is-selected')); setState('renderers', `presented: ${selected.map(archLabel).join(' + ') || 'none'}`); if (status) status.textContent = `Renderers present on ${selected.map(archLabel).join(' + ')}.`; },
@@ -691,13 +691,19 @@ async function runArchitecture() {
     () => { light('occupant', 'is-pass', 0); setState('occupant', `${ack.auditCode}`); if (status) status.textContent = `Occupant response: ${ack.auditCode}. Delivery and response stay separate.`; },
   ];
 
-  for (const step of steps) {
-    await wait(reduce ? 0 : 620);
-    if (token !== archToken) { if (button) button.disabled = false; return; }
-    step();
-    refreshIcons();
+  try {
+    for (const step of steps) {
+      await wait(reduce ? 0 : 620);
+      if (token !== archToken) return;
+      step();
+      refreshIcons();
+    }
+  } catch (error) {
+    console.error('Architecture trace failed', error);
+    if (status) status.textContent = 'The architecture trace could not complete. Reset and try again.';
+  } finally {
+    if (button && token === archToken) button.disabled = false;
   }
-  if (button) button.disabled = false;
 }
 
 const archRun = $('#arch-run');

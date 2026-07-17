@@ -430,7 +430,7 @@ body.mode-essential .technical-only { display: none; }
 .arch-return b { font-size: 12px; }
 .arch-return small { margin-top: 2px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
 
-.impl-explainer { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+.impl-explainer { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
 .impl-explainer article { display: flex; flex-direction: column; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
 .impl-explainer .detail-kicker { margin-bottom: 10px; }
 .impl-explainer h3 { margin: 0 0 8px; font-size: 16px; line-height: 1.25; }
@@ -438,6 +438,7 @@ body.mode-essential .technical-only { display: none; }
 .impl-explainer code { color: var(--yellow); font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
 .impl-explainer a { display: inline-flex; align-items: center; gap: 6px; margin-top: 13px; color: var(--indigo-soft); font-size: 12px; font-weight: 700; }
 .impl-explainer a svg { width: 14px; height: 14px; }
+.impl-explainer .benchmark-card { border-color: color-mix(in srgb, var(--yellow) 35%, var(--line)); background: #ffce5620; }
 .impl-sample { margin-top: 10px; border: 1px solid var(--line); border-radius: 12px; background: #080a10; overflow: hidden; }
 .impl-sample .code-toolbar { border-bottom: 1px solid #222431; }
 .impl-sample .code-toolbar b { color: var(--text); font-weight: 400; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; overflow-wrap: anywhere; }

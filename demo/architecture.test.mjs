@@ -71,3 +71,10 @@ test('interactive documentation renders generated artifact excerpts', () => {
   assert.match(docsSource, /Object\.entries\(DOC_EXCERPTS\)/);
   assert.match(docsSource, /lifecycle\[0\]\.code = DOC_EXCERPTS\.node/);
 });
+
+test('architecture trace uses the generated context axes through completion', () => {
+  assert.doesNotMatch(docsSource, /CORE_AXES/, 'retired context-axis constant must not stop the trace');
+  assert.match(docsSource, /Context: \$\{CONTEXT_AXES\.length\} signed axes/);
+  assert.match(docsSource, /finally \{/);
+  assert.match(docsSource, /button\.disabled = false/);
+});

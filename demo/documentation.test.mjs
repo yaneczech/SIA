@@ -126,6 +126,9 @@ test('interactive documentation exposes the complete 0.4.0 learning path', async
   assert.match(html, /data-reading-mode="technical"/);
   assert.match(html, /id="docs-search"/);
   assert.match(html, /Source-of-truth map/);
+  assert.match(html, /npm run benchmark:quick/);
+  assert.match(html, /Measure now; claim only on target hardware\./);
+  assert.match(html, /forbids production claims/);
   assert.match(html, /data-copy-target="contract-code"/);
   assert.match(html, /Renderer receipt means/);
   assert.match(html, /Occupant response means/);

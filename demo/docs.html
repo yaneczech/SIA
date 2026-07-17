@@ -456,7 +456,7 @@
         </div>
       </section>
 
-      <section class="docs-section" id="implementation" data-search="implementation quickstart npm validate conformance test emitter renderer runtime security compatibility schema command digest canonical json rfc 8785">
+      <section class="docs-section" id="implementation" data-search="implementation quickstart npm validate conformance benchmark performance latency percentile p99 queue burst target hardware test emitter renderer runtime security compatibility schema command digest canonical json rfc 8785">
         <div class="section-heading">
           <div><p class="section-index">07 · IMPLEMENT &amp; TEST</p><h2>Start with contracts, finish with vectors</h2></div>
           <p>This section is for engineers. The normative contracts behind the tutorial have executable tests: strict schemas, cross-artifact invariants, cryptographic examples, and a conformance suite scoped so each implementation can validate the boundary it owns.</p>
@@ -469,6 +469,7 @@
             <div class="command-block"><span>02</span><code>npm test</code><button type="button" data-copy-text="npm test" aria-label="Copy npm test"><i data-lucide="copy" aria-hidden="true"></i></button></div>
             <div class="command-block"><span>03</span><code>npm run validate -- examples/v0.4.0/collision-warning.instance.json</code><button type="button" data-copy-text="npm run validate -- examples/v0.4.0/collision-warning.instance.json" aria-label="Copy validation command"><i data-lucide="copy" aria-hidden="true"></i></button></div>
             <div class="command-block"><span>04</span><code>npm run conformance -- runtime</code><button type="button" data-copy-text="npm run conformance -- runtime" aria-label="Copy conformance command"><i data-lucide="copy" aria-hidden="true"></i></button></div>
+            <div class="command-block"><span>05</span><code>npm run benchmark:quick</code><button type="button" data-copy-text="npm run benchmark:quick" aria-label="Copy benchmark command"><i data-lucide="copy" aria-hidden="true"></i></button></div>
           </div>
           <div class="conformance-panel">
             <p class="detail-kicker">CHOOSE YOUR BOUNDARY</p>
@@ -498,6 +499,12 @@
             <h3>Positive and adversarial vectors, per role.</h3>
             <p><code>npm test</code> runs the full suite; <code>npm run conformance -- &lt;role&gt;</code> runs only the vectors your class must pass. Vectors are language-neutral (a base example plus an RFC 7386 patch), so a C++ or Rust runtime reuses them without touching this JavaScript reference.</p>
           </article>
+          <article class="benchmark-card">
+            <span class="detail-kicker">DEVELOPMENT BENCHMARK</span>
+            <h3>Measure now; claim only on target hardware.</h3>
+            <p><code>npm run benchmark</code> reports signing, verification, validation, invariant, context-authentication, queue-residence, and burst distributions through <code>p99.9</code>. Every report records its host and exclusions and forbids production claims. Real latency evidence still requires the representative ECU/SoC, HSM, OS, transport, renderer, thermal state, and mixed workload.</p>
+            <a href="https://github.com/yaneczech/SIA/tree/main/bench">Benchmark methodology <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+          </article>
         </div>
 
         <div class="impl-sample">
@@ -522,7 +529,7 @@
         <div class="quality-row" aria-label="Implementation qualities">
           <div><i data-lucide="shield" aria-hidden="true"></i><span><b>Fail closed</b><small>Unknown authority never widens access.</small></span></div>
           <div><i data-lucide="repeat-2" aria-hidden="true"></i><span><b>Idempotent</b><small>Receipts and responses tolerate retries.</small></span></div>
-          <div><i data-lucide="layers-3" aria-hidden="true"></i><span><b>Compatible</b><small>Spec, profile, and catalog evolve separately.</small></span></div>
+          <div><i data-lucide="layers-3" aria-hidden="true"></i><span><b>Version-bound</b><small>The published release bundle stays atomic.</small></span></div>
           <div><i data-lucide="scan-line" aria-hidden="true"></i><span><b>Auditable</b><small>Every terminal outcome has stable evidence.</small></span></div>
         </div>
       </section>
