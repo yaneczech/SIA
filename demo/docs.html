@@ -443,7 +443,15 @@
           </details>
           <details class="guarantee-item">
             <summary><i data-lucide="scan-eye" aria-hidden="true"></i><span><b>Abuse and privacy stay bounded</b><small>Rate limits, quotas, minimal evidence</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>Emitters are rate-limited; nonce caches, retained queues, and audit storage are bounded. Evidence records minimise payload and PII, while persistent retention requires encryption, integrity protection, and an explicit privacy policy.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#14-abuse-resistance-and-privacy">Normative §14 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+            <div><p>Emitters are rate-limited; nonce caches, retained queues, and audit storage are bounded. Evidence records minimise payload and PII, while persistent retention requires encryption, integrity protection, and an explicit privacy policy. Retention coalescing keys are keyed digests of declared, validated fields—raw personal values are never used as storage keys.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#14-abuse-resistance-and-privacy">Normative §14 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="guarantee-item">
+            <summary><i data-lucide="crosshair" aria-hidden="true"></i><span><b>Targets are pinned, context must be possible</b><small>No retargeting, no impossible states</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>A runtime instance may narrow <code>any_occupant</code> to one verified occupied role, but can never widen or retarget the declared audience—a message for the driver cannot be redirected to a passenger. Likewise, a context snapshot claiming physically impossible combinations, such as <code>motion_state: moving</code> with <code>energy_state: charging</code>, is rejected outright instead of being interpreted.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#9-context-integrity">Normative §6 + §9 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          </details>
+          <details class="guarantee-item">
+            <summary><i data-lucide="monitor-cog" aria-hidden="true"></i><span><b>Surfaces cannot promote themselves</b><small>Safety relevance needs attested evidence</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>A renderer's capability claims come from an attested registry, and a display cannot declare itself <code>safety_relevant</code> without evidence the deployment accepts. A center screen that merely claims to be glance-optimised gains no right to carry a critical alert—eligibility is granted by the registry and the declaration, never self-asserted.</p><a href="https://github.com/yaneczech/SIA/blob/main/03_Core-Specification.md#10-renderer-capability-and-translation">Normative §10 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
           </details>
         </div>
       </section>
