@@ -10,147 +10,138 @@ When a label or relationship is uncertain, the precedence order is:
 
 The final artwork may change layout, typography, colour, and iconography, but it
 must preserve the labelled nodes, edge direction, loop separation, and profile
-scope stated below.
+scope stated below. Each panel answers one question. Do not merge panels merely
+to reduce the published figure count; a multi-panel figure or two consecutive
+figures are both preferable to one unreadable surface.
 
 ## Figure 1 — Complexity comparison
 
+### Figure 1A — Without SIA
+
 ```mermaid
 flowchart LR
-  subgraph BEFORE["Without SIA · N × M direct integrations"]
-    direction LR
-    subgraph BE["Emitters"]
-      BE1["ADAS"]
-      BE2["Vehicle service"]
-      BE3["Application / agent"]
-    end
-    subgraph BR["Renderers"]
-      BR1["Cluster"]
-      BR2["IVI"]
-      BR3["Voice"]
-    end
-    DUP["Each direct path reimplements<br/>trust · context · attention · fallback<br/>delivery evidence · occupant response · audit"]
-    BE1 --> BR1
-    BE1 --> BR2
-    BE1 --> BR3
-    BE2 --> BR1
-    BE2 --> BR2
-    BE2 --> BR3
-    BE3 --> BR1
-    BE3 --> BR2
-    BE3 --> BR3
-    DUP -.-> BR2
+  subgraph E["Emitters"]
+    E1["ADAS"]
+    E2["Service"]
+    E3["Application / agent"]
   end
+  subgraph R["Renderers"]
+    R1["Cluster"]
+    R2["IVI"]
+    R3["Voice"]
+  end
+  E1 --> R1
+  E1 --> R2
+  E1 --> R3
+  E2 --> R1
+  E2 --> R2
+  E2 --> R3
+  E3 --> R1
+  E3 --> R2
+  E3 --> R3
+```
 
-  subgraph AFTER["With SIA · N + M integrations"]
-    direction LR
-    subgraph AE["Emitters"]
-      AE1["ADAS"]
-      AE2["Vehicle service"]
-      AE3["Application / agent"]
-    end
-    subgraph SIA["Semantic Interaction Architecture"]
-      TG["Trust gate<br/>8 fail-closed checks"]
-      CP["Context policy<br/>6 core axes"]
-      TL["Deterministic translation<br/>capability + attention"]
-      CR["Coordination runtime<br/>ordered dispatch + fallback"]
-      RT["Bounded retention<br/>drop · defer · coalesce"]
-      EV["Evidence<br/>delivery receipt ≠ occupant response<br/>hash-linked audit"]
-      TG --> CP --> TL --> CR --> EV
-      CP --> RT
-      RT --> TL
-    end
-    subgraph AR["Thin external renderers"]
-      AR1["Cluster"]
-      AR2["IVI"]
-      AR3["Voice"]
-    end
-    AE1 --> TG
-    AE2 --> TG
-    AE3 --> TG
-    CR --> AR1
-    CR --> AR2
-    CR --> AR3
+Shared caption/callout outside the graph: **every direct path repeats trust,
+context, attention, fallback, evidence, and audit logic — N × M integrations.**
+
+### Figure 1B — With SIA
+
+```mermaid
+flowchart LR
+  subgraph E["Emitters"]
+    E1["ADAS"]
+    E2["Service"]
+    E3["Application / agent"]
   end
+  SIA["SIA mediation boundary<br/>verify · decide · coordinate · evidence"]
+  subgraph R["External renderers"]
+    R1["Cluster"]
+    R2["IVI"]
+    R3["Voice"]
+  end
+  E1 --> SIA
+  E2 --> SIA
+  E3 --> SIA
+  SIA --> R1
+  SIA --> R2
+  SIA --> R3
 ```
 
 Redraw constraints:
 
-- The left side communicates duplicated policy/evidence per emitter–renderer
-  pairing; it must not imply that only one shared pre-SIA component exists.
-- The right side communicates one mediation boundary with N emitter adapters and
-  M renderer adapters.
-- Trust is labelled as eight checks, retention is bounded, and delivery receipt
-  and occupant response remain visibly distinct.
+- 1A communicates duplicated policy/evidence per emitter–renderer pairing.
+- 1B communicates one mediation boundary with N emitter adapters and M renderer
+  adapters.
+- Do not expand SIA internals here; Figure 3 owns that explanation.
 - Renderers stay outside the SIA boundary.
 
 ## Figure 3 — Mediation architecture
 
+### Figure 3A — Forward decision path
+
 ```mermaid
 flowchart LR
-  subgraph SOURCES["External producers and policy authorities"]
-    EM["Emitters<br/>ADAS · services · applications · agents"]
-    CA["Signed catalog + actor registry"]
-    CS["Authenticated context snapshot<br/>motion_state · operating_mode · energy_state<br/>road_type · driver_state · occupancy"]
-  end
+  E["Emitter"] -->|"runtime instance"| T["Trust Policy<br/>8 fail-closed checks"]
+  T --> C["Context Policy<br/>applicability + blocked disposition"]
+  C --> X["Translation Layer<br/>capabilities + attention"]
+  X --> R["Coordination Runtime<br/>ordered dispatch"]
+  R --> O["External renderer"]
+```
 
-  subgraph SIA["SIA mediation boundary"]
-    TG["Trust Policy<br/>closed envelope + payload<br/>declaration digest · actor authority · signature<br/>ingress freshness · nonce replay · revocation<br/>semantic validity"]
-    CP["Context Policy<br/>applicability · unknown-context rule<br/>blocked disposition + bounded retention"]
-    TR["Translation Layer<br/>capability filtering · attention estimate<br/>deterministic render plan"]
-    CR["Coordination Runtime<br/>ordered dispatch attempt<br/>deadline · fallback · idempotency"]
-    OR["Occupant-response contract<br/>opens only after delivery success"]
-    AU["Hash-linked audit evidence"]
-    TG --> CP --> TR --> CR
-    CR --> OR
-    TG -.-> AU
-    CP -.-> AU
-    TR -.-> AU
-    CR -.-> AU
-    OR -.-> AU
-  end
+Place three small input callouts beneath the relevant stage, not inside its box:
 
-  subgraph SURFACES["External interaction surfaces"]
-    RC["Renderer capabilities<br/>attested + safety evidence"]
-    RE["Renderers<br/>cluster · IVI · voice"]
-    OC["Occupant / authorised responder"]
-  end
+- Trust: signed catalog + actor registry.
+- Context: authenticated snapshot with six core axes.
+- Translation: attested renderer capabilities.
 
-  EM -->|"runtime instance"| TG
-  CA --> TG
-  CS --> CP
-  RC -->|"capability declarations"| TR
-  CR -->|"ordered, deadline-bounded dispatch attempt"| RE
-  RE -->|"authenticated delivery receipt<br/>received · presented · failed"| CR
-  CR -->|"runtime-issued timed_out"| CR
-  OC -->|"separate authenticated response"| OR
-  OR --> CR
+### Figure 3B — Context outcome branch
+
+```mermaid
+flowchart LR
+  C["Context Policy"] --> Q{"Applicable and unblocked?"}
+  Q -->|"yes / never_block"| P["Continue to Translation"]
+  Q -->|"drop"| D["Terminal audit"]
+  Q -->|"defer"| H["Bounded hold<br/>TTL + quotas"]
+  Q -->|"coalesce"| K["Keep newest canonical key"]
+  H -->|"context change"| C
+  K -->|"context change"| C
+```
+
+### Figure 3C — Delivery and human feedback
+
+```mermaid
+flowchart LR
+  R["Coordination Runtime"] -->|"dispatch attempt"| V["Renderer"]
+  V -->|"received / presented / failed"| R
+  R -->|"runtime-only timed_out"| R
+  R -->|"delivery success proven"| W["Occupant-response window"]
+  U["Occupant / authorised input"] -->|"authenticated response"| W
+  W --> R
 ```
 
 Redraw constraints:
 
-- Trust Policy is the mandatory chokepoint before context, translation, or
-  dispatch; claimed urgency never bypasses it.
-- The six context axes are orthogonal observations, not a single vehicle-state
-  enum.
-- Renderer capabilities flow into Translation; render plans and attempts flow
-  out through Coordination Runtime.
-- `failed` comes from a renderer; `timed_out` comes only from Coordination
-  Runtime.
-- Delivery evidence and occupant response are two separate authenticated loops.
-- Audit observes every terminal decision but must not become an unbounded
-  prerequisite for critical dispatch.
+- 3A owns the architectural forward path; it must remain readable without the
+  other panels.
+- 3B owns retention and overload meaning. The six context-axis names belong in
+  one compact callout or legend, not inside the flow.
+- 3C owns the two feedback loops. `failed` comes from a renderer; `timed_out`
+  comes only from Coordination Runtime.
+- Add one shared footer across the three panels: every terminal decision produces
+  hash-linked audit evidence, but persistence never blocks critical dispatch
+  without a bound.
 
 ## Figure 4 — Semantic node taxonomy
 
 ```mermaid
 flowchart TB
   I["Interaction"]
-  E["Event<br/>system-initiated"]
-  A["Alert<br/>safety-relevant<br/>never_block · presentation contract<br/>occupant_response: kind · authority · timeout"]
-  N["Notification<br/>informational<br/>context_policy.on_blocked<br/>drop · defer · coalesce"]
-  AC["Action<br/>occupant-initiated<br/>reserved for a future input/execution profile"]
-  S["State<br/>runtime-internal transition<br/>reserved for a future profile"]
-  T["Task<br/>composed multi-step flow<br/>reserved for a future profile"]
+  E["Event"]
+  A["Alert"]
+  N["Notification"]
+  AC["Action<br/>future profile"]
+  S["State<br/>future profile"]
+  T["Task<br/>future profile"]
 
   I --> E
   E --> A
@@ -160,18 +151,26 @@ flowchart TB
   I --> T
 ```
 
+Keep contract details in a two-row legend beside or below the tree:
+
+| Emitted family in `sia-minimal` 0.4.0 | Contract emphasis |
+|---|---|
+| Alert | safety relevance · `never_block` where declared · presentation contract · separate occupant response |
+| Notification | informational · blocked disposition: `drop`, `defer`, or `coalesce` |
+
 Redraw constraints:
 
 - The architecture contains four top-level families: Event, Action, State, and
   Task; Event has Alert and Notification subtypes.
 - The `sia-minimal` 0.4.0 profile emits only Alert and Notification.
-- Do not restore `requires_ack`, `ack_kind`, `suppression_class`, or
-  `merges_with`. Use the structured occupant-response and blocked-disposition
-  contracts shown above.
+- Do not put field lists inside taxonomy nodes. Do not restore `requires_ack`,
+  `ack_kind`, `suppression_class`, or `merges_with`.
 - Action must not reuse the output-renderer delivery contract as an input or
   execution-result contract.
 
 ## Figure A.1 — Collision-warning trust and delivery sequence
+
+### Figure A.1A — Acceptance and planning
 
 ```mermaid
 sequenceDiagram
@@ -181,48 +180,56 @@ sequenceDiagram
   participant Context as Context Policy
   participant Translate as Translation Layer
   participant Runtime as Coordination Runtime
-  participant Primary as Primary renderer
-  participant Fallback as Fallback renderer
-  participant Occupant as Occupant / responder
-  participant Audit as Audit evidence
 
   ADAS->>Trust: Signed Collision.Warning runtime instance
   Trust->>Trust: Validate envelope + payload and 8 trust requirements
   alt trust rejected
-    Trust-->>Audit: Stable TRUST_REJECTED_* terminal record
-    Note over Trust,Primary: Rejected instance never reaches translation or a renderer
+    Trust-->>ADAS: Stable TRUST_REJECTED_* outcome
+    Note over Trust,Runtime: Rejected instance never reaches Translation
   else trust accepted
     Trust->>Context: Verified instance
-    Context->>Context: Evaluate 6-axis snapshot and applicability
+    Context->>Context: Evaluate applicability from 6-axis snapshot
     Context->>Translate: Eligible instance + policy outcome
-    Translate->>Translate: Filter attested capabilities and attention constraints
+    Translate->>Translate: Filter capabilities + attention constraints
     Translate->>Runtime: Deterministic render plan
-    Runtime->>Primary: Dispatch attempt 1 with bounded deadline
-    alt primary presented
-      Primary-->>Runtime: Authenticated presented receipt
-    else primary failed or runtime deadline expires
-      Primary-->>Runtime: Authenticated failed receipt
-      Note right of Runtime: Runtime alone may issue timed_out
-      Runtime->>Fallback: Dispatch attempt 2, bound to terminal predecessor
-      Fallback-->>Runtime: Authenticated presented receipt
+  end
+```
+
+### Figure A.1B — Delivery, fallback, and response
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Runtime as Coordination Runtime
+  participant Primary as Primary renderer
+  participant Fallback as Fallback renderer
+  participant Occupant as Occupant / responder
+
+  Runtime->>Primary: Dispatch attempt 1 with bounded deadline
+  alt primary presented
+    Primary-->>Runtime: Authenticated presented receipt
+  else primary failed or deadline expires
+    Primary-->>Runtime: Authenticated failed receipt
+    Note right of Runtime: Runtime alone may issue timed_out
+    Runtime->>Fallback: Attempt 2 bound to terminal predecessor
+    Fallback-->>Runtime: Authenticated presented receipt
+  end
+  alt delivery success proven and response required
+    Runtime->>Occupant: Open occupant-response window
+    alt authenticated response received
+      Occupant-->>Runtime: Separate occupant response
+    else response deadline expires
+      Runtime->>Runtime: Occupant-response timeout
     end
-    Runtime-->>Audit: Attempts + receipts + delivery outcome
-    alt delivery-success policy satisfied and response required
-      Runtime->>Occupant: Open occupant-response window
-      alt authenticated response received
-        Occupant-->>Runtime: Separate occupant response
-      else response deadline expires
-        Runtime->>Runtime: Occupant-response timeout
-      end
-    else delivery not proven or response not required
-      Note over Runtime,Occupant: Occupant response remains not_started or not_applicable
-    end
-    Runtime-->>Audit: Occupant-response outcome + terminal record
+  else delivery not proven or response not required
+    Note over Runtime,Occupant: Response stays not_started or not_applicable
   end
 ```
 
 Redraw constraints:
 
+- A.1A ends at the render plan. A.1B starts from that plan; do not reconnect all
+  nine lifelines into one sequence.
 - The dispatch deadline is bounded by semantic validity; neither fallback nor
   queueing silently extends freshness or validity.
 - A `received` receipt alone is not delivery success. The applicable success
@@ -231,6 +238,9 @@ Redraw constraints:
   still-valid instance.
 - Delivery timeout never substitutes for occupant-response timeout, and a
   renderer receipt never proves awareness or comprehension.
+- Show audit as one shared footer or side annotation: rejected trust, delivery
+  outcome, and occupant-response outcome each produce terminal evidence. Audit
+  does not need its own lifeline.
 
 ## Export checklist
 
