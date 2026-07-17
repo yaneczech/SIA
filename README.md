@@ -4,9 +4,11 @@
 
 **A [Cars Making Sense](#about-cars-making-sense) initiative · v0.4.0 draft · July 2026**
 
+**A vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.**
+
 > **What if a collision warning could declare, in machine-readable terms, who is allowed to emit it, how fresh its attestation must be, what attention budget it consumes, and which renderer may present it — without that logic being duplicated inside every screen, widget, or assistant?**
 
-This repository contains a draft position paper proposing **Semantic Interaction Architecture (SIA)**: a narrow semantic mediation layer for high-value interactions in software-defined vehicles.
+This repository contains a draft position paper proposing **Semantic Interaction Architecture (SIA)**: the narrow mediation layer that implements that contract for high-value interactions in software-defined vehicles.
 
 SIA decouples the **meaning**, **trust requirements**, **attention demand**, **context fitness**, and **renderer capability requirements** of an in-vehicle interaction from its concrete presentation on a screen, voice channel, cluster, HUD, or other HMI surface.
 

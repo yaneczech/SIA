@@ -94,6 +94,60 @@ test('normative documentation names both feedback loops and bounded retention', 
   assert.match(core, /coalesce/);
 });
 
+test('project positioning is identical across the paper, repository, and both web entry points', async () => {
+  const positioning = 'vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions';
+  const [demoHtml, docsHtml] = await Promise.all([
+    readFile(path.join(root, 'demo/index.html'), 'utf8'),
+    readFile(path.join(root, 'demo/docs.html'), 'utf8'),
+  ]);
+  assert.match(textByFile['README.md'], new RegExp(positioning));
+  assert.match(textByFile['01_Semantic-Interaction-Architecture-sdv.md'], new RegExp(positioning));
+  assert.match(demoHtml, new RegExp(positioning));
+  assert.match(docsHtml, new RegExp(positioning));
+});
+
+test('demo entry points publish complete and consistent social sharing metadata', async () => {
+  const [demoHtml, docsHtml, ogImage] = await Promise.all([
+    readFile(path.join(root, 'demo/index.html'), 'utf8'),
+    readFile(path.join(root, 'demo/docs.html'), 'utf8'),
+    readFile(path.join(root, 'demo/og-sia.png')),
+  ]);
+  const imageUrl = 'https://yaneczech.github.io/SIA/demo/og-sia.png';
+  const imageAlt = 'SIA — Semantic Interaction Architecture: vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.';
+  const pages = [
+    {
+      html: demoHtml,
+      canonical: 'https://yaneczech.github.io/SIA/demo/',
+      title: 'SIA — Semantic Interaction Architecture',
+    },
+    {
+      html: docsHtml,
+      canonical: 'https://yaneczech.github.io/SIA/demo/docs.html',
+      title: 'SIA 0.4.0 — Interactive Documentation',
+    },
+  ];
+
+  for (const { html, canonical, title } of pages) {
+    assert.match(html, new RegExp(`<link rel="canonical" href="${canonical}">`));
+    assert.match(html, /<meta property="og:type" content="website">/);
+    assert.match(html, /<meta property="og:site_name" content="SIA">/);
+    assert.match(html, new RegExp(`<meta property="og:title" content="${title}">`));
+    assert.match(html, new RegExp(`<meta property="og:url" content="${canonical}">`));
+    assert.match(html, new RegExp(`<meta property="og:image" content="${imageUrl}">`));
+    assert.match(html, /<meta property="og:image:width" content="1200">/);
+    assert.match(html, /<meta property="og:image:height" content="630">/);
+    assert.match(html, new RegExp(`<meta property="og:image:alt" content="${imageAlt}">`));
+    assert.match(html, /<meta name="twitter:card" content="summary_large_image">/);
+    assert.match(html, new RegExp(`<meta name="twitter:title" content="${title}">`));
+    assert.match(html, new RegExp(`<meta name="twitter:image" content="${imageUrl}">`));
+    assert.match(html, new RegExp(`<meta name="twitter:image:alt" content="${imageAlt}">`));
+  }
+
+  assert.equal(ogImage.subarray(1, 4).toString(), 'PNG');
+  assert.equal(ogImage.readUInt32BE(16), 1200);
+  assert.equal(ogImage.readUInt32BE(20), 630);
+});
+
 test('reference architecture keeps implementation advice inside the evidence boundary', () => {
   const reference = textByFile['notes/reference-architecture.md'];
   const paper = textByFile['01_Semantic-Interaction-Architecture-sdv.md'];
