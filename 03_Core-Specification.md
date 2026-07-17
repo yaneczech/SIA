@@ -175,6 +175,8 @@ Selection MUST use a stable tie-breaker. Identical declaration, context, capabil
 
 A render plan MUST contain exactly one `primary` renderer. A fallback renderer is standby until a prior dispatch attempt fails or times out; it MUST NOT be labeled `concurrent` merely because it is eligible. Selected and rejected renderer sets MUST be disjoint, and every declaration-required renderer MUST be selected.
 
+Attention or load budgets MAY reject a renderer only for interactions whose declaration permits blocking (`drop`, `defer`, or `coalesce`). For a `never_block` declaration, renderer eligibility is determined by safety assurance and the presentation contract; a budget calculation MUST NOT leave such an interaction without an eligible renderer while a declared surface is available.
+
 ## 11. Delivery contract
 
 Renderer delivery and occupant response are separate feedback loops.
