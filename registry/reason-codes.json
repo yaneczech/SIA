@@ -13,7 +13,8 @@
       { "code": "TRUST_REJECTED_FRESHNESS", "meaning": "Ingress age exceeds max_ingress_age_ms." },
       { "code": "TRUST_REJECTED_REPLAY", "meaning": "Nonce was already accepted within the replay window." },
       { "code": "TRUST_REJECTED_REVOKED", "meaning": "Key or session is revoked at acceptance time." },
-      { "code": "TRUST_REJECTED_EXPIRED", "meaning": "Semantic validity had already lapsed at acceptance time." }
+      { "code": "TRUST_REJECTED_EXPIRED", "meaning": "Semantic validity had already lapsed at acceptance time." },
+      { "code": "TRUST_REJECTED_ADMISSION", "meaning": "Structural admission or a bounded per-identifier rate quota rejected the message before verification completed; reserved critical capacity is protected from unverified claims." }
     ],
     "context": [
       { "code": "CONTEXT_APPLICABLE", "meaning": "The node is meaningful in the current context; processing continues." },

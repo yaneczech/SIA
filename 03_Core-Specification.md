@@ -219,6 +219,8 @@ SIA security gates fail closed for unauthorised claims. Safety-relevant delivery
 
 The documented latency bound MUST include bounded queue residence and contention for shared CPU, HSM, transport, storage, and renderer resources. Overload MUST produce an explicit, audited outcome or enter the declared safety fallback; it MUST NOT silently extend freshness or semantic validity. Audit persistence MUST NOT become an unbounded prerequisite for critical dispatch.
 
+Processing MUST be isolated into traffic classes such that no lower-priority interaction can delay a `never_block` interaction beyond its documented latency band. The deployment MUST reserve bounded queue, worker, authentication, and transport capacity for the critical class, including its fallback path. Within a class, deadline-ordered processing (earliest deadline first) is RECOMMENDED. An interaction whose remaining time window cannot complete the next processing stage MUST NOT enter that stage; it terminates through its declared disposition or timeout outcome with an audit record. Overload may only shed or defer work according to declared dispositions — queues themselves decide nothing.
+
 SIA MUST NOT become an undocumented single point of failure for a safety-relevant indication.
 
 ## 14. Abuse resistance and privacy
@@ -226,6 +228,8 @@ SIA MUST NOT become an undocumented single point of failure for a safety-relevan
 The consolidated threat-to-mitigation mapping, non-goals, and residual risks accepted in 0.4.0 are published in [`04_Threat-Model.md`](./04_Threat-Model.md).
 
 Implementations MUST rate-limit emitters, bound nonce caches and retained queues, and audit repeated policy violations. Session authentication does not grant semantic authority and MUST remain revocable.
+
+Before authentication, an implementation MAY apply only structural admission checks: size and encoding limits, supported version and algorithm identifiers, required fields, syntactic timestamps, and a known actor or session identifier. Unauthenticated content — including the claimed node identity — MUST NOT grant elevated scheduling priority. Admission to reserved critical capacity MUST be rate-limited per session or per claimed identifier within bounded quotas, so that a flood of forged critical claims cannot exhaust critical verification capacity. Admission rejection is a terminal outcome with reason code `TRUST_REJECTED_ADMISSION`; under sustained flood it MUST be audited at a bounded, aggregated rate rather than per message.
 
 Audit details MUST follow data minimisation. Payloads classified as personal or sensitive SHOULD be referenced by digest or redacted projection rather than copied into logs. Hash linking provides tamper evidence; deployments requiring non-repudiation SHOULD additionally sign audit checkpoints.
 
