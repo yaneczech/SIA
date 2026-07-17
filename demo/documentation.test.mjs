@@ -21,6 +21,7 @@ const documents = [
   'conformance/crypto/README.md',
   'bench/README.md',
   'demo/README.md',
+  'figures/REDRAW_REFERENCE.md',
 ];
 const textByFile = Object.fromEntries(await Promise.all(documents.map(async (file) => [file, await readFile(path.join(root, file), 'utf8')])));
 

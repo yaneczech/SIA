@@ -4,6 +4,10 @@ Working note, not part of the published specification. Tracks what each figure i
 [`../figures/`](../figures/) needs to match the 0.4.0 contract, and proposes an
 interactive diagram that cannot drift from the spec again.
 
+The checked-in Mermaid blueprints for the four outstanding redraws are in
+[`../figures/REDRAW_REFERENCE.md`](../figures/REDRAW_REFERENCE.md). Use those as
+the editable semantic source when producing replacement vector or raster artwork.
+
 Status legend: ✅ accurate · ⚠️ structure fine, labels stale · ❌ conceptually behind 0.4.0.
 
 ## Per-figure verdict and fix
