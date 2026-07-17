@@ -519,7 +519,7 @@
         </div>
       </section>
 
-      <section class="docs-section" id="faq" data-search="faq questions implementation effort oem tier-1 supplier dependencies stack performance latency scope non-goals availability fallback privacy retention migration governance conformance standard vendor">
+      <section class="docs-section" id="faq" data-search="faq questions implementation effort oem tier-1 supplier dependencies stack performance latency scope non-goals availability fallback privacy retention migration governance conformance standard vendor android automotive templates notification service third-party app agent credential registry permission look sound design branding voice assistant channel actor">
         <div class="section-heading">
           <div><p class="section-index">08 · FAQ</p><h2>The questions an adopter asks first</h2></div>
           <p>Honest answers about effort, dependencies, and what SIA does and does not demand of an existing stack.</p>
@@ -568,6 +568,22 @@
           <details class="faq-item">
             <summary><i data-lucide="git-fork" aria-hidden="true"></i><span>Does adopting SIA lock me into a vendor or ecosystem?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
             <div><p>No vendor dependency is required by the draft. The contracts use JSON Schema, the vectors are language-neutral, canonicalisation follows a public RFC, and the repository is openly licensed. Renderers remain external and keep their visual and acoustic design; SIA standardises the boundary and evidence, not a GUI toolkit. A deployment supplies or builds its own runtime and may use any language, transport, and cryptographic implementation that preserves the profile's wire contracts and invariants.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="layout-template" aria-hidden="true"></i><span>How is this different from Android Automotive's templates or a notification service?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Template systems such as the Android for Cars App Library constrain <em>how an app inside one ecosystem draws</em>—a valuable but ecosystem-bound control, scoped to app categories. A platform notification service routes messages but rarely proves who was allowed to make a claim. SIA targets the layer neither covers: a vendor-neutral, vehicle-wide contract for what an interaction <em>means</em>, who has authority to emit it, when it applies, and what evidence closes it. The two compose: a templated app UI can live behind an SIA renderer, and SIA can consume signals from any data layer beneath.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="key-round" aria-hidden="true"></i><span>How does a third-party app or AI agent get permission to speak at all?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Two gates, both explicit. First, <b>identity</b>: the actor receives a credential in the deployment's signed actor registry, carrying its actor class (<code>third_party_app</code>, <code>agent_local</code>, <code>agent_cloud</code>…), validity window, and revocation state. Second, <b>semantic authority</b>: a credential alone grants nothing—the actor may emit only node types whose declarations list its class in <code>permitted_actor_classes</code>. A perfectly authenticated music app still cannot emit a collision warning, and a misbehaving actor's credential can be revoked mid-session. Who is admitted to the registry, and under what review, is a deployment governance decision SIA records but does not make.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="palette" aria-hidden="true"></i><span>Does SIA decide what warnings look or sound like?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>No. Renderers remain external and own every pixel and every tone—brand design, typography, animation, voice persona. What they cannot do is reinterpret policy: whether the interaction may appear, its priority, which surface presents it, and what evidence must come back are decided at the boundary from the declaration. Think of SIA as standardising the <em>envelope and the receipt</em>, never the letterhead.</p></div>
+          </details>
+          <details class="faq-item">
+            <summary><i data-lucide="mic" aria-hidden="true"></i><span>Where do voice assistants fit—is voice an actor?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>Voice is a <em>channel</em>, not an actor. On the output side, voice is simply one renderer that returns delivery receipts like any screen. On the origin side, the actor is whoever produced the meaning—a local or cloud assistant (<code>agent_local</code> / <code>agent_cloud</code>) or, for a verified spoken command, the human occupant. So an assistant speaking through the cabin speakers gets no extra authority from sounding official: its claims are checked against its own actor class, exactly like a silent app's.</p></div>
           </details>
         </div>
       </section>

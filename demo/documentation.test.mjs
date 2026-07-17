@@ -127,7 +127,7 @@ test('interactive documentation exposes the complete 0.4 learning path', async (
   ]) assert.match(script, new RegExp(`schema: '${schema}\\.schema\\.json'`));
   assert.match(script, /const trustChecks = \[/);
   assert.equal([...script.matchAll(/failure: 'TRUST_REJECTED_/g)].length, 8);
-  assert.equal([...html.matchAll(/class="faq-item"/g)].length, 11);
+  assert.equal([...html.matchAll(/class="faq-item"/g)].length, 15);
   assert.match(html, /Action, State, and Task are reserved for future profiles/);
   assert.match(html, /session-establishment contract is future work/);
   assert.match(html, /not a production reference runtime/);
