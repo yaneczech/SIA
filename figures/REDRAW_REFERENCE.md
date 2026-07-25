@@ -41,8 +41,9 @@ flowchart LR
   E3 --> R3
 ```
 
-Shared caption/callout outside the graph: **every direct path repeats trust,
-context, attention, fallback, evidence, and audit logic — N × M integrations.**
+Shared caption/callout outside the graph: **trust, context, attention, fallback,
+evidence, and audit logic must be handled independently on each direct path —
+N × M integrations.**
 
 ### Figure 1B — With SIA
 
@@ -90,7 +91,7 @@ flowchart LR
 
 Place three small input callouts beneath the relevant stage, not inside its box:
 
-- Trust: signed catalog + actor registry.
+- Trust: bounded structural admission, then signed catalog + actor registry.
 - Context: authenticated snapshot with six core axes.
 - Translation: attested renderer capabilities.
 
@@ -98,13 +99,16 @@ Place three small input callouts beneath the relevant stage, not inside its box:
 
 ```mermaid
 flowchart LR
-  C["Context Policy"] --> Q{"Applicable and unblocked?"}
-  Q -->|"yes / never_block"| P["Continue to Translation"]
-  Q -->|"drop"| D["Terminal audit"]
-  Q -->|"defer"| H["Bounded hold<br/>TTL + quotas"]
-  Q -->|"coalesce"| K["Keep newest canonical key"]
-  H -->|"context change"| C
-  K -->|"context change"| C
+  C["Context Policy"] --> A{"Applicable?"}
+  A -->|"no"| N["Not applicable<br/>terminal audit"]
+  A -->|"yes"| B{"Blocked now?"}
+  B -->|"no / never_block"| P["Continue to Translation"]
+  B -->|"drop"| D["Drop<br/>terminal audit"]
+  B -->|"defer"| H["Bounded hold<br/>TTL + quotas"]
+  B -->|"coalesce"| K["Keep newest canonical key"]
+  H -->|"declared trigger"| V["Full re-evaluation<br/>trust · validity · context<br/>capabilities · policy"]
+  K -->|"declared trigger"| V
+  V -->|"release only on success"| P
 ```
 
 ### Figure 3C — Delivery and human feedback
@@ -123,10 +127,13 @@ Redraw constraints:
 
 - 3A owns the architectural forward path; it must remain readable without the
   other panels.
-- 3B owns retention and overload meaning. The six context-axis names belong in
-  one compact callout or legend, not inside the flow.
+- 3B owns applicability, blocking, and bounded retention. The six context-axis
+  names belong in one compact callout or legend, not inside the flow.
 - 3C owns the two feedback loops. `failed` comes from a renderer; `timed_out`
   comes only from Coordination Runtime.
+- Add one compact overload callout outside the flows: reserved critical capacity
+  protects `never_block`; deadline-infeasible work terminates only through its
+  declared disposition, timeout, or safety fallback, with audit evidence.
 - Add one shared footer across the three panels: every terminal decision produces
   hash-linked audit evidence, but persistence never blocks critical dispatch
   without a bound.
@@ -156,7 +163,7 @@ Keep contract details in a two-row legend beside or below the tree:
 | Emitted family in `sia-minimal` 0.4.0 | Contract emphasis |
 |---|---|
 | Alert | safety relevance · `never_block` where declared · presentation contract · separate occupant response |
-| Notification | informational · blocked disposition: `drop`, `defer`, or `coalesce` |
+| Notification | informational · disposition declared per node; reference nodes exercise `drop`, `defer`, and `coalesce` |
 
 Redraw constraints:
 
@@ -181,17 +188,23 @@ sequenceDiagram
   participant Translate as Translation Layer
   participant Runtime as Coordination Runtime
 
-  ADAS->>Trust: Signed Collision.Warning runtime instance
-  Trust->>Trust: Validate envelope + payload and 8 trust requirements
-  alt trust rejected
-    Trust-->>ADAS: Stable TRUST_REJECTED_* outcome
-    Note over Trust,Runtime: Rejected instance never reaches Translation
-  else trust accepted
-    Trust->>Context: Verified instance
-    Context->>Context: Evaluate applicability from 6-axis snapshot
-    Context->>Translate: Eligible instance + policy outcome
-    Translate->>Translate: Filter capabilities + attention constraints
-    Translate->>Runtime: Deterministic render plan
+  ADAS->>Trust: Signed Alert.Collision.Warning runtime instance
+  Trust->>Trust: Structural pre-auth admission + bounded quota
+  alt admission rejected
+    Trust->>Trust: Terminal TRUST_REJECTED_ADMISSION outcome
+    Note over Trust,Runtime: Unverified claims get no priority; flood audit is bounded and aggregated
+  else admitted for verification
+    Trust->>Trust: Perform 8 trust checks, including envelope + payload
+    alt trust rejected
+      Trust->>Trust: Terminal registered trust-rejection outcome
+      Note over Trust,Runtime: Rejected instance never reaches Translation
+    else trust accepted
+      Trust->>Context: Verified instance
+      Context->>Context: Evaluate applicability from 6-axis snapshot
+      Context->>Translate: Eligible instance + policy outcome
+      Translate->>Translate: Filter capabilities + attention constraints
+      Translate->>Runtime: Deterministic render plan
+    end
   end
 ```
 
@@ -208,21 +221,32 @@ sequenceDiagram
   Runtime->>Primary: Dispatch attempt 1 with bounded deadline
   alt primary presented
     Primary-->>Runtime: Authenticated presented receipt
-  else primary failed or deadline expires
-    Primary-->>Runtime: Authenticated failed receipt
-    Note right of Runtime: Runtime alone may issue timed_out
+  else primary did not present
+    alt renderer reports failure
+      Primary-->>Runtime: Authenticated failed receipt
+    else primary deadline expires
+      Runtime->>Runtime: Runtime-issued timed_out receipt
+    end
     Runtime->>Fallback: Attempt 2 bound to terminal predecessor
-    Fallback-->>Runtime: Authenticated presented receipt
+    alt fallback presented
+      Fallback-->>Runtime: Authenticated presented receipt
+    else renderer reports failure
+      Fallback-->>Runtime: Authenticated failed receipt
+    else fallback deadline expires
+      Runtime->>Runtime: Runtime-issued timed_out receipt
+    end
   end
   alt delivery success proven and response required
-    Runtime->>Occupant: Open occupant-response window
+    Runtime->>Runtime: Open occupant-response window
     alt authenticated response received
       Occupant-->>Runtime: Separate occupant response
     else response deadline expires
       Runtime->>Runtime: Occupant-response timeout
     end
-  else delivery not proven or response not required
-    Note over Runtime,Occupant: Response stays not_started or not_applicable
+  else delivery not proven
+    Note over Runtime,Occupant: Occupant response remains not_started
+  else delivery success proven and response not required
+    Note over Runtime,Occupant: No response window; interaction closes
   end
 ```
 
@@ -232,6 +256,8 @@ Redraw constraints:
   nine lifelines into one sequence.
 - The dispatch deadline is bounded by semantic validity; neither fallback nor
   queueing silently extends freshness or validity.
+- A structural admission rejection is terminal; under sustained flood its audit
+  evidence is bounded and aggregated rather than emitted once per packet.
 - A `received` receipt alone is not delivery success. The applicable success
   policy requires `presented` evidence.
 - Fallback dispatch requires a terminal failed/timed-out predecessor and a
@@ -250,7 +276,10 @@ Before replacing a raster figure, verify that the artwork:
 - contains no retired fields (`requires_ack`, `ack_kind`, `suppression_class`,
   `merges_with`);
 - preserves the eight trust requirements and six core context axes;
+- shows structural pre-authentication admission without granting priority from
+  an unverified node claim;
 - keeps renderers outside SIA;
+- separates `not_applicable` from blocking and its declared disposition;
 - distinguishes render plan, dispatch attempt, delivery receipt, and occupant
   response;
 - labels uncertainty and overload outcomes as explicit, bounded, and auditable;
