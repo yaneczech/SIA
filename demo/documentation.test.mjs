@@ -268,3 +268,39 @@ test('interactive documentation exposes the complete 0.4.0 learning path', async
   assert.match(demoHtml, /VISUAL ATTENTION COST/);
   assert.doesNotMatch(demoHtml, /<small>ATTENTION BUDGET<\/small>/);
 });
+
+test('the Test Lab exposes a shareable, resettable, copyable scenario state', async () => {
+  const [html, script, css] = await Promise.all([
+    readFile(path.join(root, 'demo/index.html'), 'utf8'),
+    readFile(path.join(root, 'demo/app.js'), 'utf8'),
+    readFile(path.join(root, 'demo/styles.css'), 'utf8'),
+  ]);
+
+  // Controls: share, reset, and audit-record copy must all exist in the markup.
+  for (const id of ['lab-share', 'lab-reset', 'audit-copy']) {
+    assert.match(html, new RegExp(`id="${id}"`), `lab toolbar is missing #${id}`);
+  }
+
+  // URL state is written from, and restored into, the full control set.
+  assert.match(script, /function writeLabStateToUrl/);
+  assert.match(script, /function applyLabStateFromUrl/);
+  assert.match(script, /history\.replaceState/);
+  // Baseline must be captured after the node select is populated, or the shared
+  // link would encode an empty node value as the default.
+  const initOrder = script.slice(script.indexOf('populateNodeSelect();'));
+  assert.ok(
+    initOrder.indexOf('captureLabBaseline();') < initOrder.indexOf('applyLabStateFromUrl();'),
+    'the lab baseline must be captured before URL state is applied',
+  );
+
+  // A shared link must never inject an unknown option value into a select.
+  assert.match(script, /\[\.\.\.el\.options\]\.some\(\(option\) => option\.value === raw\)/);
+
+  // Restoring state must not silently skip the recompute.
+  assert.match(script, /applyLabStateFromUrl\(\);\s*\n\s*updateLab\(\);/);
+
+  // The wrapped heading column keeps the paragraph styling it had as a direct child.
+  assert.match(html, /class="heading-aside"/);
+  assert.match(css, /\.section-heading \.heading-aside > p/);
+  assert.match(css, /\.lab-toolbar button, \.audit-toolbar button/);
+});

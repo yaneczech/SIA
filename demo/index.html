@@ -213,7 +213,13 @@
     <section class="lab" id="lab" aria-labelledby="lab-title">
       <div class="section-heading">
         <div><p class="eyebrow">TEST LAB</p><h2 id="lab-title">Try to break SIA</h2></div>
-        <p>Change the inputs. Test renderer delivery independently from the occupant response; the result and audit record update instantly.</p>
+        <div class="heading-aside">
+          <p>Change the inputs. Test renderer delivery independently from the occupant response; the result and audit record update instantly.</p>
+          <div class="lab-toolbar">
+            <button type="button" id="lab-share"><i data-lucide="link" aria-hidden="true"></i> Copy link to this scenario</button>
+            <button type="button" id="lab-reset"><i data-lucide="rotate-ccw" aria-hidden="true"></i> Reset inputs</button>
+          </div>
+        </div>
       </div>
       <div class="lab-grid">
         <form class="control-panel" id="lab-form">
@@ -332,6 +338,7 @@
             </div>
             <details>
               <summary>Technical audit log</summary>
+              <div class="audit-toolbar"><button type="button" id="audit-copy"><i data-lucide="copy" aria-hidden="true"></i> Copy audit record</button></div>
               <pre id="audit-log"></pre>
             </details>
           </div>

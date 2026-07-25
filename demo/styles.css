@@ -51,7 +51,8 @@ h1 span { color: var(--indigo); }
 .explainer, .lab { padding: 64px clamp(20px, 5vw, 76px); border-top: 1px solid var(--line); }
 .section-heading { display: grid; grid-template-columns: 1.4fr 1fr; align-items: end; gap: 40px; margin-bottom: 28px; }
 .section-heading h2 { margin: 0; font-size: clamp(36px, 5vw, 70px); letter-spacing: 0; line-height: 1; }
-.section-heading > p { margin: 0; max-width: 510px; color: var(--muted); line-height: 1.55; }
+.section-heading > p, .section-heading .heading-aside > p { margin: 0; max-width: 510px; color: var(--muted); line-height: 1.55; }
+.section-heading .heading-aside { min-width: 0; max-width: 510px; }
 .scenario-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 8px; }
 .scenario-chip { min-height: 60px; padding: 9px 11px; display: flex; align-items: center; gap: 10px; text-align: left; background: transparent; border: 1px solid var(--line); border-radius: 14px; cursor: pointer; transition: .2s ease; }
 .scenario-chip:hover { background: var(--surface); border-color: #4a4d60; }
@@ -214,6 +215,11 @@ h1 span { color: var(--indigo); }
 .attention-budget.unused { border-color: #333646; background: #0f1119; }
 .attention-budget.excluded { border-color: var(--line); color: var(--muted); }
 .attention-budget.excluded small { color: var(--muted); }
+
+.lab-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.lab-toolbar button, .audit-toolbar button { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 8px 13px; border: 1px solid var(--control-line); border-radius: 9px; background: var(--surface); color: var(--text); cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.lab-toolbar button:hover, .audit-toolbar button:hover { border-color: var(--indigo-soft); background: var(--surface-2); }
+.audit-toolbar { display: flex; justify-content: flex-end; margin-bottom: 8px; }
 
 .lab { background: #0d0f18; }
 .lab-grid { display: grid; grid-template-columns: minmax(360px, .82fr) 1.18fr; border: 1px solid var(--line); border-radius: var(--radius); overflow: clip; }

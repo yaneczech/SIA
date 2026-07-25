@@ -427,7 +427,99 @@ function populateNodeSelect() {
 }
 
 const labInputs = ['node', 'actor', 'signature', 'credential-active', 'declaration-bound', 'validity-bounded', 'age', 'replay', 'vehicle-state', 'road-type', 'driver-state', 'cluster-online', 'voice-online', 'ivi-online', 'delivery-mode', 'ack-mode', 'inject-priority'];
-labInputs.forEach((id) => $(`#${id}`).addEventListener('input', updateLab));
+labInputs.forEach((id) => $(`#${id}`).addEventListener('input', () => {
+  updateLab();
+  writeLabStateToUrl();
+}));
+
+// --- Shareable lab state -------------------------------------------------
+// The URL carries only the controls that differ from the published baseline,
+// so a shared scenario link stays short and reviewable by eye. The baseline is
+// captured during init, after the node select has been populated.
+let labBaseline = {};
+
+function captureLabBaseline() {
+  labBaseline = readLabControls();
+}
+
+function readLabControls() {
+  return Object.fromEntries(labInputs.map((id) => {
+    const el = $(`#${id}`);
+    return [id, el.type === 'checkbox' ? el.checked : el.value];
+  }));
+}
+
+function writeLabStateToUrl() {
+  const current = readLabControls();
+  const params = new URLSearchParams();
+  for (const id of labInputs) {
+    if (String(current[id]) === String(labBaseline[id])) continue;
+    params.set(id, typeof current[id] === 'boolean' ? (current[id] ? '1' : '0') : current[id]);
+  }
+  const query = params.toString();
+  history.replaceState(null, '', `${location.pathname}${query ? `?${query}` : ''}${location.hash}`);
+}
+
+function applyLabStateFromUrl() {
+  const params = new URLSearchParams(location.search);
+  let applied = 0;
+  for (const id of labInputs) {
+    if (!params.has(id)) continue;
+    const el = $(`#${id}`);
+    const raw = params.get(id);
+    if (el.type === 'checkbox') el.checked = raw === '1' || raw === 'true';
+    else if (el.tagName === 'SELECT') {
+      if (![...el.options].some((option) => option.value === raw)) continue;
+      el.value = raw;
+    } else el.value = raw;
+    applied += 1;
+  }
+  return applied;
+}
+
+function resetLab() {
+  for (const [id, value] of Object.entries(labBaseline)) {
+    const el = $(`#${id}`);
+    if (el.type === 'checkbox') el.checked = value;
+    else el.value = value;
+  }
+  updateLab();
+  writeLabStateToUrl();
+  $('#node').focus();
+}
+
+$('#lab-reset')?.addEventListener('click', resetLab);
+$('#lab-share')?.addEventListener('click', (event) => {
+  writeLabStateToUrl();
+  copyToClipboard(location.href, event.currentTarget, 'Link copied');
+});
+$('#audit-copy')?.addEventListener('click', (event) => {
+  copyToClipboard($('#audit-log').textContent, event.currentTarget, 'Record copied');
+});
+
+async function copyToClipboard(text, button, doneLabel) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const scratch = document.createElement('textarea');
+    scratch.value = text;
+    scratch.setAttribute('readonly', '');
+    scratch.style.position = 'fixed';
+    scratch.style.opacity = '0';
+    document.body.append(scratch);
+    scratch.select();
+    document.execCommand('copy');
+    scratch.remove();
+  }
+  if (!button) return;
+  const previous = button.innerHTML;
+  button.innerHTML = `<i data-lucide="check" aria-hidden="true"></i> ${doneLabel}`;
+  refreshIcons();
+  window.setTimeout(() => {
+    button.innerHTML = previous;
+    refreshIcons();
+  }, 1500);
+}
 
 function updateLab() {
   const nodeId = $('#node').value;
@@ -572,5 +664,7 @@ function contextSummary(result) {
 populateNodeSelect();
 renderTrustMatrix();
 resetAnimation();
+captureLabBaseline();
+applyLabStateFromUrl();
 updateLab();
 refreshIcons();
