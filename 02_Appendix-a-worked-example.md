@@ -247,6 +247,7 @@ previous_attempt_id: null
 dispatched_at_ms: 1784116800060
 deadline_at_ms: 1784116800360
 state: dispatched
+reason_code: null
 integrity: {issuer: coordination_runtime, key_id: vehicle-hsm:runtime:1, algorithm: EdDSA, signature: <signature>}
 ```
 
