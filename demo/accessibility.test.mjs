@@ -62,3 +62,8 @@ test('decorative documentation counters are excluded from the accessibility tree
   assert.match(docsHtml, /class="detail-number"[^>]*aria-hidden="true"/);
   assert.equal([...docsHtml.matchAll(/class="clock-number" aria-hidden="true"/g)].length, 3);
 });
+
+test('renderer cards stay in the content column at narrow breakpoints', () => {
+  assert.match(demoCss, /\.renderer-grid\s*\{[^}]*grid-column:\s*2/);
+  assert.match(demoCss, /@media \(max-width:\s*680px\)[\s\S]*?\.renderer-grid\s*\{[^}]*grid-template-columns:\s*1fr/);
+});

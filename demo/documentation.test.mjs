@@ -335,3 +335,56 @@ test('the landing contrast section names real catalog nodes and matches their de
   assert.equal(notification.occupant_response.kind, 'none');
   assert.ok(alert.semantic_validity_ms < notification.semantic_validity_ms, 'the alert must have the shorter validity the section claims');
 });
+
+test('landing research and evidence claims stay inside the documented boundary', async () => {
+  const html = await readFile(path.join(root, 'demo/index.html'), 'utf8');
+
+  assert.match(html, /what evidence records whether it was presented/);
+  assert.doesNotMatch(html, /evidence proves that it was delivered/);
+  assert.match(html, /Declared next-eligible delivery fallback/);
+  assert.doesNotMatch(html, /Fail-operational delivery fallback/);
+
+  assert.doesNotMatch(html, /href="\.\.\/01_Semantic-Interaction-Architecture-sdv\.md#/);
+  assert.equal(
+    [...html.matchAll(/href="https:\/\/github\.com\/yaneczech\/SIA\/blob\/main\/01_Semantic-Interaction-Architecture-sdv\.md#/g)].length,
+    3,
+    'research links must target rendered GitHub sections',
+  );
+  for (const source of ['Feld &amp; Müller', 'Klotz et al.', 'Grobelna et al.']) {
+    assert.match(html, new RegExp(source), `landing page is missing the academic antecedent ${source}`);
+  }
+});
+
+test('the landing page routes each audience to a destination that exists', async () => {
+  const [html, css] = await Promise.all([
+    readFile(path.join(root, 'demo/index.html'), 'utf8'),
+    readFile(path.join(root, 'demo/styles.css'), 'utf8'),
+  ]);
+
+  const router = html.match(/<nav class="audience-router"[\s\S]*?<\/nav>/);
+  assert.ok(router, 'audience router not found');
+  const hrefs = [...router[0].matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(hrefs.length, 4, 'the router offers exactly four starting points');
+
+  // In-page anchors must resolve, or a reader is routed into nothing.
+  for (const href of hrefs.filter((h) => h.startsWith('#'))) {
+    assert.match(html, new RegExp(`id="${href.slice(1)}"`), `router target ${href} has no matching element`);
+  }
+  // Same-origin page links must exist on disk.
+  for (const href of hrefs.filter((h) => h.startsWith('./'))) {
+    await access(path.join(root, 'demo', href.slice(2)));
+  }
+
+  // The router is a navigation landmark with an accessible name.
+  assert.match(router[0], /aria-labelledby="audience-title"/);
+  assert.match(html, /id="audience-title"/);
+  assert.match(css, /\.audience-router \{/);
+  // It must collapse rather than overflow on narrow viewports.
+  assert.match(css, /\.audience-router \{ grid-template-columns: 1fr 1fr; \}/);
+  assert.match(css, /\.audience-router \{ grid-template-columns: 1fr;/);
+
+  // The Define/Decide/Prove triad was deliberately dropped; the layer-gap pills carry it.
+  assert.doesNotMatch(html, /class="mental-model"/);
+  assert.doesNotMatch(css, /\.mental-model/);
+  assert.match(html, /class="layer-gaps"/);
+});

@@ -47,7 +47,7 @@
     <section class="hero" aria-labelledby="hero-title">
       <p class="eyebrow">ONE MEANING. CONSISTENT DECISIONS. VERIFIABLE OUTCOMES.</p>
       <h1 id="hero-title">How does one warning<br><span>keep its meaning?</span></h1>
-      <p class="hero-copy">SIA defines what an in-vehicle interaction means, who is allowed to issue it, where it may appear, and what evidence proves that it was delivered.</p>
+      <p class="hero-copy">SIA defines what an in-vehicle interaction means, who is allowed to issue it, where it may appear, and what evidence records whether it was presented.</p>
       <p class="hero-formal">Formally, SIA is a vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.</p>
       <details class="sdv-definition">
         <summary>What does “software-defined vehicle” mean here?</summary>
@@ -56,6 +56,26 @@
       <a class="hero-action" href="#derivation">See why the parts exist <i data-lucide="arrow-down" aria-hidden="true"></i></a>
     </section>
 
+    <nav class="audience-router" aria-labelledby="audience-title">
+      <h2 class="sr-only" id="audience-title">Choose where to start</h2>
+      <a href="#demo">
+        <span><i data-lucide="play-circle" aria-hidden="true"></i>Understand the idea</span>
+        <small>Follow one warning through the boundary, step by step.</small>
+      </a>
+      <a href="#research">
+        <span><i data-lucide="flask-conical" aria-hidden="true"></i>Explore the research questions</span>
+        <small>Open problems, and what would narrow or reject SIA.</small>
+      </a>
+      <a href="./docs.html">
+        <span><i data-lucide="book-open" aria-hidden="true"></i>Inspect the protocol</span>
+        <small>Lifecycle, trust checks, and all thirteen contracts.</small>
+      </a>
+      <a href="https://github.com/yaneczech/SIA/tree/main/conformance">
+        <span><i data-lucide="terminal" aria-hidden="true"></i>Run the conformance tests</span>
+        <small>Language-neutral vectors for your conformance class.</small>
+      </a>
+    </nav>
+
     <section class="derivation" id="derivation" aria-labelledby="derivation-title">
       <div class="section-heading">
         <div>
@@ -63,14 +83,6 @@
           <h2 id="derivation-title">Why these parts?</h2>
         </div>
         <p>The architecture is derived from recurring gaps between what existing layers prove and what an occupant-facing interaction needs.</p>
-      </div>
-
-      <div class="mental-model" aria-label="SIA in three steps">
-        <article><span>01</span><i data-lucide="book-open" aria-hidden="true"></i><h3>Define</h3><p>What does this interaction mean?</p></article>
-        <i data-lucide="arrow-right" aria-hidden="true"></i>
-        <article><span>02</span><i data-lucide="route" aria-hidden="true"></i><h3>Decide</h3><p>Is it authorised, relevant, and renderable here?</p></article>
-        <i data-lucide="arrow-right" aria-hidden="true"></i>
-        <article><span>03</span><i data-lucide="file-check-2" aria-hidden="true"></i><h3>Prove</h3><p>What was presented, and how did the occupant respond?</p></article>
       </div>
 
       <div class="derivation-table-wrap">
@@ -247,7 +259,7 @@
         <article class="critical-card">
           <div><span>ALERT</span><i data-lucide="triangle-alert" aria-hidden="true"></i></div>
           <h3>Collision warning</h3>
-          <ul><li>Restricted driver-assistance authority</li><li>Short semantic validity</li><li>Never held behind routine content</li><li>Fail-operational delivery fallback</li><li>Explicit response policy</li></ul>
+          <ul><li>Restricted driver-assistance authority</li><li>Short semantic validity</li><li>Never held behind routine content</li><li>Declared next-eligible delivery fallback</li><li>Explicit response policy</li></ul>
         </article>
         <article class="deferrable-card">
           <div><span>NOTIFICATION</span><i data-lucide="music" aria-hidden="true"></i></div>
@@ -279,7 +291,7 @@
       </div>
     </section>
 
-    <section class="research-section" aria-labelledby="research-title">
+    <section class="research-section" id="research" aria-labelledby="research-title">
       <div class="section-heading">
         <div><p class="eyebrow">WHY AUTOMOTIVEUI?</p><h2 id="research-title">A testable research program</h2></div>
         <p>SIA holds semantic and lifecycle variables stable so researchers can compare renderers, modalities, trust cues, and evidence claims under controlled conditions.</p>
@@ -309,7 +321,28 @@
           </tbody>
         </table>
       </div>
-      <p class="research-links">See the paper’s <a href="../01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-research-basis">research basis</a>, <a href="../01_Semantic-Interaction-Architecture-sdv.md#12-standards-and-ecosystem-alignment">standards alignment</a>, and <a href="../01_Semantic-Interaction-Architecture-sdv.md#references">academic references</a>.</p>
+      <div class="academic-heading">
+        <p class="eyebrow">SELECTED ACADEMIC ANTECEDENTS</p>
+        <p>These works motivate distinct parts of the problem; none already provides SIA’s combined authority, translation, and lifecycle-evidence contract.</p>
+      </div>
+      <div class="academic-sources">
+        <a href="https://www.dfki.de/web/forschung/projekte-publikationen/publikation/5695">
+          <small>AUTOMOTIVEUI 2011</small>
+          <b>Feld &amp; Müller — The Automotive Ontology</b>
+          <span>Shared in-vehicle knowledge and reasoning; an antecedent for semantic declarations.</span>
+        </a>
+        <a href="https://ceur-ws.org/Vol-2213/paper5.pdf">
+          <small>SSN 2018</small>
+          <b>Klotz et al. — VSSo</b>
+          <span>A formal ontology for vehicle signals; a data and context substrate rather than an interaction lifecycle.</span>
+        </a>
+        <a href="https://www.mdpi.com/2076-3417/15/10/5572">
+          <small>APPLIED SCIENCES 2025</small>
+          <b>Grobelna et al. — Design of Automotive HMI</b>
+          <span>A review of evolving UX, safety, security, and emerging-technology pressures on automotive HMI.</span>
+        </a>
+      </div>
+      <p class="research-links">Continue with the paper’s <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-position-in-the-ecosystem">research basis</a>, <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#12-relation-to-existing-standards-and-adjacent-work">standards alignment</a>, and <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#references">complete references</a>.</p>
     </section>
 
     <section class="lab" id="lab" aria-labelledby="lab-title">
