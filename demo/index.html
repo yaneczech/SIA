@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090a12">
-  <meta name="description" content="SIA is a vendor-neutral interaction-integrity and evidence contract for occupant-facing software-defined vehicle interactions.">
+  <meta name="description" content="How one in-vehicle interaction keeps its meaning across screens, voice channels, and AI agents.">
   <link rel="canonical" href="https://yaneczech.github.io/SIA/demo/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SIA">
   <meta property="og:locale" content="en_US">
   <meta property="og:title" content="SIA — Semantic Interaction Architecture">
-  <meta property="og:description" content="A vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.">
+  <meta property="og:description" content="Keep one in-vehicle interaction meaningful, authorised, and verifiable across every output.">
   <meta property="og:url" content="https://yaneczech.github.io/SIA/demo/">
   <meta property="og:image" content="https://yaneczech.github.io/SIA/demo/og-sia.png">
   <meta property="og:image:type" content="image/png">
@@ -19,7 +19,7 @@
   <meta property="og:image:alt" content="SIA — Semantic Interaction Architecture: vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SIA — Semantic Interaction Architecture">
-  <meta name="twitter:description" content="A vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.">
+  <meta name="twitter:description" content="Keep one in-vehicle interaction meaningful, authorised, and verifiable across every output.">
   <meta name="twitter:image" content="https://yaneczech.github.io/SIA/demo/og-sia.png">
   <meta name="twitter:image:alt" content="SIA — Semantic Interaction Architecture: vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.">
   <title>SIA — Interactive Demo</title>
@@ -45,10 +45,47 @@
 
   <main>
     <section class="hero" aria-labelledby="hero-title">
-      <p class="eyebrow">ONE MESSAGE. ONE SAFE DECISION.</p>
-      <h1 id="hero-title">Who gets to speak<br><span>to people in the car?</span></h1>
-      <p class="hero-copy">SIA is a vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions. In plain terms, it is a safety-aware translator between vehicle systems and their screens or voice channels: it checks whether a warning is trusted, fresh, and delivered in the right place.</p>
-      <a class="hero-action" href="#demo">Start the story <i data-lucide="arrow-down" aria-hidden="true"></i></a>
+      <p class="eyebrow">ONE MEANING. CONSISTENT DECISIONS. VERIFIABLE OUTCOMES.</p>
+      <h1 id="hero-title">How does one warning<br><span>keep its meaning?</span></h1>
+      <p class="hero-copy">SIA defines what an in-vehicle interaction means, who is allowed to issue it, where it may appear, and what evidence proves that it was delivered.</p>
+      <p class="hero-formal">Formally, SIA is a vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.</p>
+      <details class="sdv-definition">
+        <summary>What does “software-defined vehicle” mean here?</summary>
+        <p>A vehicle in which occupant-facing functions are provided and updated by multiple software services, applications, or agents across several HMI surfaces.</p>
+      </details>
+      <a class="hero-action" href="#derivation">See why the parts exist <i data-lucide="arrow-down" aria-hidden="true"></i></a>
+    </section>
+
+    <section class="derivation" id="derivation" aria-labelledby="derivation-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">FROM FAILURE TO RESPONSIBILITY</p>
+          <h2 id="derivation-title">Why these parts?</h2>
+        </div>
+        <p>The architecture is derived from recurring gaps between what existing layers prove and what an occupant-facing interaction needs.</p>
+      </div>
+
+      <div class="mental-model" aria-label="SIA in three steps">
+        <article><span>01</span><i data-lucide="book-open" aria-hidden="true"></i><h3>Define</h3><p>What does this interaction mean?</p></article>
+        <i data-lucide="arrow-right" aria-hidden="true"></i>
+        <article><span>02</span><i data-lucide="route" aria-hidden="true"></i><h3>Decide</h3><p>Is it authorised, relevant, and renderable here?</p></article>
+        <i data-lucide="arrow-right" aria-hidden="true"></i>
+        <article><span>03</span><i data-lucide="file-check-2" aria-hidden="true"></i><h3>Prove</h3><p>What was presented, and how did the occupant respond?</p></article>
+      </div>
+
+      <div class="derivation-table-wrap">
+        <table class="derivation-table">
+          <thead><tr><th>Observed problem</th><th>Required responsibility</th><th>SIA component</th></tr></thead>
+          <tbody>
+            <tr><td>The same interaction is independently defined for each surface.</td><td>Define meaning and policy once.</td><td><b>Semantic declaration</b><small>Catalog / ontology</small></td></tr>
+            <tr><td>An authenticated actor may still lack authority to issue a specific claim.</td><td>Verify semantic authority, freshness, and provenance.</td><td><b>Trust Policy</b><small>Eight fail-closed checks</small></td></tr>
+            <tr><td>The appropriate modality depends on vehicle, occupant, and renderer capabilities.</td><td>Select an eligible presentation plan.</td><td><b>Context + Translation</b><small>Capability negotiation</small></td></tr>
+            <tr><td>Dispatch does not prove presentation; presentation does not prove acknowledgement.</td><td>Track each lifecycle outcome separately.</td><td><b>Coordination Runtime</b><small>Two feedback loops</small></td></tr>
+            <tr><td>Decisions must remain reviewable after the event.</td><td>Bind stable evidence and reason codes.</td><td><b>Receipts + audit</b><small>Deterministic evidence</small></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="layer-gaps"><b>Data ≠ interaction meaning.</b><b>Authentication ≠ semantic authority.</b><b>Dispatch ≠ presentation ≠ acknowledgement.</b></p>
     </section>
 
     <section class="explainer" id="demo" aria-labelledby="demo-title">
@@ -87,7 +124,7 @@
           <div class="stage ontology" data-stage="ontology">
             <div class="stage-index">01</div>
             <div class="stage-symbol ontology-symbol" aria-hidden="true"><i data-lucide="book-open"></i></div>
-            <div><p class="stage-kicker">ONTOLOGY</p><h3>Declared once</h3><p id="ontology-detail">The interaction's meaning, trust rule, attention cost, and presentation contract are authored before any vehicle ships.</p></div>
+            <div><p class="stage-kicker">SEMANTIC CATALOG / ONTOLOGY</p><h3>Define the meaning</h3><p id="ontology-detail">The interaction's meaning, trust rule, attention requirements, and presentation contract are authored before any vehicle ships.</p></div>
           </div>
 
           <div class="flow-link" aria-hidden="true"><span class="packet"></span><span class="link-line"></span></div>
@@ -95,7 +132,7 @@
           <div class="stage emitter" data-stage="emitter">
             <div class="stage-index">02</div>
             <div class="stage-symbol" aria-hidden="true"><i data-lucide="radar"></i></div>
-            <div><p class="stage-kicker">EMITTER</p><h3>Vehicle system</h3><p id="emitter-detail">Detects a collision risk and emits the meaning “critical warning”.</p></div>
+            <div><p class="stage-kicker">RUNTIME INSTANCE / EMITTER</p><h3>Send one occurrence</h3><p id="emitter-detail">A driver-assistance system (ADAS) detects a collision risk and emits the meaning “critical warning”.</p></div>
           </div>
 
           <div class="flow-link" aria-hidden="true"><span class="packet"></span><span class="link-line"></span></div>
@@ -105,7 +142,7 @@
             <div class="stage policy" data-stage="trust">
               <div class="stage-index">03</div>
               <div class="stage-symbol shield" aria-hidden="true"><i data-lucide="shield-check"></i></div>
-              <div><p class="stage-kicker">TRUST POLICY</p><h3>Who is speaking?</h3><p id="trust-detail">Binds the message to its declaration and current authority, then checks all eight trust requirements.</p></div>
+              <div><p class="stage-kicker">TRUST POLICY</p><h3>Verify who may say it</h3><p id="trust-detail">Binds the message to its declaration and current authority, then checks all eight trust requirements.</p></div>
               <div class="stage-result" id="trust-result">waiting</div>
             </div>
 
@@ -114,7 +151,7 @@
             <div class="stage translation" data-stage="translation">
               <div class="stage-index">04</div>
               <div class="stage-symbol" aria-hidden="true"><i data-lucide="route"></i></div>
-              <div><p class="stage-kicker">TRANSLATION + CONTEXT</p><h3>Where should it go?</h3><p id="translation-detail">Matches the driving situation with the capabilities of available devices.</p></div>
+              <div><p class="stage-kicker">CONTEXT + TRANSLATION</p><h3>Choose where it may appear</h3><p id="translation-detail">Matches the driving situation with the capabilities of available devices.</p></div>
               <div class="stage-result" id="translation-result">waiting</div>
             </div>
 
@@ -123,7 +160,7 @@
             <div class="stage runtime" data-stage="runtime">
               <div class="stage-index">05</div>
               <div class="stage-symbol" aria-hidden="true"><i data-lucide="reply"></i></div>
-              <div><p class="stage-kicker">COORDINATION RUNTIME</p><h3>Did it arrive—and was it acknowledged?</h3><p id="runtime-detail">First verifies renderer presentation, then tracks the separate occupant response.</p></div>
+              <div><p class="stage-kicker">COORDINATION RUNTIME</p><h3>Prove what happened</h3><p id="runtime-detail">First verifies renderer presentation, then tracks the separate occupant response.</p></div>
               <div class="stage-result" id="runtime-result">waiting</div>
             </div>
           </div>
@@ -132,6 +169,7 @@
 
           <div class="stage renderers" data-stage="renderers">
             <div class="stage-index">06</div>
+            <div class="renderer-heading"><p class="stage-kicker">RENDERER + OCCUPANT</p><h3>Present and respond</h3></div>
             <div class="renderer-grid" aria-label="Output devices">
               <div class="renderer" data-renderer="cluster"><span class="renderer-screen"><i data-lucide="triangle-alert" aria-hidden="true"></i></span><b>Cluster</b><small>in the driver's view</small><em class="renderer-receipt">not dispatched</em></div>
               <div class="renderer" data-renderer="voice"><span class="voice-waves"><i data-lucide="volume-2" aria-hidden="true"></i></span><b>Voice</b><small>eyes-free</small><em class="renderer-receipt">not dispatched</em></div>
@@ -170,12 +208,12 @@
           <p>The short answer is always visible. Open the technical trace for exact fields, rules, and machine-readable output.</p>
         </div>
         <div class="phase-tabs" role="tablist" aria-label="Pipeline phases">
-          <button id="phase-tab-ontology" role="tab" aria-selected="true" aria-controls="phase-panel" tabindex="0" data-phase="ontology"><span>01</span>Ontology</button>
-          <button id="phase-tab-emitter" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="emitter"><span>02</span>Emitter</button>
-          <button id="phase-tab-trust" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="trust"><span>03</span>Trust</button>
-          <button id="phase-tab-translation" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="translation"><span>04</span>Translation</button>
-          <button id="phase-tab-runtime" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="runtime"><span>05</span>Runtime</button>
-          <button id="phase-tab-renderers" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="renderers"><span>06</span>Renderers</button>
+          <button id="phase-tab-ontology" role="tab" aria-selected="true" aria-controls="phase-panel" tabindex="0" data-phase="ontology"><span>01</span><b>Define meaning</b><small>Ontology</small></button>
+          <button id="phase-tab-emitter" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="emitter"><span>02</span><b>Send occurrence</b><small>Emitter</small></button>
+          <button id="phase-tab-trust" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="trust"><span>03</span><b>Verify authority</b><small>Trust Policy</small></button>
+          <button id="phase-tab-translation" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="translation"><span>04</span><b>Choose outputs</b><small>Translation</small></button>
+          <button id="phase-tab-runtime" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="runtime"><span>05</span><b>Prove outcome</b><small>Runtime</small></button>
+          <button id="phase-tab-renderers" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="renderers"><span>06</span><b>Present + respond</b><small>Renderers</small></button>
         </div>
         <div class="inspector-content" id="phase-panel" role="tabpanel" aria-labelledby="phase-tab-ontology">
           <div class="inspector-summary">
@@ -200,6 +238,37 @@
       </section>
     </section>
 
+    <section class="contrast-section" aria-labelledby="contrast-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">SAME CONTRACT, DIFFERENT POLICY</p><h2 id="contrast-title">Critical is not the default</h2></div>
+        <p>SIA is not only a security gateway for warnings. The declaration makes different lifecycle choices explicit for different interaction types.</p>
+      </div>
+      <div class="contrast-grid">
+        <article class="critical-card">
+          <div><span>ALERT</span><i data-lucide="triangle-alert" aria-hidden="true"></i></div>
+          <h3>Collision warning</h3>
+          <ul><li>Restricted driver-assistance authority</li><li>Short semantic validity</li><li>Never held behind routine content</li><li>Fail-operational delivery fallback</li><li>Explicit response policy</li></ul>
+        </article>
+        <article class="deferrable-card">
+          <div><span>NOTIFICATION</span><i data-lucide="music" aria-hidden="true"></i></div>
+          <h3>Now playing</h3>
+          <ul><li>Vehicle-service or third-party authority</li><li>Longer semantic validity</li><li>Coalesces to the latest value</li><li>Broader renderer eligibility</li><li>No acknowledgement required</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="scope-section" aria-labelledby="scope-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">BOUNDARIES</p><h2 id="scope-title">What SIA is—and is not</h2></div>
+        <p>The contract makes a narrow claim. Production safety still depends on the surrounding vehicle system and empirical evidence.</p>
+      </div>
+      <div class="scope-grid">
+        <article><i data-lucide="check-circle-2" aria-hidden="true"></i><h3>SIA does</h3><ul><li>Preserve declared meaning and authority</li><li>Choose eligible outputs under explicit policy</li><li>Bind evidence of delivery and response</li></ul></article>
+        <article><i data-lucide="minus-circle" aria-hidden="true"></i><h3>SIA does not</h3><ul><li>Detect hazards or validate sensor truth</li><li>Draw the UI or replace renderer safety controls</li><li>Replace middleware, cybersecurity, functional safety, or HMI testing</li></ul></article>
+        <article><i data-lucide="git-branch" aria-hidden="true"></i><h3>SIA depends on</h3><ul><li>Authenticated context and actor credentials</li><li>Empirically calibrated attention estimates</li><li>Deployment-owned safety and availability mechanisms</li></ul></article>
+      </div>
+    </section>
+
     <section class="matrix-section" aria-labelledby="matrix-title">
       <div class="section-heading">
         <div><p class="eyebrow">WHO GETS TO SPEAK</p><h2 id="matrix-title">Trust matrix</h2></div>
@@ -208,6 +277,39 @@
       <div class="matrix-wrap">
         <table class="trust-matrix" id="trust-matrix" aria-label="Which actor may emit which interaction"></table>
       </div>
+    </section>
+
+    <section class="research-section" aria-labelledby="research-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">WHY AUTOMOTIVEUI?</p><h2 id="research-title">A testable research program</h2></div>
+        <p>SIA holds semantic and lifecycle variables stable so researchers can compare renderers, modalities, trust cues, and evidence claims under controlled conditions.</p>
+      </div>
+      <div class="research-grid">
+        <article><h3>Cross-modal equivalence</h3><p>Which properties must remain invariant across visual, voice, and haptic renderers?</p></article>
+        <article><h3>Attention calibration</h3><p>Can declared estimates predict measured demand across vehicles, contexts, and modalities?</p></article>
+        <article><h3>Trust calibration</h3><p>What provenance helps occupants appropriately trust claims from ADAS and AI agents?</p></article>
+        <article><h3>Fallback consistency</h3><p>Does meaning and urgency survive renderer failure or a change of modality?</p></article>
+        <article><h3>Evidence semantics</h3><p>When should delivery, noticing, comprehension, and acknowledgement be separate claims?</p></article>
+        <article><h3>Architectural cost</h3><p>Does shared policy reduce duplication without unacceptable latency or centralisation risk?</p></article>
+      </div>
+      <aside class="falsification">
+        <span>WHAT WOULD NARROW OR REJECT SIA?</span>
+        <p>A minimal implementation should be narrowed or rejected if it does not reduce duplicated policy, fails to produce auditable deterministic behaviour, or adds costs and latency that outweigh its integration benefit.</p>
+      </aside>
+      <div class="related-heading"><h3>Research basis and adjacent systems</h3><p>Standards, production frameworks, and academic antecedents are related evidence—not interchangeable categories.</p></div>
+      <div class="related-table-wrap">
+        <table class="related-table">
+          <thead><tr><th>Approach</th><th>Primary abstraction</th><th>Rendering scope</th><th>Semantic authority</th><th>Delivery evidence</th></tr></thead>
+          <tbody>
+            <tr><td>VSS / data layers</td><td>Vehicle signals</td><td>None</td><td>No</td><td>No</td></tr>
+            <tr><td>Android app templates</td><td>Application UI templates</td><td>One ecosystem</td><td>Platform permissions</td><td>Platform-specific</td></tr>
+            <tr><td>Qt / Kanzi</td><td>Concrete HMI implementation</td><td>Renderer-owned</td><td>No shared contract</td><td>Implementation-specific</td></tr>
+            <tr><td>W3C MMI / EMMA</td><td>Multimodal events and meaning</td><td>Generic</td><td>Not automotive policy</td><td>Not vehicle lifecycle evidence</td></tr>
+            <tr class="sia-row"><td>SIA</td><td>Occupant-facing interaction contract</td><td>External renderers remain</td><td>Yes</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="research-links">See the paper’s <a href="../01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-research-basis">research basis</a>, <a href="../01_Semantic-Interaction-Architecture-sdv.md#12-standards-and-ecosystem-alignment">standards alignment</a>, and <a href="../01_Semantic-Interaction-Architecture-sdv.md#references">academic references</a>.</p>
     </section>
 
     <section class="lab" id="lab" aria-labelledby="lab-title">
@@ -333,8 +435,14 @@
               </div>
             </div>
             <div class="attention-readout" id="attention-readout">
-              <div class="attention-sum"><small>VISUAL ATTENTION COST</small><p id="attention-formula">—</p></div>
+              <div class="attention-sum"><small>ILLUSTRATIVE VISUAL ATTENTION COST</small><p id="attention-formula">—</p></div>
               <div class="attention-budgets" id="attention-budgets"></div>
+              <div class="attention-provenance" id="attention-provenance">
+                <span><b>Status</b> unvalidated demo value</span>
+                <span><b>Source</b> illustrative_demo_fixture</span>
+                <span><b>Calibration</b> none</span>
+                <p>These values demonstrate the contract shape. They do not constitute validated human-attention evidence.</p>
+              </div>
             </div>
             <details>
               <summary>Technical audit log</summary>

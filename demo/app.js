@@ -125,7 +125,7 @@ function updateScenarioCopy(input) {
   const copy = emitterCopy[input.nodeId] || emitterCopy[COLLISION_ID];
   const permittedActors = node.trustRequirements.permittedActorClasses;
   $('#emitter-detail').textContent = input.actorClass === permittedActors[0] ? copy.legit : copy.illegit(actorLabel(input.actorClass));
-  $('#ontology-detail').textContent = `${node.label} (${node.type}) — permitted: ${permittedActors.map(actorLabel).join(', ')}. Base glance cost: ${node.attention.glanceTimeMs} ms.`;
+  $('#ontology-detail').textContent = `${node.label} (${node.type}) — permitted: ${permittedActors.map(actorLabel).join(', ')}. Illustrative base glance estimate: ${node.attention.glanceTimeMs} ms.`;
 }
 
 async function runScenario(inputOverride = null) {
@@ -632,7 +632,7 @@ function renderAttentionReadout(node, result) {
     return;
   }
   const a = result.attention;
-  formula.textContent = `${a.base} ms base × ${a.modifier} (${a.roadType} · ${a.driverState}) = ${a.effective} ms effective glance cost`;
+  formula.textContent = `${a.base} ms illustrative base × ${a.modifier} (${a.roadType} · ${a.driverState}) = ${a.effective} ms estimated effective demand`;
   budgets.innerHTML = Object.entries(RENDERERS).map(([name, cap]) => {
     const b = a.budgets[name];
     const budgetText = cap.maxGlanceBudgetMs == null ? 'eyes-free' : `${cap.maxGlanceBudgetMs} ms budget`;

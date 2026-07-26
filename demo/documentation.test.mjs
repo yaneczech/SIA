@@ -304,3 +304,34 @@ test('the Test Lab exposes a shareable, resettable, copyable scenario state', as
   assert.match(css, /\.section-heading \.heading-aside > p/);
   assert.match(css, /\.lab-toolbar button, \.audit-toolbar button/);
 });
+
+test('the landing contrast section names real catalog nodes and matches their declared policy', async () => {
+  const [html, catalog] = await Promise.all([
+    readFile(path.join(root, 'demo/index.html'), 'utf8'),
+    readFile(path.join(root, 'examples/v0.4.0/catalog.json'), 'utf8').then(JSON.parse),
+  ]);
+
+  const contrast = html.match(/<div class="contrast-grid">([\s\S]*?)<\/div>\s*<\/section>/);
+  assert.ok(contrast, 'contrast section not found');
+  const labels = [...contrast[1].matchAll(/<h3>([^<]+)<\/h3>/g)].map((m) => m[1]);
+  assert.equal(labels.length, 2, 'the contrast pairs exactly one alert with one notification');
+
+  // Every named interaction must exist in the signed catalog, so the landing page
+  // cannot advertise a node the profile does not actually declare.
+  const catalogLabels = catalog.nodes.map((node) => node.id.split('.').slice(-2).join(' ').toLowerCase());
+  for (const label of labels) {
+    const normalised = label.toLowerCase().replace(/\s+/g, ' ');
+    assert.ok(
+      catalogLabels.some((entry) => entry.replace('.', ' ') === normalised || entry.includes(normalised.split(' ').pop())),
+      `contrast section names "${label}", which is not a node in the published catalog`,
+    );
+  }
+
+  const alert = catalog.nodes.find((node) => node.id.endsWith('Collision.Warning'));
+  const notification = catalog.nodes.find((node) => node.id.endsWith('Media.NowPlaying'));
+  assert.equal(alert.context_policy.on_blocked.disposition, 'never_block');
+  assert.equal(alert.occupant_response.kind, 'explicit_or_timeout');
+  assert.equal(notification.context_policy.on_blocked.disposition, 'coalesce');
+  assert.equal(notification.occupant_response.kind, 'none');
+  assert.ok(alert.semantic_validity_ms < notification.semantic_validity_ms, 'the alert must have the shorter validity the section claims');
+});
