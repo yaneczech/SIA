@@ -336,31 +336,22 @@ test('the landing contrast section names real catalog nodes and matches their de
   assert.ok(alert.semantic_validity_ms < notification.semantic_validity_ms, 'the alert must have the shorter validity the section claims');
 });
 
-test('landing research and evidence claims stay inside the documented boundary', async () => {
+test('landing evidence claims stay inside the documented boundary without reviewer-facing residue', async () => {
   const html = await readFile(path.join(root, 'demo/index.html'), 'utf8');
 
   assert.match(html, /what evidence records whether it was presented/);
   assert.doesNotMatch(html, /evidence proves that it was delivered/);
   assert.match(html, /Declared next-eligible delivery fallback/);
   assert.doesNotMatch(html, /Fail-operational delivery fallback/);
-
-  assert.doesNotMatch(html, /href="\.\.\/01_Semantic-Interaction-Architecture-sdv\.md#/);
-  assert.equal(
-    [...html.matchAll(/href="https:\/\/github\.com\/yaneczech\/SIA\/blob\/main\/01_Semantic-Interaction-Architecture-sdv\.md#/g)].length,
-    3,
-    'research links must target rendered GitHub sections',
-  );
-  for (const destination of ['Related work', 'Open questions', 'References']) {
-    assert.match(html, new RegExp(`>${destination}<`), `compact evidence block is missing ${destination}`);
-  }
-  assert.match(html, /SIA should be narrowed or rejected/);
-  assert.ok(
-    html.indexOf('id="lab"') < html.indexOf('id="research"'),
-    'the evidence base should support the working demo instead of interrupting it',
-  );
+  assert.doesNotMatch(html, /Formally,/);
+  assert.doesNotMatch(html, /sdv-definition/);
+  assert.doesNotMatch(html, /id="research"/);
+  assert.doesNotMatch(html, /SIA should be narrowed or rejected/);
   assert.doesNotMatch(html, /class="research-grid"/);
   assert.doesNotMatch(html, /class="related-table"/);
   assert.doesNotMatch(html, /class="academic-sources"/);
+  assert.match(html, /SIA has a defined boundary/);
+  assert.match(html, /Specification and repository →/);
 });
 
 test('the landing page routes each audience to a destination that exists', async () => {

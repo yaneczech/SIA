@@ -48,11 +48,6 @@
       <p class="eyebrow">MEANING · AUTHORITY · EVIDENCE</p>
       <h1 id="hero-title">Who may speak to people in the car<br><span>— and what evidence shows what happened?</span></h1>
       <p class="hero-copy">SIA defines what an in-vehicle interaction means, who is allowed to issue it, where it may appear, and what evidence records whether it was presented.</p>
-      <p class="hero-formal">Formally, SIA is a vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.</p>
-      <details class="sdv-definition">
-        <summary>What does “software-defined vehicle” mean here?</summary>
-        <p>A vehicle in which occupant-facing functions are provided and updated by multiple software services, applications, or agents across several HMI surfaces.</p>
-      </details>
       <a class="hero-action" href="#derivation">See why the parts exist <i data-lucide="arrow-down" aria-hidden="true"></i></a>
     </section>
 
@@ -268,7 +263,7 @@
     <section class="scope-section" aria-labelledby="scope-title">
       <div class="section-heading">
         <div><p class="eyebrow">BOUNDARIES</p><h2 id="scope-title">What SIA is—and is not</h2></div>
-        <p>The contract makes a narrow claim. Production safety still depends on the surrounding vehicle system and empirical evidence.</p>
+        <p>SIA has a defined boundary. Production safety still depends on the surrounding vehicle system and empirical evidence.</p>
       </div>
       <div class="scope-grid">
         <article><i data-lucide="check-circle-2" aria-hidden="true"></i><h3>SIA does</h3><ul><li>Preserve declared meaning and authority</li><li>Choose eligible outputs under explicit policy</li><li>Bind evidence of delivery and response</li></ul></article>
@@ -429,31 +424,13 @@
       </div>
     </section>
 
-    <section class="research-section" id="research" aria-labelledby="research-title">
-      <div class="research-compact">
-        <div>
-          <p class="eyebrow">EVIDENCE BASE</p>
-          <h2 id="research-title">The proposal is testable</h2>
-        </div>
-        <div class="research-compact-copy">
-          <p>SIA builds on prior work in vehicle semantics, multimodal interaction, automotive HMI, and renderer frameworks. Its open questions concern cross-modal equivalence, attention calibration, provenance, delivery evidence, and architectural cost.</p>
-          <p><b>SIA should be narrowed or rejected</b> if a minimal implementation does not reduce duplicated policy, cannot produce deterministic auditable behaviour, or adds more latency and integration cost than it removes.</p>
-          <nav class="research-links" aria-label="Research and evidence links">
-            <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-position-in-the-ecosystem">Related work</a>
-            <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#13-open-questions-and-path-forward">Open questions</a>
-            <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#references">References</a>
-          </nav>
-        </div>
-      </div>
-    </section>
-
     <section class="takeaway" aria-label="Key takeaway">
       <img class="takeaway-logo" src="../figures/sia-logo.svg" alt="SIA">
       <p><b>Meaning and policy are defined once.</b><br>Every surface consumes the same verified interaction contract without redefining it.</p>
     </section>
   </main>
 
-  <footer><span>SIA · Semantic Interaction Architecture</span><span class="footer-links"><a href="./docs.html">Interactive documentation</a><a href="https://github.com/yaneczech/SIA">Architecture proposal →</a></span></footer>
+  <footer><span>SIA · Semantic Interaction Architecture</span><span class="footer-links"><a href="./docs.html">Interactive documentation</a><a href="https://github.com/yaneczech/SIA">Specification and repository →</a></span></footer>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script type="module" src="./app.js"></script>
 </body>

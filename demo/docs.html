@@ -98,7 +98,7 @@
         <div class="hero-grid">
           <div class="hero-content">
             <p class="eyebrow">SEMANTIC INTERACTION ARCHITECTURE · 0.4.0</p>
-            <h1>Who may say what to the people in a car – and how do you prove it?</h1>
+            <h1>Who may say what to the people in a car—and what evidence records what happened?</h1>
             <p class="hero-copy">SIA is a vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions. In practice, it is the mediation layer that decides which claims may reach people in a car, where they may appear, and preserves bound evidence for each lifecycle outcome.</p>
             <div class="hero-actions">
               <a class="primary-action" href="#lifecycle">Explore the lifecycle <i data-lucide="arrow-down" aria-hidden="true"></i></a>
@@ -124,7 +124,7 @@
           <div class="problem-card">
             <span class="problem-step">WHAT BREAKS TODAY</span>
             <h3>Different systems make competing claims.</h3>
-            <p>Vehicle platforms already use permissions and HMI rules, but those controls are usually platform-specific. They do not provide one portable contract that proves an emitter has authority to make a particular semantic claim.</p>
+            <p>Vehicle platforms already use permissions and HMI rules, but those controls are usually platform-specific. They do not provide one portable contract for verifying whether an emitter has authority to make a particular semantic claim.</p>
           </div>
           <div class="problem-card">
             <span class="problem-step">WHY IT HAPPENS</span>
@@ -352,7 +352,7 @@
       <section class="docs-section" id="feedback" data-search="delivery receipt renderer feedback acknowledgement occupant response ack timeout dispatch attempt presented received failed fallback loop machine confirmation human response">
         <div class="section-heading">
           <div><p class="section-index">04 · DELIVERY &amp; RESPONSE</p><h2>Two feedback loops, two different claims</h2></div>
-          <p>The plan is made—now prove what actually happened. A renderer can prove it presented something. Only a separate occupant response can prove a human acknowledged it. SIA never lets one claim stand in for the other.</p>
+          <p>The plan is made—now record each outcome separately. A renderer confirms presentation. A separate occupant response records whether a human acknowledged it. SIA never lets one claim stand in for the other.</p>
         </div>
 
         <div class="feedback-explorer">
@@ -508,7 +508,7 @@
             <p>Each artifact is validated in JSON Schema 2020-12 strict mode, then against cross-artifact invariants (does the instance bind the exact declaration digest? is the render plan deterministic? is retention inside validity?), then its signature and canonical digests are recomputed. Failures print in plain language, not raw schema paths.</p>
           </article>
           <article>
-            <span class="detail-kicker">WHAT THE SUITE PROVES</span>
+            <span class="detail-kicker">WHAT THE SUITE VERIFIES</span>
             <h3>Positive and adversarial vectors, per role.</h3>
             <p><code>npm test</code> runs the full suite; <code>npm run conformance -- &lt;role&gt;</code> runs only the vectors your class must pass. Vectors are language-neutral (a base example plus an RFC 7386 patch), so a C++ or Rust runtime reuses them without touching this JavaScript reference.</p>
           </article>
@@ -551,7 +551,7 @@
       <section class="docs-section" id="faq" data-search="faq questions implementation effort oem tier-1 supplier dependencies stack performance latency scope non-goals availability fallback privacy retention migration governance conformance standard vendor android automotive templates notification service third-party app agent credential registry permission look sound design branding voice assistant channel actor">
         <div class="section-heading">
           <div><p class="section-index">08 · FAQ</p><h2>The questions an adopter asks first</h2></div>
-          <p>Honest answers about effort, dependencies, and what SIA does and does not demand of an existing stack.</p>
+          <p>Integration effort, dependencies, scope, and deployment responsibilities.</p>
         </div>
         <div class="faq-list">
           <details class="faq-item" open>
@@ -587,12 +587,12 @@
             <div><p>Yes, as a prototype and migration strategy: start with one declared interaction, one emitter, and adapters for existing renderers; run the mediation path beside the current HMI path; compare decisions, latency, and evidence; then expand only after the deployment-specific safety case is clear. The exact contract, profile, and catalog bindings are validated together under one public SIA release version; unknown or incompatible critical constructs fail closed or enter the documented safety fallback. Incremental coexistence does not remove the need to prove that parallel legacy and SIA paths cannot cause unsafe duplicate or conflicting presentation.</p></div>
           </details>
           <details class="faq-item">
-            <summary><i data-lucide="badge-check" aria-hidden="true"></i><span>What does passing the conformance suite prove?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>It proves that an implementation passes the published positive and adversarial vectors for its <b>emitter</b>, <b>renderer</b>, or <b>runtime</b> class and follows the SIA 0.4.0 machine-readable contracts and invariants covered by those vectors. It does not prove regulatory compliance, functional safety, production latency, attention-model validity, cryptographic key operations, or whole-vehicle availability. Those remain deployment evidence. The repository currently provides executable examples, validators, a teaching/demo engine, and conformance material—not a production reference runtime.</p></div>
+            <summary><i data-lucide="badge-check" aria-hidden="true"></i><span>What does the conformance suite verify?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+            <div><p>It verifies that an implementation passes the published positive and adversarial vectors for its <b>emitter</b>, <b>renderer</b>, or <b>runtime</b> class and follows the SIA 0.4.0 machine-readable contracts and invariants covered by those vectors. It does not establish regulatory compliance, functional safety, production latency, attention-model validity, cryptographic key operations, or whole-vehicle availability. Those remain deployment evidence. The repository currently provides executable examples, validators, a teaching/demo engine, and conformance material—not a production reference runtime.</p></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="scale" aria-hidden="true"></i><span>Is this an approved standard? Can I ship it in a production vehicle?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
-            <div><p>No. SIA 0.4.0 is a <b>pre-standard draft</b> circulated for review and falsification. It is deliberately small so it can be prototyped, tested, and critiqued before any standardisation. Passing the conformance suite proves contract compliance, not regulatory compliance—that remains the deployment's responsibility, with empirical testing. The recommended path is: prototype on a bench, compare against your existing HMI stack, then decide whether it earns standardisation.</p><a href="https://github.com/yaneczech/SIA/blob/main/VERSIONING.md">How versions evolve <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+            <div><p>No. SIA 0.4.0 is an <b>implementable pre-standard contract</b>. The conformance suite verifies the published contract, not regulatory compliance; production use still requires deployment-specific safety, latency, availability, and empirical HMI evidence. Start with a bench prototype, compare its decisions and integration cost with the existing HMI path, and expand only when the deployment case supports it.</p><a href="https://github.com/yaneczech/SIA/blob/main/VERSIONING.md">How versions evolve <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
           </details>
           <details class="faq-item">
             <summary><i data-lucide="git-fork" aria-hidden="true"></i><span>Does adopting SIA lock me into a vendor or ecosystem?</span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
