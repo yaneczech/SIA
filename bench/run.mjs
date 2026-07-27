@@ -218,7 +218,7 @@ const report = {
 if (options.json) {
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 } else {
-  console.log('SIA portable benchmark — DEVELOPMENT MEASUREMENT ONLY');
+  console.log('SIA portable benchmark – DEVELOPMENT MEASUREMENT ONLY');
   console.log(report.evidence.warning);
   console.log(`Host: ${report.environment.target_label} · ${report.environment.cpu_model} · ${report.environment.platform}/${report.environment.architecture} · Node ${report.environment.node}`);
   console.log(`Samples: ${options.iterations} (+ ${options.warmup} warmup) · burst: ${options.burst} · concurrency: ${options.concurrency}`);

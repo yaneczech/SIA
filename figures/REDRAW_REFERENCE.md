@@ -14,9 +14,9 @@ scope stated below. Each panel answers one question. Do not merge panels merely
 to reduce the published figure count; a multi-panel figure or two consecutive
 figures are both preferable to one unreadable surface.
 
-## Figure 1 — Complexity comparison
+## Figure 1 – Complexity comparison
 
-### Figure 1A — Without SIA
+### Figure 1A – Without SIA
 
 ```mermaid
 flowchart LR
@@ -42,10 +42,10 @@ flowchart LR
 ```
 
 Shared caption/callout outside the graph: **trust, context, attention, fallback,
-evidence, and audit logic must be handled independently on each direct path —
+evidence, and audit logic must be handled independently on each direct path –
 N × M integrations.**
 
-### Figure 1B — With SIA
+### Figure 1B – With SIA
 
 ```mermaid
 flowchart LR
@@ -76,9 +76,9 @@ Redraw constraints:
 - Do not expand SIA internals here; Figure 3 owns that explanation.
 - Renderers stay outside the SIA boundary.
 
-## Figure 3 — Mediation architecture
+## Figure 3 – Mediation architecture
 
-### Figure 3A — Forward decision path
+### Figure 3A – Forward decision path
 
 ```mermaid
 flowchart LR
@@ -95,7 +95,7 @@ Place three small input callouts beneath the relevant stage, not inside its box:
 - Context: authenticated snapshot with six core axes.
 - Translation: attested renderer capabilities.
 
-### Figure 3B — Context outcome branch
+### Figure 3B – Context outcome branch
 
 ```mermaid
 flowchart LR
@@ -111,7 +111,7 @@ flowchart LR
   V -->|"release only on success"| P
 ```
 
-### Figure 3C — Delivery and human feedback
+### Figure 3C – Delivery and human feedback
 
 ```mermaid
 flowchart LR
@@ -138,7 +138,7 @@ Redraw constraints:
   hash-linked audit evidence, but persistence never blocks critical dispatch
   without a bound.
 
-## Figure 4 — Semantic node taxonomy
+## Figure 4 – Semantic node taxonomy
 
 ```mermaid
 flowchart TB
@@ -175,9 +175,9 @@ Redraw constraints:
 - Action must not reuse the output-renderer delivery contract as an input or
   execution-result contract.
 
-## Figure A.1 — Collision-warning trust and delivery sequence
+## Figure A.1 – Collision-warning trust and delivery sequence
 
-### Figure A.1A — Acceptance and planning
+### Figure A.1A – Acceptance and planning
 
 ```mermaid
 sequenceDiagram
@@ -208,7 +208,7 @@ sequenceDiagram
   end
 ```
 
-### Figure A.1B — Delivery, fallback, and response
+### Figure A.1B – Delivery, fallback, and response
 
 ```mermaid
 sequenceDiagram

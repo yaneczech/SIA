@@ -65,7 +65,7 @@ export function actorLabel(actorClass) {
 }
 
 /**
- * Every actor × node permission, derived from the catalog — the literal
+ * Every actor × node permission, derived from the catalog – the literal
  * answer to "who is allowed to say what" (§6.3), not asserted separately.
  */
 export function trustMatrix() {
@@ -204,16 +204,16 @@ export function evaluateInteraction(input) {
   if (node.type === 'Alert') {
     // Safety mandate (§9.1): only safety-certified or eyes-free surfaces are structurally
     // eligible for a critical Alert. Attention numbers are still recorded for audit,
-    // but they do not gate cluster/voice — a non-suppressible alert must not be
+    // but they do not gate cluster/voice – a non-suppressible alert must not be
     // silently blocked by a budget calculation.
     for (const name of node.presentationContract.preferredRenderers) {
       if (available[name]) { primary = name; break; }
     }
     for (const name of Object.keys(available)) {
       if (!available[name]) continue;
-      if (name === primary) { attention.budgets[name] = { eligible: true, reason: 'safety-certified surface — selected' }; continue; }
+      if (name === primary) { attention.budgets[name] = { eligible: true, reason: 'safety-certified surface – selected' }; continue; }
       if (node.presentationContract.preferredRenderers.includes(name)) {
-        attention.budgets[name] = { eligible: true, reason: 'eligible declared fallback — standby until needed' };
+        attention.budgets[name] = { eligible: true, reason: 'eligible declared fallback – standby until needed' };
         continue;
       }
       rejectedRenderers.push(name);
@@ -347,12 +347,12 @@ export function buildPhaseTrace(input, decision, acknowledgement = null, deliver
     ontology: {
       icon: 'book-open',
       question: 'What was declared, once, in the vocabulary?',
-      answer: `${node.label} is defined a single time — trust, attention and fallback are properties of the declaration, not of any single emission.`,
+      answer: `${node.label} is defined a single time – trust, attention and fallback are properties of the declaration, not of any single emission.`,
       explanation: 'This card is authored before any vehicle ships. It never changes at runtime; only its instances (emissions) do.',
       input: { title: 'Node identity', items: [decision.nodeId, `type: ${node.type}`, `priority: ${node.priority}`] },
       rule: { title: 'Declared contract', items: [`permitted actors: ${node.trustRequirements.permittedActorClasses.join(', ')}`, `ingress age ≤ ${node.trustRequirements.maxIngressAgeMs} ms`, `applicability: ${node.contextPolicy.applicability}`, `when blocked: ${node.contextPolicy.onBlocked.disposition}`] },
       output: { title: 'Attention + delivery', items: [`illustrative base glance: ${node.attention.glanceTimeMs} ms`, 'calibration status: unvalidated demo fixture', `renderer order: ${node.presentationContract.preferredRenderers.join(' → ')}`, `retention TTL: ${node.contextPolicy.onBlocked.ttlMs == null ? 'none' : `${node.contextPolicy.onBlocked.ttlMs} ms`}`, `delivery policy: ${node.presentationContract.deliverySuccessPolicy}`, `occupant response: ${node.occupantResponse.kind}`] },
-      rationale: 'Every downstream phase reads this declaration. Nothing here is trusted from the runtime payload — that separation is what makes the rest of the pipeline auditable.',
+      rationale: 'Every downstream phase reads this declaration. Nothing here is trusted from the runtime payload – that separation is what makes the rest of the pipeline auditable.',
       trace: {
         node_id: decision.nodeId,
         declaration: node,
@@ -425,7 +425,7 @@ export function buildPhaseTrace(input, decision, acknowledgement = null, deliver
       input: { title: 'Render plan', items: [`Primary: ${decision.primary ? RENDERERS[decision.primary].label : 'none'}`, `Concurrent: ${decision.concurrent.map((c) => RENDERERS[c].label).join(', ') || 'none'}`, 'Accessibility alternative available'] },
       rule: { title: 'Render and report', items: ['Preserve declared priority', 'Use renderer-native presentation', 'Return received when accepted', 'Return presented only after occupant-facing output succeeds', 'Return failed or allow runtime delivery timeout', responseRequired ? 'Expose a separate occupant-response affordance' : 'No occupant response needed'] },
       output: { title: 'Renderer receipts', items: selected.length ? allRenderers.map((name) => `${RENDERERS[name].label}: ${delivery?.receipts?.[name]?.state || (selected.includes(name) ? 'pending' : 'inactive')}`) : ['No render request', 'No delivery receipt', 'No occupant ACK expected'] },
-      rationale: decision.primary ? 'A delivery receipt proves which renderer accepted and presented the interaction. It does not claim that the occupant noticed or understood it; that is tracked separately.' : deferred ? 'No render request exists yet, so the absence of a delivery receipt is intentional—not a delivery failure. The retained semantic state remains auditable.' : 'Fail-closed or context-dropped means an unsafe, unauthorised, or contextually inappropriate interaction remains invisible even if a renderer is technically available.',
+      rationale: decision.primary ? 'A delivery receipt proves which renderer accepted and presented the interaction. It does not claim that the occupant noticed or understood it; that is tracked separately.' : deferred ? 'No render request exists yet, so the absence of a delivery receipt is intentional, not a delivery failure. The retained semantic state remains auditable.' : 'Fail-closed or context-dropped means an unsafe, unauthorised, or contextually inappropriate interaction remains invisible even if a renderer is technically available.',
       trace: { dispatch: Object.fromEntries(allRenderers.map((name) => [name, selected.includes(name) ? 'requested' : 'inactive'])), semantic_identity: decision.nodeId, delivery_receipts: delivery?.receipts || {}, delivery_channel: decision.primary ? 'renderer_to_runtime' : null, occupant_response_channel: decision.primary && responseRequired ? 'occupant_via_authenticated_input_to_runtime' : null },
     },
   };

@@ -1,4 +1,4 @@
-# Appendix A — Worked Example: `Alert.Collision.Warning` End to End
+# Appendix A – Worked Example: `Alert.Collision.Warning` End to End
 
 *Companion to “Toward a Semantic Interaction Architecture for Software-Defined Vehicles” (v0.4.0).*<br>
 *The normative lifecycle and requirements are defined in [`03_Core-Specification.md`](./03_Core-Specification.md). The JSON files in [`examples/v0.4.0/`](./examples/v0.4.0/) are executable conformance material.*
@@ -109,7 +109,7 @@ The three exact artifact bindings are explicit without creating competing public
 
 ## A.3 Trust verification
 
-![Figure A.1 — Alert.Collision.Warning trust and translation flow](./figures/figA1-alert-flow.png)
+![Figure A.1 – Alert.Collision.Warning trust and translation flow](./figures/figA1-alert-flow.png)
 
 *Figure A.1. Trust verification is a chokepoint before Translation. A failed instance never reaches a renderer, regardless of claimed urgency. The sequence shown is the 0.3 sketch: in 0.4.0, dispatch is an ordered, deadline-bounded attempt per renderer, the “acknowledgement or timeout” return is split into an authenticated delivery receipt and a separate occupant response, and the response window opens only on `presented` evidence (§A.6–A.7).*
 

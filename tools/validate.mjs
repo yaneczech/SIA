@@ -84,9 +84,9 @@ function explain(error) {
   const where = error.instancePath || '(document root)';
   switch (error.keyword) {
     case 'additionalProperties':
-      return `${where}: unexpected field "${error.params.additionalProperty}" — SIA envelopes are closed; a runtime instance must not carry policy overrides.`;
+      return `${where}: unexpected field "${error.params.additionalProperty}" – SIA envelopes are closed; a runtime instance must not carry policy overrides.`;
     case 'unevaluatedProperties':
-      return `${where}: unexpected field "${error.params.unevaluatedProperty}" — not part of this contract.`;
+      return `${where}: unexpected field "${error.params.unevaluatedProperty}" – not part of this contract.`;
     case 'required':
       return `${where}: missing required field "${error.params.missingProperty}".`;
     case 'enum':
@@ -138,7 +138,7 @@ for (const file of files) {
   try {
     doc = await loadJson(file);
   } catch (error) {
-    console.error(`✗ ${file}: not valid JSON — ${error.message}`);
+    console.error(`✗ ${file}: not valid JSON – ${error.message}`);
     failures += 1;
     continue;
   }
@@ -192,7 +192,7 @@ for (const file of files) {
     failures += 1;
     continue;
   }
-  console.log(`✓ ${file} (${contract.replace('.schema.json', '')})${notes.length ? ` — ${notes.join(' ')}` : ''}`);
+  console.log(`✓ ${file} (${contract.replace('.schema.json', '')})${notes.length ? ` – ${notes.join(' ')}` : ''}`);
 }
 
 process.exit(failures === 0 ? 0 : 1);

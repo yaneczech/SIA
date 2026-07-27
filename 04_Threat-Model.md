@@ -2,9 +2,9 @@
 
 # SIA Threat Model
 
-**Version 0.4.0 — companion to the [Core Specification](./03_Core-Specification.md) · July 2026**
+**Version 0.4.0 – companion to the [Core Specification](./03_Core-Specification.md) · July 2026**
 
-SIA defends one property: **interaction integrity** — the meaning, priority, and origin of an occupant-facing interaction is what it claims to be. This document consolidates the threats the 0.4.0 contracts are designed to stop, where each defence lives, and which conformance vector exercises it.
+SIA defends one property: **interaction integrity** – the meaning, priority, and origin of an occupant-facing interaction is what it claims to be. This document consolidates the threats the 0.4.0 contracts are designed to stop, where each defence lives, and which conformance vector exercises it.
 
 ## Threats and mitigations
 

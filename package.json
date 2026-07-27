@@ -2,7 +2,7 @@
   "name": "sia",
   "private": true,
   "type": "module",
-  "description": "Semantic Interaction Architecture — schemas, conformance examples, tools, and interactive demo",
+  "description": "Semantic Interaction Architecture – schemas, conformance examples, tools, and interactive demo",
   "scripts": {
     "test": "node --test demo/*.test.mjs bench/*.test.mjs",
     "benchmark": "node bench/run.mjs",

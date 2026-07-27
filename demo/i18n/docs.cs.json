@@ -3,8 +3,8 @@
   "$comment": "Sample partial translation proving the i18n pipeline. Untranslated keys keep their English text. See README.md in this directory.",
   "selectors": {
     "#overview .hero-content .eyebrow": "SÉMANTICKÁ INTERAKČNÍ ARCHITEKTURA · 0.4.0",
-    "#overview .hero-content h1": "Kdo smí co říkat lidem v autě—a jak to dokážete?",
-    "#overview .hero-content .hero-copy": "Moderní auto má desítky softwarových systémů, několik obrazovek, hlasového asistenta—a brzy i aplikace třetích stran a AI agenty. Všichni chtějí vaši pozornost za jízdy. SIA je navrhovaná mediační vrstva, která rozhoduje, které zprávy projdou, kde se smějí zobrazit, a uchovává provázané důkazy o každém výsledku životního cyklu.",
+    "#overview .hero-content h1": "Kdo smí co říkat lidem v autě a jak to dokážete?",
+    "#overview .hero-content .hero-copy": "Moderní auto má desítky softwarových systémů, několik obrazovek, hlasového asistenta, a brzy i aplikace třetích stran a AI agenty. Všichni chtějí vaši pozornost za jízdy. SIA je navrhovaná mediační vrstva, která rozhoduje, které zprávy projdou, kde se smějí zobrazit, a uchovává provázané důkazy o každém výsledku životního cyklu.",
     "#overview .problem-card:nth-child(1) .problem-step": "CO SE DNES ROZBÍJÍ",
     "#overview .problem-card:nth-child(1) h3": "Různé systémy vznášejí soupeřící nároky.",
     "#overview .problem-card:nth-child(1) p": "Vozidlové platformy už používají oprávnění a HMI pravidla, ta jsou ale obvykle specifická pro danou platformu. Neposkytují jeden přenositelný kontrakt, který dokáže, že emitor smí učinit konkrétní sémantický nárok.",
@@ -20,9 +20,9 @@
       "0": {
         "kicker": "FÁZE 01 · ONTOLOGIE",
         "title": "Deklarujte význam jednou.",
-        "summary": "Dávno předtím, než jakékoli varování vystřelí, napíší inženýři jednu malou strojově čitelnou kartu: co kolizní varování znamená, kdo ho smí poslat, jak je naléhavé, kde se smí objevit a co musí následovat. Té kartě se říká node—jeden záznam ve slovníku všeho, co smí vozidlo říkat lidem.",
+        "summary": "Dávno předtím, než jakékoli varování vystřelí, napíší inženýři jednu malou strojově čitelnou kartu: co kolizní varování znamená, kdo ho smí poslat, jak je naléhavé, kde se smí objevit a co musí následovat. Té kartě se říká node: jeden záznam ve slovníku všeho, co smí vozidlo říkat lidem.",
         "story": "Karta říká: „Kolizní varování je kritické. Smí ho poslat pouze asistenční systém (ADAS). Trust Policy ho smí přijmout jen tehdy, když jsou stále otevřená jak dvousetmilisekundová ingress-freshness lhůta, tak pětisetmilisekundová semantic-validity lhůta. Po prokázané prezentaci uzavře dvousekundové okno odpovědi potvrzení nebo timeout runtime.“",
-        "why": "Protože pravidla žijí na této kartě a ve sdílené politice—ne v kódu každé obrazovky—vyhodnotí mediační hranice stejnou sadu pravidel dříve, než požádá způsobilý výstup o prezentaci. Nic si nemůže později vymluvit vyšší důležitost: když prioritu určuje karta, je priorita rozhodnutá."
+        "why": "Protože pravidla žijí na této kartě a ve sdílené politice, ne v kódu každé obrazovky, vyhodnotí mediační hranice stejnou sadu pravidel dříve, než požádá způsobilý výstup o prezentaci. Nic si nemůže později vymluvit vyšší důležitost: když prioritu určuje karta, je priorita rozhodnutá."
       }
     }
   }

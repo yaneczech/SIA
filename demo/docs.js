@@ -33,26 +33,26 @@ const lifecycle = [
   {
     kicker: 'PHASE 01 · ONTOLOGY',
     title: 'Declare the meaning once.',
-    summary: 'Long before any warning fires, engineers write one small machine-readable card: what a collision warning means, who may send it, how urgent it is, where it may appear, and what must happen afterwards. That card is called a node—one entry in the vehicle’s dictionary of everything it is allowed to say to people.',
+    summary: 'Long before any warning fires, engineers write one small machine-readable card: what a collision warning means, who may send it, how urgent it is, where it may appear, and what must happen afterwards. That card is called a node: one entry in the vehicle’s dictionary of everything it is allowed to say to people.',
     story: `The card says: “A collision warning is critical. Only the driver-assistance system (ADAS) may send it. Trust Policy may accept it only while its ${collisionNode.trustRequirements.maxIngressAgeMs} ms ingress-freshness window and ${collisionNode.semanticValidityMs} ms semantic-validity window are both open. Once presentation succeeds, acknowledgement or a runtime timeout closes the ${collisionNode.occupantResponse.timeoutMs / 1000}-second response window.”`,
-    why: 'Because the rules live on this card and shared policy—not inside each screen’s code—the mediation boundary evaluates the same rule set before any eligible output is asked to present. Nothing can talk its way into higher importance later: if the card says the priority, the priority is settled.',
+    why: 'Because the rules live on this card and shared policy, not inside each screen’s code, the mediation boundary evaluates the same rule set before any eligible output is asked to present. Nothing can talk its way into higher importance later: if the card says the priority, the priority is settled.',
     icon: 'book-open',
     outputBadge: 'Signed node declaration',
     inputTitle: 'Interaction intent',
     input: ['One stable semantic meaning', 'Target occupant role', 'Payload facts required to render'],
     ruleTitle: 'Declaration is authority',
-    rules: ['Closed schema', 'Canonical digest binding', 'Policy is data—not runtime override'],
+    rules: ['Closed schema', 'Canonical digest binding', 'Policy is data, not runtime override'],
     outputTitle: 'Versioned semantic node',
     output: ['Trust requirements', 'Attention + context policy', 'Delivery + response contract'],
-    codeIntro: 'This representative excerpt uses the format machines read (JSON). Don’t read every line—notice permitted_actor_classes: the complete list of who may send this warning, and priority, decided here, once.',
+    codeIntro: 'This representative excerpt uses the format machines read (JSON). Don’t read every line. Notice permitted_actor_classes: the complete list of who may send this warning, and priority, decided here, once.',
     codeLabel: 'collision-warning.node.json',
     code: null,
   },
   {
     kicker: 'PHASE 02 · EMITTER',
-    title: 'Emit facts—not new authority.',
-    summary: 'Now the moment happens: ADAS sees the gap to the car ahead closing fast. It writes one short message—“collision warning, 1.4 seconds to impact”—points it at the dictionary card by name, adds a timestamp and its cryptographic signature, and hands it to SIA.',
-    story: 'The message carries only observed facts. It cannot ask for a bigger screen, a louder sound, or a higher priority—those fields simply do not exist in the message format.',
+    title: 'Emit facts, not new authority.',
+    summary: 'Now the moment happens: ADAS sees the gap to the car ahead closing fast. It writes one short message – “collision warning, 1.4 seconds to impact” – points it at the dictionary card by name, adds a timestamp and its cryptographic signature, and hands it to SIA.',
+    story: 'The message carries only observed facts. It cannot ask for a bigger screen, a louder sound, or a higher priority; those fields simply do not exist in the message format.',
     why: 'A compromised or misbehaving system cannot smuggle authority into a message: any extra field makes the whole message invalid. Facts travel; power stays on the card.',
     icon: 'radio-tower',
     outputBadge: 'Attested runtime instance',
@@ -70,7 +70,7 @@ const lifecycle = [
     kicker: 'PHASE 03 · TRUST POLICY',
     title: 'Verify all eight trust requirements.',
     summary: `Before any screen even knows the message exists, SIA interrogates it: Is it well-formed? Does it reference the exact card we have installed? Is ADAS allowed to say this? Does the signature verify? Is its attestation-to-acceptance age within the declared ${collisionNode.trustRequirements.maxIngressAgeMs} ms window? Have we seen it before? Is the sender’s key still valid? Is the warning still meaningful right now?`,
-    story: 'Eight questions, all mandatory. One “no” stops everything—the message never reaches a screen, no matter how urgent it claims to be.',
+    story: 'Eight questions, all mandatory. One “no” stops everything: the message never reaches a screen, no matter how urgent it claims to be.',
     why: 'Under the declared trust model, this gate makes a fake warning from a music app fail closed: a valid login is not enough, because authority to speak comes from the card, not from authentication alone. The full list of checks is explored one by one in section 02 below.',
     icon: 'shield-check',
     outputBadge: 'Verified or trust_rejected',
@@ -80,7 +80,7 @@ const lifecycle = [
     rules: ['Every check is mandatory', 'Unknown nodes stay unknown', 'Signature alone is insufficient'],
     outputTitle: 'Trust decision',
     output: ['Stable reason code', 'Exact evidence digests', 'Audit on terminal rejection'],
-    codeIntro: 'This teaching trace summarises the verifier’s eight answers; it is not an additional wire contract. Normative audit records use stable outcome codes to reconstruct why a message passed—or where it stopped.',
+    codeIntro: 'This teaching trace summarises the verifier’s eight answers; it is not an additional wire contract. Normative audit records use stable outcome codes to reconstruct why a message passed, or where it stopped.',
     codeLabel: 'trust-evaluation.trace.json',
     code: {
       state: 'verified',
@@ -100,9 +100,9 @@ const lifecycle = [
   {
     kicker: 'PHASE 04 · TRANSLATION + CONTEXT',
     title: 'Resolve applicability and eligible outputs.',
-    summary: 'The warning is genuine—now where should it appear? SIA takes a signed snapshot of the situation (moving, highway, driver attentive) and matches the card’s requirements against what each output can prove about itself.',
-    story: 'The instrument cluster has the required safety assurance and glance capability—selected. Voice—kept on standby. The center screen does not meet this warning’s declared safety profile—rejected, and the reason is written down.',
-    why: 'The choice is deterministic: same inputs, same plan, every time. No screen improvises, every rejection has a recorded reason—that is what makes the behaviour certifiable and auditable.',
+    summary: 'The warning is genuine. Now where should it appear? SIA takes a signed snapshot of the situation (moving, highway, driver attentive) and matches the card’s requirements against what each output can prove about itself.',
+    story: 'The instrument cluster has the required safety assurance and glance capability – selected. Voice – kept on standby. The center screen does not meet this warning’s declared safety profile – rejected, and the reason is written down.',
+    why: 'The choice is deterministic: same inputs, same plan, every time. No screen improvises, every rejection has a recorded reason; that is what makes the behaviour certifiable and auditable.',
     icon: 'route',
     outputBadge: 'Deterministic render plan',
     inputTitle: 'Verified meaning + context',
@@ -111,14 +111,14 @@ const lifecycle = [
     rules: ['Applicability ≠ blocking', 'Unknown context never relaxes policy', 'Stable renderer tie-breaker'],
     outputTitle: 'Selected + rejected',
     output: ['Exactly one primary', 'Ordered fallbacks', 'Reason for every rejection'],
-    codeIntro: 'The render plan. Both halves matter: selected says where the warning goes; rejected shows the center screen refused with a reason code—not silently skipped.',
+    codeIntro: 'The render plan. Both halves matter: selected says where the warning goes; rejected shows the center screen refused with a reason code, not silently skipped.',
     codeLabel: 'collision.render-plan.json',
     code: null,
   },
   {
     kicker: 'PHASE 05 · COORDINATION RUNTIME',
     title: 'Dispatch one ordered attempt at a time.',
-    summary: 'SIA now asks the cluster to show the warning—one attempt at a time, each with its own deadline. If the cluster fails or stays silent past the deadline, the next attempt goes to voice.',
+    summary: 'SIA now asks the cluster to show the warning, one attempt at a time, each with its own deadline. If the cluster fails or stays silent past the deadline, the next attempt goes to voice.',
     story: 'The whole cascade must finish while the warning is still true: an expired warning is never sent anywhere.',
     why: 'Ordered attempts with deadlines mean a broken screen cannot silently swallow a critical warning. Every attempt is numbered and points to its predecessor, so the order is provable afterwards. SIA still assumes at-least-once transport, so deployments must prevent duplicate presentation where normal and fallback paths can overlap.',
     icon: 'send',
@@ -136,8 +136,8 @@ const lifecycle = [
   {
     kicker: 'PHASE 06 · FEEDBACK + CLOSURE',
     title: 'Record delivery and occupant response separately.',
-    summary: 'The cluster confirms: “presented, 72 ms after dispatch.” That machine receipt opens the 2-second window for the human. The driver presses the steering-wheel button—a separate, authenticated event.',
-    story: 'Two different facts, never merged: the car showed the warning, and the driver answered it. If the driver does not respond, the timeout is recorded as the runtime’s own decision—the system never pretends a human acted.',
+    summary: 'The cluster confirms: “presented, 72 ms after dispatch.” That machine receipt opens the 2-second window for the human. The driver presses the steering-wheel button – a separate, authenticated event.',
+    story: 'Two different facts, never merged: the car showed the warning, and the driver answered it. If the driver does not respond, the timeout is recorded as the runtime’s own decision; the system never pretends a human acted.',
     why: 'Decision-relevant outcomes now sit in a tamper-evident audit chain: who sent what, what was verified, what was shown where, and whether an authorised occupant responded. After an incident, that chain answers questions no screenshot could reconstruct.',
     icon: 'reply',
     outputBadge: 'Receipt, response, and audit',
@@ -176,7 +176,7 @@ const contextCases = {
   lane: {
     status: 'NOT APPLICABLE',
     title: 'The instance closes without presentation.',
-    description: 'A stationary vehicle cannot depart its lane. This meaning is irrelevant here—it is not temporarily suppressed or retained.',
+    description: 'A stationary vehicle cannot depart its lane. This meaning is irrelevant here; it is not temporarily suppressed or retained.',
     code: 'applicability: "moving_only"',
     icon: 'ban',
     className: 'is-not-applicable',
@@ -277,7 +277,7 @@ const contracts = {
   receipt: {
     kicker: 'MACHINE FEEDBACK',
     title: 'Delivery receipt',
-    description: 'Renderer evidence for received, presented, or failed output—or a runtime-issued delivery timeout.',
+    description: 'Renderer evidence for received, presented, or failed output – or a runtime-issued delivery timeout.',
     schema: 'delivery-receipt.schema.json', identity: 'receipt_id + attempt sequence', owner: 'Renderer or runtime', file: 'collision.delivery-receipt.json',
   },
   response: {
@@ -649,8 +649,8 @@ function resetArchitecture() {
   const setState = (key, text) => { const el = $(`[data-arch-state="${key}"]`); if (el) el.textContent = text; };
   setState('emitter', 'idle');
   ['trust', 'context', 'translation', 'runtime', 'renderers'].forEach((k) => setState(k, 'waiting'));
-  setState('receipt', 'machine evidence — awaiting run');
-  setState('occupant', 'separate human evidence — awaiting run');
+  setState('receipt', 'machine evidence – awaiting run');
+  setState('occupant', 'separate human evidence – awaiting run');
 }
 
 async function runArchitecture() {
@@ -683,7 +683,7 @@ async function runArchitecture() {
   const steps = [
     () => { setState('emitter', `emits ${node.label}`); light('emitter', 'is-pass', 0); if (status) status.textContent = `${node.label}: ADAS emits a signed instance.`; $('.arch-wire-in')?.classList.add('is-live'); },
     () => { setState('trust', decision.accepted ? `verified · ${trustChecks.length}/${trustChecks.length}` : 'rejected'); light('trust', decision.accepted ? 'is-pass' : 'is-fail', 0); if (status) status.textContent = `Trust Policy: ${decision.accepted ? `all ${trustChecks.length} checks pass` : decision.auditCode}.`; },
-    () => { setState('context', `${decision.context.motionState} · applicable`); light('context', 'is-pass', 0); if (status) status.textContent = `Context: ${CONTEXT_AXES.length} signed axes — applicable while ${decision.context.motionState}.`; },
+    () => { setState('context', `${decision.context.motionState} · applicable`); light('context', 'is-pass', 0); if (status) status.textContent = `Context: ${CONTEXT_AXES.length} signed axes – applicable while ${decision.context.motionState}.`; },
     () => { setState('translation', decision.primary ? `${decision.auditCode}` : decision.auditCode); light('translation', decision.primary ? 'is-pass' : 'is-fail', 0); if (status) status.textContent = `Translation: primary ${archLabel(decision.primary)}${decision.concurrent.length ? ` + ${decision.concurrent.map(archLabel).join(', ')}` : ''}.`; $('.arch-wire-out')?.classList.add('is-live'); },
     () => { setState('runtime', 'ordered dispatch'); light('runtime', 'is-pass', 0); if (status) status.textContent = 'Coordination Runtime dispatches one deadline-bounded attempt.'; },
     () => { light('renderers', 'is-pass', 0); selected.forEach((name) => $(`[data-arch-surface="${name}"]`)?.classList.add('is-selected')); setState('renderers', `presented: ${selected.map(archLabel).join(' + ') || 'none'}`); if (status) status.textContent = `Renderers present on ${selected.map(archLabel).join(' + ')}.`; },

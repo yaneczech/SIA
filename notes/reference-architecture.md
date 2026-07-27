@@ -11,7 +11,7 @@ decide(state, event, now) → (state', effects[], audit[])
 ```
 
 - **Events:** verified instance, context snapshot, delivery receipt, occupant response, timer expiry.
-- **Effects:** dispatch request, timer arm, audit append. No I/O, no clock reads, no threads inside the kernel — `now` enters as a parameter, which makes replay and conformance vectors the natural test oracle.
+- **Effects:** dispatch request, timer arm, audit append. No I/O, no clock reads, no threads inside the kernel – `now` enters as a parameter, which makes replay and conformance vectors the natural test oracle.
 - **Interactions carry absolute times**, never chains of relative timeouts: `accepted_at`, `valid_until`, the current attempt deadline, and the occupant-response deadline. Before an expensive stage, the runtime compares the remaining window with the deployment's reviewed worst-case bound for that **next stage**, including the required reserve. Work that cannot enter the stage terminates through the applicable rejection, disposition, timeout, or safety-fallback outcome (§13). The safety case separately proves that the complete worst-case path fits inside semantic validity.
 - **The hash-linked audit chain is evidence, not a recovery journal.** The 0.4.0 audit record does not contain every input required to reconstruct runtime state. A deployment that requires replay uses a separate bounded event journal and/or authenticated state snapshots; neither may turn audit persistence into an unbounded prerequisite for critical dispatch.
 - **Protocol-managed queues, replay caches, and retention stores are bounded** (§8, §13, §14). A deployment may therefore choose fixed pools or another allocation strategy whose worst-case behaviour it can prove. Pre-allocation can remove GC and fragmentation from the critical path, but language, code size, and safety-integrity qualification remain deployment choices rather than SIA claims.
@@ -29,7 +29,7 @@ There is no general buffer and no unbounded FIFO. Each queue exists because the 
 | Deferred retention | context-blocked `defer` instances | declared TTL + bounded queue limits (§8) |
 | Coalescing store | latest value per canonical key | atomic replacement, older entry → `superseded` |
 | Dispatch | ready renderer attempts | deadline-aware ordering; non-positive window forbids the attempt (§11) |
-| Receipt / response | returning evidence | high priority — state must not lag reality |
+| Receipt / response | returning evidence | high priority – state must not lag reality |
 | Audit | persisted evidence | bounded admission, asynchronous flush where used, optional signed checkpoints; never an unbounded prerequisite for critical dispatch (§13–§14) |
 
 The queue must not invent a drop or merge semantic. **The node's declared disposition constrains the permitted outcomes** (`drop` / `defer` / `coalesce` / `never_block`); within those constraints, the deployment's reviewed overload policy enforces quotas, selects any eviction victim deterministically, and records the resulting outcome.
@@ -38,10 +38,10 @@ The queue must not invent a drop or merge semantic. **The node's declared dispos
 
 Two-level discipline (normative skeleton in §13–§14):
 
-1. **Isolated traffic classes** — `never_block` safety, ordinary alerts, notifications + deferred work, audit/telemetry. No lower class can delay the critical class beyond its documented latency band; the critical class has reserved queue slots, worker capacity, authentication capacity, transport credits, and its fallback path.
-2. **Earliest-deadline-first within a class** (RECOMMENDED) — prevents blindly serving an older packet that still has more remaining time than a newer, tighter one.
+1. **Isolated traffic classes** – `never_block` safety, ordinary alerts, notifications + deferred work, audit/telemetry. No lower class can delay the critical class beyond its documented latency band; the critical class has reserved queue slots, worker capacity, authentication capacity, transport credits, and its fallback path.
+2. **Earliest-deadline-first within a class** (RECOMMENDED) – prevents blindly serving an older packet that still has more remaining time than a newer, tighter one.
 
-**Pre-authentication admission is the subtle part.** The envelope carries no priority (closed schema), but the *claimed* `node_id` is still unverified text. A flood of forged critical claims must not exhaust the critical lane's verification capacity — hence admission to reserved capacity is rate-limited per session/claimed identifier *before* verify, with only cheap structural checks (size, version, algorithm identifier, required fields, syntactic timestamp, known session) allowed pre-auth. Flood-time audit is aggregated, not per packet.
+**Pre-authentication admission is the subtle part.** The envelope carries no priority (closed schema), but the *claimed* `node_id` is still unverified text. A flood of forged critical claims must not exhaust the critical lane's verification capacity – hence admission to reserved capacity is rate-limited per session/claimed identifier *before* verify, with only cheap structural checks (size, version, algorithm identifier, required fields, syntactic timestamp, known session) allowed pre-auth. Flood-time audit is aggregated, not per packet.
 
 ## 4. Cryptography placement
 
@@ -60,7 +60,7 @@ Placement options that prevent an accidental serial bottleneck:
 - **Public-key verification placement is deployment-defined.** Public keys require integrity rather than confidentiality, but verifier integrity, fault resistance, key provisioning, platform assurance, and measured contention determine whether verification runs in software, a secure execution environment, or an HSM.
 - **Runtime-issued authentication is also a deployment choice.** An HSM may protect signing or MAC keys, but putting every dispatch attempt or receipt through one serial device can itself create the hot-path bottleneck. The deployment must document key custody, concurrency, queue bounds, and the timeout/fallback outcome when the authenticator is unavailable.
 - **A revocable session with a per-packet MAC is an optional optimisation**, not a completed 0.4.0 protocol. Session establishment and HMAC provisioning are deployment-defined and explicitly deferred from the current profile; packets still require nonce, timestamp, validity binding, semantic authority checks, and current revocation state.
-- Per-packet ES256 remains a supported path. A deployment choosing any path must measure tail latency and contention on target hardware. The algorithm profile stays the closed enum of §6 — mechanism *placement* is free, primitive *choice* is not, because an open-ended algorithm identifier is a downgrade surface and defeats interoperability review.
+- Per-packet ES256 remains a supported path. A deployment choosing any path must measure tail latency and contention on target hardware. The algorithm profile stays the closed enum of §6 – mechanism *placement* is free, primitive *choice* is not, because an open-ended algorithm identifier is a downgrade surface and defeats interoperability review.
 
 ## 5. Target-hardware bottleneck campaign
 
@@ -84,9 +84,9 @@ physical instrumentation of pixels or sound. Target validation must establish
 what event the renderer calls `presented` and correlate that evidence with
 physical time-to-indication.
 
-Hardware delay therefore consumes one of several independent windows — ingress
+Hardware delay therefore consumes one of several independent windows – ingress
 freshness, semantic validity, retention TTL, delivery deadline, or occupant-response
-deadline — and must end in the corresponding explicit outcome. It must never be
+deadline – and must end in the corresponding explicit outcome. It must never be
 hidden by silently extending a timestamp or validity window.
 
 ## 6. Implementation shape checklist
@@ -103,7 +103,7 @@ The runtime stays a small coordinator. It must not grow into a message broker, a
 
 ## 7. Division of labour
 
-**SIA owns claims** — who may say what, when it applies, where it may appear, what evidence closes it, and the audit chain. **The platform owns physics** — transport QoS, scheduling and isolation, key storage and provisioning, sensor truth, pixels and sound, and the whole-vehicle safety case.
+**SIA owns claims** – who may say what, when it applies, where it may appear, what evidence closes it, and the audit chain. **The platform owns physics** – transport QoS, scheduling and isolation, key storage and provisioning, sensor truth, pixels and sound, and the whole-vehicle safety case.
 
 | The spec defines | The deployment profile sets | The safety case proves |
 |---|---|---|

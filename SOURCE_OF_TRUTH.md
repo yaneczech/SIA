@@ -38,4 +38,4 @@ npm run check:demo-profile   # fail if the committed projection is stale
 
 ## Version boundary
 
-The repository publishes one version: **0.4.0 — pre-standard draft**. Clarifications and tooling repairs remain part of that draft until a complete replacement bundle is deliberately released. Documentation, schemas, signed examples, conformance material, and demo MUST NOT advertise independent SIA versions. Machine-readable deployment latency, overload, session, or real-time contracts require a future negotiated release bundle rather than a silent change to 0.4.0.
+The repository publishes one version: **0.4.0 – pre-standard draft**. Clarifications and tooling repairs remain part of that draft until a complete replacement bundle is deliberately released. Documentation, schemas, signed examples, conformance material, and demo MUST NOT advertise independent SIA versions. Machine-readable deployment latency, overload, session, or real-time contracts require a future negotiated release bundle rather than a silent change to 0.4.0.

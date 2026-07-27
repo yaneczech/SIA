@@ -103,7 +103,7 @@ function resetAnimation() {
   $('#decision-state').className = 'decision-state waiting';
   setIcon('#decision-icon', 'arrow-right');
   $('#decision-title').textContent = 'Ready';
-  $('#decision-copy').textContent = 'Run a scenario to see why the interaction passes—or which rule stops it.';
+  $('#decision-copy').textContent = 'Run a scenario to see why the interaction passes, or which rule stops it.';
   $('#decision-announcement').textContent = '';
   $('#runtime-time').textContent = '0 ms';
   $('#check-list').innerHTML = '';
@@ -125,7 +125,7 @@ function updateScenarioCopy(input) {
   const copy = emitterCopy[input.nodeId] || emitterCopy[COLLISION_ID];
   const permittedActors = node.trustRequirements.permittedActorClasses;
   $('#emitter-detail').textContent = input.actorClass === permittedActors[0] ? copy.legit : copy.illegit(actorLabel(input.actorClass));
-  $('#ontology-detail').textContent = `${node.label} (${node.type}) — permitted: ${permittedActors.map(actorLabel).join(', ')}. Illustrative base glance estimate: ${node.attention.glanceTimeMs} ms.`;
+  $('#ontology-detail').textContent = `${node.label} (${node.type}) – permitted: ${permittedActors.map(actorLabel).join(', ')}. Illustrative base glance estimate: ${node.attention.glanceTimeMs} ms.`;
 }
 
 async function runScenario(inputOverride = null) {
@@ -623,11 +623,11 @@ function renderAttentionReadout(node, result) {
   if (!result.attention) {
     formula.textContent = result.accepted
       ? result.outcome === 'context_deferred'
-        ? `Not evaluated yet — Context Policy ${result.retention.disposition}s the semantic state before renderer budgeting and will re-evaluate it on a context change.`
+        ? `Not evaluated yet – Context Policy ${result.retention.disposition}s the semantic state before renderer budgeting and will re-evaluate it on a context change.`
         : result.outcome === 'not_applicable'
-          ? 'Not evaluated — the declaration is not applicable in this context, so renderer delivery never starts.'
-          : 'Not evaluated — Context Policy dropped the applicable interaction before a renderer budget was computed.'
-      : 'Not evaluated — the node was rejected before reaching Translation.';
+          ? 'Not evaluated – the declaration is not applicable in this context, so renderer delivery never starts.'
+          : 'Not evaluated – Context Policy dropped the applicable interaction before a renderer budget was computed.'
+      : 'Not evaluated – the node was rejected before reaching Translation.';
     budgets.innerHTML = '';
     return;
   }

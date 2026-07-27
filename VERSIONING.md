@@ -2,7 +2,7 @@
 
 ## One public version
 
-The repository publishes one SIA release version. The current release is **0.4.0 — pre-standard draft**.
+The repository publishes one SIA release version. The current release is **0.4.0 – pre-standard draft**.
 
 That same version MUST identify the README, Core Specification, schemas, published `sia-minimal` profile, catalog, policies, registries, renderer capabilities, examples, conformance material, demo, and interactive documentation. A commit may clarify or repair the current draft without inventing another public version. A new version exists only when the complete release bundle is updated, validated, signed, documented, and tagged together.
 

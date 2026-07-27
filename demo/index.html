@@ -9,20 +9,20 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SIA">
   <meta property="og:locale" content="en_US">
-  <meta property="og:title" content="SIA — Semantic Interaction Architecture">
+  <meta property="og:title" content="SIA – Semantic Interaction Architecture">
   <meta property="og:description" content="Keep one in-vehicle interaction meaningful, authorised, and verifiable across every output.">
   <meta property="og:url" content="https://yaneczech.github.io/SIA/demo/">
   <meta property="og:image" content="https://yaneczech.github.io/SIA/demo/og-sia.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="SIA — Semantic Interaction Architecture: vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.">
+  <meta property="og:image:alt" content="SIA – Semantic Interaction Architecture: vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SIA — Semantic Interaction Architecture">
+  <meta name="twitter:title" content="SIA – Semantic Interaction Architecture">
   <meta name="twitter:description" content="Keep one in-vehicle interaction meaningful, authorised, and verifiable across every output.">
   <meta name="twitter:image" content="https://yaneczech.github.io/SIA/demo/og-sia.png">
-  <meta name="twitter:image:alt" content="SIA — Semantic Interaction Architecture: vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.">
-  <title>SIA — Interactive Demo</title>
+  <meta name="twitter:image:alt" content="SIA – Semantic Interaction Architecture: vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.">
+  <title>SIA – Interactive Demo</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://use.typekit.net/cyy0vwc.css">
   <link rel="stylesheet" href="./styles.css">
@@ -30,7 +30,7 @@
 <body>
   <a class="skip-link" href="#demo">Skip to the demo</a>
   <header class="site-header">
-    <a class="brand" href="https://github.com/yaneczech/SIA" aria-label="SIA — repository">
+    <a class="brand" href="https://github.com/yaneczech/SIA" aria-label="SIA – repository">
       <img src="../figures/sia-logo.svg" alt="SIA">
       <span>INTERACTION LAB</span>
     </a>
@@ -46,7 +46,7 @@
   <main>
     <section class="hero" aria-labelledby="hero-title">
       <p class="eyebrow">MEANING · AUTHORITY · EVIDENCE</p>
-      <h1 id="hero-title">Who may speak to people in the car<br><span>— and what evidence shows what happened?</span></h1>
+      <h1 id="hero-title">Who may speak to people in the car,<br><span>and what evidence shows what happened?</span></h1>
       <p class="hero-copy">SIA defines what an in-vehicle interaction means, who is allowed to issue it, where it may appear, and what evidence records whether it was presented.</p>
       <a class="hero-action" href="#derivation">See why the parts exist <i data-lucide="arrow-down" aria-hidden="true"></i></a>
     </section>
@@ -141,7 +141,7 @@
           <div class="flow-link" aria-hidden="true"><span class="packet"></span><span class="link-line"></span></div>
 
           <div class="sia-boundary">
-            <div class="boundary-label">SIA — SINGLE MEDIATION BOUNDARY</div>
+            <div class="boundary-label">SIA – SINGLE MEDIATION BOUNDARY</div>
             <div class="stage policy" data-stage="trust">
               <div class="stage-index">03</div>
               <div class="stage-symbol shield" aria-hidden="true"><i data-lucide="shield-check"></i></div>
@@ -191,13 +191,13 @@
           <div class="decision-state waiting" id="decision-state">
             <span class="decision-icon" id="decision-icon"><i data-lucide="arrow-right" aria-hidden="true"></i></span>
             <h3 id="decision-title" tabindex="-1">Ready</h3>
-            <p id="decision-copy">Run a scenario to see why the warning passes—or which rule stops it.</p>
+            <p id="decision-copy">Run a scenario to see why the warning passes, or which rule stops it.</p>
           </div>
           <div class="sr-only" id="decision-announcement" role="status" aria-atomic="true"></div>
           <div class="check-list" id="check-list" aria-label="Scenario checks"></div>
           <button class="run-button" id="run-button"><span>Run scenario</span><i data-lucide="play" aria-hidden="true"></i></button>
           <button class="run-button ack-action" id="panel-ack-button" hidden><span>Acknowledge as driver</span><i data-lucide="reply" aria-hidden="true"></i></button>
-          <button class="run-button resume-action" id="resume-button" hidden><span>Driver attentive — re-evaluate</span><i data-lucide="refresh-cw" aria-hidden="true"></i></button>
+          <button class="run-button resume-action" id="resume-button" hidden><span>Driver attentive – re-evaluate</span><i data-lucide="refresh-cw" aria-hidden="true"></i></button>
           <button class="replay-button" id="replay-button" hidden><i data-lucide="rotate-ccw" aria-hidden="true"></i> Replay animation</button>
         </aside>
       </div>
@@ -262,7 +262,7 @@
 
     <section class="scope-section" aria-labelledby="scope-title">
       <div class="section-heading">
-        <div><p class="eyebrow">BOUNDARIES</p><h2 id="scope-title">What SIA is—and is not</h2></div>
+        <div><p class="eyebrow">BOUNDARIES</p><h2 id="scope-title">What SIA is and is not</h2></div>
         <p>SIA has a defined boundary. Production safety still depends on the surrounding vehicle system and empirical evidence.</p>
       </div>
       <div class="scope-grid">
@@ -275,7 +275,7 @@
     <section class="matrix-section" aria-labelledby="matrix-title">
       <div class="section-heading">
         <div><p class="eyebrow">WHO GETS TO SPEAK</p><h2 id="matrix-title">Trust matrix</h2></div>
-        <p>Every cell below is read directly from the same node catalog the engine evaluates — not asserted separately. Blocked here means blocked before any renderer ever sees the message.</p>
+        <p>Every cell below is read directly from the same node catalog the engine evaluates – not asserted separately. Blocked here means blocked before any renderer ever sees the message.</p>
       </div>
       <div class="matrix-wrap">
         <table class="trust-matrix" id="trust-matrix" aria-label="Which actor may emit which interaction"></table>
@@ -308,8 +308,8 @@
             <div class="field">
               <label for="actor">Actor class</label>
               <select id="actor" name="actor">
-                <option value="adas">ADAS — driving safety system</option>
-                <option value="service">Vehicle service — climate, media, nav</option>
+                <option value="adas">ADAS – driving safety system</option>
+                <option value="service">Vehicle service – climate, media, nav</option>
                 <option value="third_party_app">Third-party app</option>
                 <option value="agent_local">In-vehicle AI assistant</option>
                 <option value="agent_cloud">Cloud AI assistant</option>
@@ -368,17 +368,17 @@
               <div class="field">
                 <label for="delivery-mode"><span>Renderer receipt</span><small>machine confirmation</small></label>
                 <select id="delivery-mode">
-                  <option value="presented">Presented — renderer confirms output</option>
-                  <option value="received">Received — presentation still pending</option>
-                  <option value="fallback">Primary fails — backup presents</option>
-                  <option value="timeout">No presentation receipt — timeout</option>
+                  <option value="presented">Presented – renderer confirms output</option>
+                  <option value="received">Received – presentation still pending</option>
+                  <option value="fallback">Primary fails – backup presents</option>
+                  <option value="timeout">No presentation receipt – timeout</option>
                 </select>
               </div>
               <div class="field">
                 <label for="ack-mode"><span>Occupant response</span><small>starts only after presentation</small></label>
                 <select id="ack-mode">
                   <option value="explicit">Driver presses acknowledge</option>
-                  <option value="timeout">No occupant response — timeout</option>
+                  <option value="timeout">No occupant response – timeout</option>
                   <option value="pending">Still waiting for occupant</option>
                 </select>
               </div>
@@ -399,13 +399,13 @@
             <div class="timing-readout" aria-label="Independent protocol timing windows">
               <div class="attention-sum"><small>PROTOCOL TIMING · INDEPENDENT WINDOWS</small><p>Freshness, semantic validity, and renderer delivery are different clocks. They are not one additive latency guarantee.</p></div>
               <div class="timing-budgets">
-                <div><b id="timing-ingress">—</b><small>attestation → acceptance</small></div>
-                <div><b id="timing-validity">—</b><small>occurrence → semantic expiry</small></div>
-                <div><b id="timing-delivery">—</b><small>dispatch attempt timeout</small></div>
+                <div><b id="timing-ingress">–</b><small>attestation → acceptance</small></div>
+                <div><b id="timing-validity">–</b><small>occurrence → semantic expiry</small></div>
+                <div><b id="timing-delivery">–</b><small>dispatch attempt timeout</small></div>
               </div>
             </div>
             <div class="attention-readout" id="attention-readout">
-              <div class="attention-sum"><small>ILLUSTRATIVE VISUAL ATTENTION COST</small><p id="attention-formula">—</p></div>
+              <div class="attention-sum"><small>ILLUSTRATIVE VISUAL ATTENTION COST</small><p id="attention-formula">–</p></div>
               <div class="attention-budgets" id="attention-budgets"></div>
               <div class="attention-provenance" id="attention-provenance">
                 <span><b>Status</b> unvalidated demo value</span>

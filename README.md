@@ -6,7 +6,7 @@
 
 **A vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.**
 
-> **What if a collision warning could declare, in machine-readable terms, who is allowed to emit it, how fresh its attestation must be, what attention budget it consumes, and which renderer may present it — without that logic being duplicated inside every screen, widget, or assistant?**
+> **What if a collision warning could declare, in machine-readable terms, who is allowed to emit it, how fresh its attestation must be, what attention budget it consumes, and which renderer may present it – without that logic being duplicated inside every screen, widget, or assistant?**
 
 This repository contains a draft position paper proposing **Semantic Interaction Architecture (SIA)**: the narrow mediation layer that implements that contract for high-value interactions in software-defined vehicles.
 
@@ -18,7 +18,7 @@ The proposal is intentionally framed as a **mediation contract**, not as a repla
 
 ## The problem
 
-Modern vehicle HMI is still largely renderer-first and tightly coupled. The same intent — *acknowledge an alert*, *increase volume*, *navigate back*, *warn the driver* — is often implemented separately for each screen size, input device, voice assistant, application surface, and vehicle generation.
+Modern vehicle HMI is still largely renderer-first and tightly coupled. The same intent – *acknowledge an alert*, *increase volume*, *navigate back*, *warn the driver* – is often implemented separately for each screen size, input device, voice assistant, application surface, and vehicle generation.
 
 That creates three recurring costs:
 
@@ -34,20 +34,20 @@ SIA starts from the claim that the missing abstraction is not another graphical 
 
 SIA defines a typed semantic vocabulary for in-vehicle interactions. In the full architecture, interaction nodes are organised as:
 
-- `Action` — occupant-initiated interaction
-- `Event` — system-initiated interaction
-  - `Alert` — safety-relevant, may declare a separate occupant response
-  - `Notification` — informational, with explicit drop, defer, or coalesce behaviour when blocked
-- `State` — runtime coordination state
-- `Task` — composed multi-step flow
+- `Action` – occupant-initiated interaction
+- `Event` – system-initiated interaction
+  - `Alert` – safety-relevant, may declare a separate occupant response
+  - `Notification` – informational, with explicit drop, defer, or coalesce behaviour when blocked
+- `State` – runtime coordination state
+- `Task` – composed multi-step flow
 
 Each node carries machine-readable metadata for:
 
-- **Trust** — signed catalog and authority registry, declaration/credential binding, permitted actor classes, signed origin, freshness, semantic validity, revocation, and replay protection.
-- **Attention** — estimated glance time, task steps, cognitive load, and other audit-facing attention-demand proxies.
-- **Context** — multi-axis driving context such as vehicle state, road type, driver state, autonomy state, and jurisdiction.
-- **Capability negotiation** — renderer and input-device capabilities expressed as measurable constraints rather than informal labels.
-- **Lifecycle and feedback** — applicability, bounded retention, deterministic render plans, renderer delivery receipts, and separate occupant responses.
+- **Trust** – signed catalog and authority registry, declaration/credential binding, permitted actor classes, signed origin, freshness, semantic validity, revocation, and replay protection.
+- **Attention** – estimated glance time, task steps, cognitive load, and other audit-facing attention-demand proxies.
+- **Context** – multi-axis driving context such as vehicle state, road type, driver state, autonomy state, and jurisdiction.
+- **Capability negotiation** – renderer and input-device capabilities expressed as measurable constraints rather than informal labels.
+- **Lifecycle and feedback** – applicability, bounded retention, deterministic render plans, renderer delivery receipts, and separate occupant responses.
 
 The architecture consists of three functional components and two cross-cutting policies:
 
@@ -115,21 +115,21 @@ For example, SIA does not decide whether a collision is physically imminent. It 
 
 ## Read the paper
 
-- [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) — motivation, related work, architecture, node taxonomy, policy model, Minimal SIA Profile 0.4.0, and path forward.
-- [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) — a concrete `Alert.Collision.Warning` traced end-to-end through declaration, trust, context, translation, renderer delivery, occupant response, retention, and adversarial scenarios.
-- [**Core Specification**](./03_Core-Specification.md) — the normative 0.4.0 lifecycle, retention, delivery, security, compatibility, and conformance requirements.
-- [**JSON Schema contracts**](./schema/) — strict contracts for signed catalogs, policies, actor credentials, declarations, instances, context, capabilities, retention, render plans, dispatch attempts, delivery, occupant response, and audit.
-- [**Validated examples**](./examples/v0.4.0/) — executable positive conformance material used by automated tests.
-- [**Interactive demo**](./demo/) — a dark-mode visual walkthrough and test lab using the same 0.4.0 outcomes and feedback loops as the engine tests.
-- [**Threat model**](./04_Threat-Model.md) — the consolidated threat-to-mitigation table, non-goals, and residual risks accepted in 0.4.0.
-- [**Reason-code registry**](./registry/reason-codes.json) — the normative machine-readable codes for trust, context, retention, translation, delivery, and occupant-response outcomes.
-- [**Conformance vectors**](./conformance/) — language-neutral positive and negative test vectors, tagged by conformance class (`emitter`, `renderer`, `runtime`) so a supplier tests only the side of the boundary it owns.
-- [**Cryptographic vectors**](./conformance/crypto/) — published test keys and really-signed examples, so implementers can verify both their signing and their verification code, including tamper and algorithm-confusion rejections.
-- [**Versioning policy**](./VERSIONING.md) — how the wire contract, the node catalog, registries, and vectors are allowed to evolve.
-- [**Source-of-truth map**](./SOURCE_OF_TRUTH.md) — which artifact owns each concept and how schemas, examples, demo, and documentation are kept aligned.
-- [**Node authoring guide**](./05_Node-Authoring-Guide.md) — the checklist for designing a new interaction node, from meaning to payload.
-- [**Glossary**](./GLOSSARY.md) — every normative term on one page.
-- [**Runtime reference architecture**](./notes/reference-architecture.md) — non-normative implementation guidance for bounded queues, scheduling, authentication placement, and the target-hardware evidence campaign.
+- [**Position paper**](./01_Semantic-Interaction-Architecture-sdv.md) – motivation, related work, architecture, node taxonomy, policy model, Minimal SIA Profile 0.4.0, and path forward.
+- [**Appendix A: Worked example**](./02_Appendix-a-worked-example.md) – a concrete `Alert.Collision.Warning` traced end-to-end through declaration, trust, context, translation, renderer delivery, occupant response, retention, and adversarial scenarios.
+- [**Core Specification**](./03_Core-Specification.md) – the normative 0.4.0 lifecycle, retention, delivery, security, compatibility, and conformance requirements.
+- [**JSON Schema contracts**](./schema/) – strict contracts for signed catalogs, policies, actor credentials, declarations, instances, context, capabilities, retention, render plans, dispatch attempts, delivery, occupant response, and audit.
+- [**Validated examples**](./examples/v0.4.0/) – executable positive conformance material used by automated tests.
+- [**Interactive demo**](./demo/) – a dark-mode visual walkthrough and test lab using the same 0.4.0 outcomes and feedback loops as the engine tests.
+- [**Threat model**](./04_Threat-Model.md) – the consolidated threat-to-mitigation table, non-goals, and residual risks accepted in 0.4.0.
+- [**Reason-code registry**](./registry/reason-codes.json) – the normative machine-readable codes for trust, context, retention, translation, delivery, and occupant-response outcomes.
+- [**Conformance vectors**](./conformance/) – language-neutral positive and negative test vectors, tagged by conformance class (`emitter`, `renderer`, `runtime`) so a supplier tests only the side of the boundary it owns.
+- [**Cryptographic vectors**](./conformance/crypto/) – published test keys and really-signed examples, so implementers can verify both their signing and their verification code, including tamper and algorithm-confusion rejections.
+- [**Versioning policy**](./VERSIONING.md) – how the wire contract, the node catalog, registries, and vectors are allowed to evolve.
+- [**Source-of-truth map**](./SOURCE_OF_TRUTH.md) – which artifact owns each concept and how schemas, examples, demo, and documentation are kept aligned.
+- [**Node authoring guide**](./05_Node-Authoring-Guide.md) – the checklist for designing a new interaction node, from meaning to payload.
+- [**Glossary**](./GLOSSARY.md) – every normative term on one page.
+- [**Runtime reference architecture**](./notes/reference-architecture.md) – non-normative implementation guidance for bounded queues, scheduling, authentication placement, and the target-hardware evidence campaign.
 
 ---
 
@@ -154,17 +154,17 @@ The validator auto-detects the contract, validates it in JSON Schema 2020-12 str
 
 ## Key diagrams
 
-- **Fig. 1** — Complexity comparison: before vs. after SIA
-- **Fig. 2** — Position of SIA in the SDV stack
-- **Fig. 3** — Mediation architecture
-- **Fig. 4** — Node taxonomy
-- **Fig. A.1** — `Alert.Collision.Warning` trust and translation flow
+- **Fig. 1** – Complexity comparison: before vs. after SIA
+- **Fig. 2** – Position of SIA in the SDV stack
+- **Fig. 3** – Mediation architecture
+- **Fig. 4** – Node taxonomy
+- **Fig. A.1** – `Alert.Collision.Warning` trust and translation flow
 
 ---
 
 ## Current status
 
-This is **v0.4.0 — a pre-standard draft for implementation, critique, and falsification**.
+This is **v0.4.0 – a pre-standard draft for implementation, critique, and falsification**.
 
 The document is not yet a standard and does not claim that no OEM-internal equivalent exists. Its absence claim is limited to publicly documented standards, open-source SDV projects, published automotive ontology work, and production-facing HMI frameworks available at the time of writing.
 
@@ -182,12 +182,12 @@ Version 0.4.0 makes the previously illustrative runtime contract executable. The
 
 The paper intentionally leaves several questions open:
 
-1. **Production encoding** — canonical JSON, deterministic CBOR/COSE, or generated Protobuf for constrained paths.
-2. **Trust-anchor operations** — production key provisioning, HSM integration, rollover, recovery, and algorithm agility; the artifact and revocation bindings are defined in 0.4.0.
-3. **Attention validation** — calibration against occlusion testing, eye-glance measurement, and simulator studies.
-4. **Safety case** — bounded latency, fail-operational fallback, and coexistence with certified legacy alert paths.
-5. **Reference implementation** — likely prototype path on Eclipse Kuksa or adjacent SDV infrastructure.
-6. **Comparison with adjacent work** — especially VSS/VSSo, Android Automotive Car App Library, W3C MMI/EMMA, Onto-CMS, and AXIL.
+1. **Production encoding** – canonical JSON, deterministic CBOR/COSE, or generated Protobuf for constrained paths.
+2. **Trust-anchor operations** – production key provisioning, HSM integration, rollover, recovery, and algorithm agility; the artifact and revocation bindings are defined in 0.4.0.
+3. **Attention validation** – calibration against occlusion testing, eye-glance measurement, and simulator studies.
+4. **Safety case** – bounded latency, fail-operational fallback, and coexistence with certified legacy alert paths.
+5. **Reference implementation** – likely prototype path on Eclipse Kuksa or adjacent SDV infrastructure.
+6. **Comparison with adjacent work** – especially VSS/VSSo, Android Automotive Car App Library, W3C MMI/EMMA, Onto-CMS, and AXIL.
 
 ---
 
@@ -208,8 +208,8 @@ Feedback, counter-positions, and collaboration offers are welcome: **dizencz@gma
 
 ## About Cars Making Sense
 
-Cars Making Sense is a research initiative focused on usability, UX, and interaction quality in the automotive industry. We analyse existing and historical HMI solutions, identify where they fall short, and propose better design paths — grounded in how people actually use vehicles, not only in how dashboards happen to be built.
+Cars Making Sense is a research initiative focused on usability, UX, and interaction quality in the automotive industry. We analyse existing and historical HMI solutions, identify where they fall short, and propose better design paths – grounded in how people actually use vehicles, not only in how dashboards happen to be built.
 
 SIA is our first concrete technical proposal: a formal answer to a recurring problem in current in-vehicle interaction design.
 
-*Cars Making Sense — July 2026*
+*Cars Making Sense – July 2026*

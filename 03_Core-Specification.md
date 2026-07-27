@@ -2,7 +2,7 @@
 
 # SIA Core Specification
 
-**Version 0.4.0 — pre-standard draft · July 2026**
+**Version 0.4.0 – pre-standard draft · July 2026**
 
 This document is the normative implementer contract for the Semantic Interaction Architecture. The position paper explains the motivation and architecture; this specification defines the interoperable behaviour.
 
@@ -116,7 +116,7 @@ Replay protection is scoped: a nonce MUST be unique per `(actor_id, key_id)` wit
 
 The canonical signing representation is RFC 8785 (JSON Canonicalization Scheme). The signing input for an artifact is its JCS serialization with the `signature` member removed from its evidence block (`attestation.signature`, `integrity.signature`, or `evidence.signature`); the signature is computed over the UTF-8 bytes of that serialization. The algorithm profile is fixed to the identifiers enumerated by the schemas (`ES256` in JOSE raw `r||s` encoding, `EdDSA`, `HMAC-SHA-256`). A deployment MAY restrict this set further, but MUST NOT accept algorithm identifiers outside it, and MUST NOT accept `none` for any artifact other than a runtime-issued timeout event.
 
-Every signed example in `examples/v0.4.0/` carries a real signature verifiable with the published test keys; the cryptographic conformance vectors — including tamper, wrong-key, and algorithm-confusion rejections — are in [`conformance/crypto/`](./conformance/crypto/).
+Every signed example in `examples/v0.4.0/` carries a real signature verifiable with the published test keys; the cryptographic conformance vectors – including tamper, wrong-key, and algorithm-confusion rejections – are in [`conformance/crypto/`](./conformance/crypto/).
 
 ## 7. Time semantics
 
@@ -193,9 +193,9 @@ A renderer receipt MUST bind `receipt_id`, `attempt_id`, receipt sequence, `deci
 
 The render plan declares one success policy:
 
-- `any_selected_presented` — any selected or fallback renderer may satisfy delivery;
-- `primary_presented` — the primary renderer must present;
-- `all_required_presented` — every renderer marked required must present.
+- `any_selected_presented` – any selected or fallback renderer may satisfy delivery;
+- `primary_presented` – the primary renderer must present;
+- `all_required_presented` – every renderer marked required must present.
 
 Occupant response MUST NOT start until the applicable delivery-success policy is satisfied. If it is never satisfied, occupant response remains `not_started` and delivery closes through failure or timeout policy.
 
@@ -219,7 +219,7 @@ SIA security gates fail closed for unauthorised claims. Safety-relevant delivery
 
 The documented latency bound MUST include bounded queue residence and contention for shared CPU, HSM, transport, storage, and renderer resources. Overload MUST produce an explicit, audited outcome or enter the declared safety fallback; it MUST NOT silently extend freshness or semantic validity. Audit persistence MUST NOT become an unbounded prerequisite for critical dispatch.
 
-Processing MUST be isolated into traffic classes such that no lower-priority interaction can delay a `never_block` interaction beyond its documented latency band. The deployment MUST reserve bounded queue, worker, authentication, and transport capacity for the critical class, including its fallback path. Within a class, deadline-ordered processing (earliest deadline first) is RECOMMENDED. An interaction whose remaining time window cannot complete the next processing stage MUST NOT enter that stage; it terminates through its declared disposition or timeout outcome with an audit record. Overload may only shed or defer work according to declared dispositions — queues themselves decide nothing.
+Processing MUST be isolated into traffic classes such that no lower-priority interaction can delay a `never_block` interaction beyond its documented latency band. The deployment MUST reserve bounded queue, worker, authentication, and transport capacity for the critical class, including its fallback path. Within a class, deadline-ordered processing (earliest deadline first) is RECOMMENDED. An interaction whose remaining time window cannot complete the next processing stage MUST NOT enter that stage; it terminates through its declared disposition or timeout outcome with an audit record. Overload may only shed or defer work according to declared dispositions – queues themselves decide nothing.
 
 SIA MUST NOT become an undocumented single point of failure for a safety-relevant indication.
 
@@ -229,7 +229,7 @@ The consolidated threat-to-mitigation mapping, non-goals, and residual risks acc
 
 Implementations MUST rate-limit emitters, bound nonce caches and retained queues, and audit repeated policy violations. Session authentication does not grant semantic authority and MUST remain revocable.
 
-Before authentication, an implementation MAY apply only structural admission checks: size and encoding limits, supported version and algorithm identifiers, required fields, syntactic timestamps, and a known actor or session identifier. Unauthenticated content — including the claimed node identity — MUST NOT grant elevated scheduling priority. Admission to reserved critical capacity MUST be rate-limited per session or per claimed identifier within bounded quotas, so that a flood of forged critical claims cannot exhaust critical verification capacity. Admission rejection is a terminal outcome with reason code `TRUST_REJECTED_ADMISSION`; under sustained flood it MUST be audited at a bounded, aggregated rate rather than per message.
+Before authentication, an implementation MAY apply only structural admission checks: size and encoding limits, supported version and algorithm identifiers, required fields, syntactic timestamps, and a known actor or session identifier. Unauthenticated content – including the claimed node identity – MUST NOT grant elevated scheduling priority. Admission to reserved critical capacity MUST be rate-limited per session or per claimed identifier within bounded quotas, so that a flood of forged critical claims cannot exhaust critical verification capacity. Admission rejection is a terminal outcome with reason code `TRUST_REJECTED_ADMISSION`; under sustained flood it MUST be audited at a bounded, aggregated rate rather than per message.
 
 Audit details MUST follow data minimisation. Payloads classified as personal or sensitive SHOULD be referenced by digest or redacted projection rather than copied into logs. Hash linking provides tamper evidence; deployments requiring non-repudiation SHOULD additionally sign audit checkpoints.
 

@@ -8,16 +8,16 @@
 
 **Author:** Jan Janeček  
 **Affiliation:** Cars Making Sense  
-**Version:** 0.4.0 — Pre-standard draft<br>
+**Version:** 0.4.0 – Pre-standard draft<br>
 **Date:** July 2026
 
 ---
 
 ## Abstract
 
-As vehicles become multimodal, AI-augmented, software-defined platforms, the interaction layer has become one of the most volatile and least consistently abstracted parts of the in-vehicle stack. Abstraction has scaled below interaction — hardware, signals, middleware and services — but only narrowly within interaction itself. A long tradition of automotive ontology and HMI research has produced valuable component contributions, yet we found no public, vendor-neutral framework that treats the vehicle’s interaction surface as a typed, measurable, trust-aware semantic vocabulary.
+As vehicles become multimodal, AI-augmented, software-defined platforms, the interaction layer has become one of the most volatile and least consistently abstracted parts of the in-vehicle stack. Abstraction has scaled below interaction – hardware, signals, middleware and services – but only narrowly within interaction itself. A long tradition of automotive ontology and HMI research has produced valuable component contributions, yet we found no public, vendor-neutral framework that treats the vehicle’s interaction surface as a typed, measurable, trust-aware semantic vocabulary.
 
-We propose a **Semantic Interaction Architecture** (SIA): a **vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions**, implemented as a narrow mediation layer in which interactions are described by their meaning, attention demand, contextual fitness and authority of origin, rather than by buttons, screens or widgets. SIA sits above existing SDV data and service abstractions — such as COVESA VSS, Eclipse Kuksa, Eclipse uProtocol and AUTOSAR Adaptive — and below concrete renderers, which remain external consumers of a verified semantic stream. Its contribution is second-wave integration, not first-wave invention: it combines renderers as external consumers, actor-class trust with requirement-vs-attestation separation, attention metrics aligned with distraction-guideline axes, deterministic capability negotiation, bounded context retention, authenticated delivery receipts and a separate occupant-response contract. We describe the architecture and a deliberately small 0.4.0 profile suitable for reference implementation and standardisation discussion.
+We propose a **Semantic Interaction Architecture** (SIA): a **vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions**, implemented as a narrow mediation layer in which interactions are described by their meaning, attention demand, contextual fitness and authority of origin, rather than by buttons, screens or widgets. SIA sits above existing SDV data and service abstractions – such as COVESA VSS, Eclipse Kuksa, Eclipse uProtocol and AUTOSAR Adaptive – and below concrete renderers, which remain external consumers of a verified semantic stream. Its contribution is second-wave integration, not first-wave invention: it combines renderers as external consumers, actor-class trust with requirement-vs-attestation separation, attention metrics aligned with distraction-guideline axes, deterministic capability negotiation, bounded context retention, authenticated delivery receipts and a separate occupant-response contract. We describe the architecture and a deliberately small 0.4.0 profile suitable for reference implementation and standardisation discussion.
 
 This position paper is explanatory. The normative implementer contract, lifecycle and conformance requirements are defined in [`03_Core-Specification.md`](./03_Core-Specification.md); machine-readable contracts and executable examples are published in [`schema/`](./schema/) and [`examples/v0.4.0/`](./examples/v0.4.0/).
 
@@ -25,7 +25,7 @@ This position paper is explanatory. The normative implementer contract, lifecycl
 
 ## 1. Motivation
 
-The first generation of software-defined vehicles has surfaced a structural problem that early SDV literature did not centrally address. As infotainment surfaces grew, voice assistants proliferated, over-the-air update cadence accelerated, and AI agents began entering the cabin, the interaction layer became both more visible to occupants and more fragile as a system boundary. The same intent — return to a previous view, acknowledge an alert, increase volume, set a destination — may behave differently across brands, vehicle generations, firmware versions and modalities. More importantly, the authority of a message reaching the occupant is often not semantically explicit: from the driver’s perspective, a warning produced by ADAS, a message produced by a third-party application and a suggestion produced by an AI assistant may share the same visual or auditory surface.
+The first generation of software-defined vehicles has surfaced a structural problem that early SDV literature did not centrally address. As infotainment surfaces grew, voice assistants proliferated, over-the-air update cadence accelerated, and AI agents began entering the cabin, the interaction layer became both more visible to occupants and more fragile as a system boundary. The same intent – return to a previous view, acknowledge an alert, increase volume, set a destination – may behave differently across brands, vehicle generations, firmware versions and modalities. More importantly, the authority of a message reaching the occupant is often not semantically explicit: from the driver’s perspective, a warning produced by ADAS, a message produced by a third-party application and a suggestion produced by an AI assistant may share the same visual or auditory surface.
 
 Substantial abstraction work already exists in automotive systems. COVESA VSS abstracts vehicle signals. Eclipse Kuksa and uProtocol help services exchange data. AUTOSAR, S-CORE and related middleware projects address runtime and software architecture. Android Automotive and HMI frameworks such as Qt, Kanzi or Unity provide application and rendering abstractions. What remains largely absent is a **semantic interaction abstraction**: a layer that decouples what an interaction means, who is authorised to emit it, what attention it demands, and which renderers are eligible to express it.
 
@@ -35,7 +35,7 @@ This paper takes the position that the recurring inconsistency of in-vehicle int
 
 A natural objection is that any additional boundary creates additional complexity. We argue the inverse. The complexity already exists today, but it is duplicated across every emitter–renderer pair: each direct path may implement its own trust checks, context rules, capability assumptions, accessibility fallbacks, acknowledgement logic and audit behaviour. SIA does not introduce this complexity; it consolidates it into one auditable boundary.
 
-![Figure 1 — complexity comparison](./figures/fig1-complexity-comparison.png)
+![Figure 1 – complexity comparison](./figures/fig1-complexity-comparison.png)
 
 *Figure 1. Without SIA, cross-cutting interaction logic is duplicated across emitter–renderer pairs. With SIA, this logic is consolidated at a mediation boundary; renderers become thinner consumers and adding new emitters or renderers becomes linear rather than multiplicative. The concern labels inside the illustration reflect the 0.3 draft: 0.4.0 expands trust verification to eight checks, adds bounded context retention, and splits renderer delivery receipts from the occupant response.*
 
@@ -106,7 +106,7 @@ SIA is therefore deliberately a second-wave proposal: a small mediation contract
 
 ### 2.4 Position in the SDV stack
 
-![Figure 2 — Position of SIA in the SDV stack](./figures/fig2-stack-position.png)
+![Figure 2 – Position of SIA in the SDV stack](./figures/fig2-stack-position.png)
 
 *Figure 2. SIA sits above existing data and service abstractions and below concrete renderers. It is not a renderer, GUI toolkit, data model or middleware replacement.*
 
@@ -130,9 +130,9 @@ The architecture has three functional components and two cross-cutting policies.
 
 Renderers and input devices are external to SIA. They declare measurable capabilities into the Translation Layer and consume the resulting modality decisions. This boundary is deliberate: SIA should standardise the interaction contract, not the visual design or implementation of each HMI surface.
 
-![Figure 3 — Mediation architecture](./figures/fig3-mediation-architecture.png)
+![Figure 3 – Mediation architecture](./figures/fig3-mediation-architecture.png)
 
-*Figure 3. SIA contains three functional components and two policies. Emitters submit nodes through Trust Policy; renderers register capabilities and consume modality decisions. The illustration predates the 0.4.0 contract in three details: the core context axes are now `motion_state`, `operating_mode`, `energy_state`, `road_type`, `driver_state`, and `occupancy`; Trust Policy verifies eight requirements; and the single “render / input / ack” arrow is now two separate authenticated loops — a renderer delivery receipt and an independent occupant response.*
+*Figure 3. SIA contains three functional components and two policies. Emitters submit nodes through Trust Policy; renderers register capabilities and consume modality decisions. The illustration predates the 0.4.0 contract in three details: the core context axes are now `motion_state`, `operating_mode`, `energy_state`, `road_type`, `driver_state`, and `occupancy`; Trust Policy verifies eight requirements; and the single “render / input / ack” arrow is now two separate authenticated loops – a renderer delivery receipt and an independent occupant response.*
 
 ---
 
@@ -140,9 +140,9 @@ Renderers and input devices are external to SIA. They declare measurable capabil
 
 A common failure mode in interaction schemas is treating all interactions as generic messages. SIA separates semantically different node types because they carry different obligations.
 
-![Figure 4 — Node taxonomy](./figures/fig4-node-taxonomy.png)
+![Figure 4 – Node taxonomy](./figures/fig4-node-taxonomy.png)
 
-*Figure 4. Four architectural semantic types. In the 0.4.0 minimal profile, only two concrete `Event` subtypes — `Alert` and `Notification` — are emitted. The per-family metadata labels shown are illustrative 0.3 vocabulary: in 0.4.0, acknowledgement fields became the `occupant_response` contract and suppression/merging became the declared blocked disposition (`drop`, `defer`, `coalesce`).*
+*Figure 4. Four architectural semantic types. In the 0.4.0 minimal profile, only two concrete `Event` subtypes – `Alert` and `Notification` – are emitted. The per-family metadata labels shown are illustrative 0.3 vocabulary: in 0.4.0, acknowledgement fields became the `occupant_response` contract and suppression/merging became the declared blocked disposition (`drop`, `defer`, `coalesce`).*
 
 **Action.** Occupant-initiated. May be discrete (`Action.Navigate.Back`), sustained (`Action.Media.Volume.Increase`) or continuous (`Action.Map.Zoom`). A complete input authentication, execution-result and cancellation contract is deferred from 0.4.0; the output-renderer delivery contract must not be reused as a shortcut.
 
@@ -191,7 +191,7 @@ Every emitted node carries a typed declarative contract. Runtime instances carry
 | PII class and accessibility alternatives | ● | ● |
 | Regulatory or assessment basis | ○ | ○ |
 
-● mandatory · ○ optional · — not applicable
+● mandatory · ○ optional · – not applicable
 
 Context retention is nested under `context_policy.on_blocked`. A declaration chooses exactly one disposition: `never_block`, `drop`, `defer`, or `coalesce`. Deferred and coalesced items have a bounded TTL, deterministic expiry behaviour and explicit queue limits; coalescing also declares the canonical key fields. Renderer delivery is governed by `presentation_contract`, while a human response is governed independently by `occupant_response`. This prevents “message accepted by a renderer” from being confused with “person acknowledged the interaction.”
 
@@ -385,7 +385,7 @@ The Translation Layer computes candidate renderers by filtering against node req
 When several renderers qualify, arbitration should be deterministic and auditable:
 
 1. **Safety mandate.** If the node requires a safety-certified surface, non-qualifying renderers are eliminated.
-2. **Modality preference.** Among surviving candidates, the renderer that best satisfies the node’s recommended modality and minimises time-to-indication — the interval from dispatch decision to perceptible occupant output — wins.
+2. **Modality preference.** Among surviving candidates, the renderer that best satisfies the node’s recommended modality and minimises time-to-indication – the interval from dispatch decision to perceptible occupant output – wins.
 3. **Context availability.** If gaze or occupant-attention data is available, the system may prefer the surface the occupant is already attending to, but never in a way that overrides safety requirements.
 
 The output should be explainable in logs: for example, “cluster selected because HUD unavailable; IVI rejected due to attention budget”.
@@ -596,7 +596,7 @@ The recommended path is therefore:
 
 ### 13.6 Cross-domain generalisation
 
-The underlying pattern — typed interaction nodes, measurable attention, trust provenance, capability-negotiated rendering and multi-axis context — may apply beyond vehicles, for example in aviation, medical environments, industrial control rooms or XR. This paper intentionally does not generalise there. Useful generality should emerge from one validated domain binding, not from premature abstraction.
+The underlying pattern – typed interaction nodes, measurable attention, trust provenance, capability-negotiated rendering and multi-axis context – may apply beyond vehicles, for example in aviation, medical environments, industrial control rooms or XR. This paper intentionally does not generalise there. Useful generality should emerge from one validated domain binding, not from premature abstraction.
 
 ---
 

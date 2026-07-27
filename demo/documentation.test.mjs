@@ -113,17 +113,17 @@ test('demo entry points publish complete and consistent social sharing metadata'
     readFile(path.join(root, 'demo/og-sia.png')),
   ]);
   const imageUrl = 'https://yaneczech.github.io/SIA/demo/og-sia.png';
-  const imageAlt = 'SIA — Semantic Interaction Architecture: vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.';
+  const imageAlt = 'SIA – Semantic Interaction Architecture: vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.';
   const pages = [
     {
       html: demoHtml,
       canonical: 'https://yaneczech.github.io/SIA/demo/',
-      title: 'SIA — Semantic Interaction Architecture',
+      title: 'SIA – Semantic Interaction Architecture',
     },
     {
       html: docsHtml,
       canonical: 'https://yaneczech.github.io/SIA/demo/docs.html',
-      title: 'SIA 0.4.0 — Interactive Documentation',
+      title: 'SIA 0.4.0 – Interactive Documentation',
     },
   ];
 
@@ -385,4 +385,26 @@ test('the landing page routes each audience to a destination that exists', async
   assert.doesNotMatch(html, /class="mental-model"/);
   assert.doesNotMatch(css, /\.mental-model/);
   assert.match(html, /class="layer-gaps"/);
+});
+
+test('demo prose uses the spaced en dash, never an em dash', async () => {
+  // One dash convention across the whole demo: a spaced en dash (–) where a dash
+  // earns its place, a comma or a rewrite where it does not. An em dash (—) slipping
+  // back in is the drift this guards against, including in translated strings.
+  const files = [
+    'demo/index.html',
+    'demo/docs.html',
+    'demo/app.js',
+    'demo/docs.js',
+    'demo/sia-engine.js',
+    'demo/generated-profile.js',
+    'demo/i18n/docs.cs.json',
+  ];
+  for (const file of files) {
+    const text = await readFile(path.join(root, file), 'utf8');
+    assert.doesNotMatch(text, /—/, `${file} contains an em dash; use a spaced en dash, a comma, or a rewrite`);
+    // A bare en dash wedged between words reads as a hyphen; the convention is spaced.
+    // A dash alone between tags is an empty-value placeholder, not prose, so it is exempt.
+    assert.doesNotMatch(text, /[\p{L}\p{N}]–[\p{L}\p{N}]/u, `${file} contains an unspaced en dash between words`);
+  }
 });
