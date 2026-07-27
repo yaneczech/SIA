@@ -103,7 +103,7 @@ function resetAnimation() {
   $('#decision-state').className = 'decision-state waiting';
   setIcon('#decision-icon', 'arrow-right');
   $('#decision-title').textContent = 'Ready';
-  $('#decision-copy').textContent = 'Run a scenario to see why the interaction passes—or where it safely stops.';
+  $('#decision-copy').textContent = 'Run a scenario to see why the interaction passes—or which rule stops it.';
   $('#decision-announcement').textContent = '';
   $('#runtime-time').textContent = '0 ms';
   $('#check-list').innerHTML = '';

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090a12">
-  <meta name="description" content="Who may speak to the driver, and who can prove what was said: keeping one in-vehicle interaction meaningful and verifiable across screens, voice channels, and AI agents.">
+  <meta name="description" content="Who may speak to people in the car, what an interaction means, and what evidence records what happened across screens, voice channels, and AI agents.">
   <link rel="canonical" href="https://yaneczech.github.io/SIA/demo/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SIA">
@@ -45,8 +45,8 @@
 
   <main>
     <section class="hero" aria-labelledby="hero-title">
-      <p class="eyebrow">WHO MAY SPEAK · WHAT IT MEANS · WHAT WAS PROVEN</p>
-      <h1 id="hero-title">Who may speak to the driver—<br><span>and who can prove what was said?</span></h1>
+      <p class="eyebrow">MEANING · AUTHORITY · EVIDENCE</p>
+      <h1 id="hero-title">Who may speak to people in the car<br><span>— and what evidence shows what happened?</span></h1>
       <p class="hero-copy">SIA defines what an in-vehicle interaction means, who is allowed to issue it, where it may appear, and what evidence records whether it was presented.</p>
       <p class="hero-formal">Formally, SIA is a vendor-neutral interaction-integrity and evidence contract for occupant-facing SDV interactions.</p>
       <details class="sdv-definition">
@@ -61,10 +61,6 @@
       <a href="#demo">
         <span><i data-lucide="play-circle" aria-hidden="true"></i>Understand the idea</span>
         <small>Follow one warning through the boundary, step by step.</small>
-      </a>
-      <a href="#research">
-        <span><i data-lucide="flask-conical" aria-hidden="true"></i>Explore the research questions</span>
-        <small>Open problems, and what would narrow or reject SIA.</small>
       </a>
       <a href="./docs.html">
         <span><i data-lucide="book-open" aria-hidden="true"></i>Inspect the protocol</span>
@@ -172,7 +168,7 @@
             <div class="stage runtime" data-stage="runtime">
               <div class="stage-index">05</div>
               <div class="stage-symbol" aria-hidden="true"><i data-lucide="reply"></i></div>
-              <div><p class="stage-kicker">COORDINATION RUNTIME</p><h3>Prove what happened</h3><p id="runtime-detail">First verifies renderer presentation, then tracks the separate occupant response.</p></div>
+              <div><p class="stage-kicker">COORDINATION RUNTIME</p><h3>Record what happened</h3><p id="runtime-detail">First verifies renderer presentation, then tracks the separate occupant response.</p></div>
               <div class="stage-result" id="runtime-result">waiting</div>
             </div>
           </div>
@@ -200,7 +196,7 @@
           <div class="decision-state waiting" id="decision-state">
             <span class="decision-icon" id="decision-icon"><i data-lucide="arrow-right" aria-hidden="true"></i></span>
             <h3 id="decision-title" tabindex="-1">Ready</h3>
-            <p id="decision-copy">Run a scenario to see why the warning passes—or where it safely stops.</p>
+            <p id="decision-copy">Run a scenario to see why the warning passes—or which rule stops it.</p>
           </div>
           <div class="sr-only" id="decision-announcement" role="status" aria-atomic="true"></div>
           <div class="check-list" id="check-list" aria-label="Scenario checks"></div>
@@ -211,20 +207,20 @@
         </aside>
       </div>
 
-      <section class="phase-inspector" aria-labelledby="phase-inspector-title">
-        <div class="inspector-heading">
+      <details class="phase-inspector">
+        <summary class="inspector-heading">
           <div>
             <p class="eyebrow">INSIDE THE PIPELINE</p>
-            <h3 id="phase-inspector-title">What happens in each phase?</h3>
+            <h3>Inspect exact phase inputs, rules, and outputs</h3>
           </div>
-          <p>The short answer is always visible. Open the technical trace for exact fields, rules, and machine-readable output.</p>
-        </div>
+          <p>The walkthrough above gives the operating model. Open this layer for the field-level trace.</p>
+        </summary>
         <div class="phase-tabs" role="tablist" aria-label="Pipeline phases">
           <button id="phase-tab-ontology" role="tab" aria-selected="true" aria-controls="phase-panel" tabindex="0" data-phase="ontology"><span>01</span><b>Define meaning</b><small>Ontology</small></button>
           <button id="phase-tab-emitter" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="emitter"><span>02</span><b>Send occurrence</b><small>Emitter</small></button>
           <button id="phase-tab-trust" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="trust"><span>03</span><b>Verify authority</b><small>Trust Policy</small></button>
           <button id="phase-tab-translation" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="translation"><span>04</span><b>Choose outputs</b><small>Translation</small></button>
-          <button id="phase-tab-runtime" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="runtime"><span>05</span><b>Prove outcome</b><small>Runtime</small></button>
+          <button id="phase-tab-runtime" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="runtime"><span>05</span><b>Record outcome</b><small>Runtime</small></button>
           <button id="phase-tab-renderers" role="tab" aria-selected="false" aria-controls="phase-panel" tabindex="-1" data-phase="renderers"><span>06</span><b>Present + respond</b><small>Renderers</small></button>
         </div>
         <div class="inspector-content" id="phase-panel" role="tabpanel" aria-labelledby="phase-tab-ontology">
@@ -247,7 +243,7 @@
             </div>
           </details>
         </div>
-      </section>
+      </details>
     </section>
 
     <section class="contrast-section" aria-labelledby="contrast-title">
@@ -289,60 +285,6 @@
       <div class="matrix-wrap">
         <table class="trust-matrix" id="trust-matrix" aria-label="Which actor may emit which interaction"></table>
       </div>
-    </section>
-
-    <section class="research-section" id="research" aria-labelledby="research-title">
-      <div class="section-heading">
-        <div><p class="eyebrow">WHY AUTOMOTIVEUI?</p><h2 id="research-title">A testable research program</h2></div>
-        <p>SIA holds semantic and lifecycle variables stable so researchers can compare renderers, modalities, trust cues, and evidence claims under controlled conditions.</p>
-      </div>
-      <div class="research-grid">
-        <article><h3>Cross-modal equivalence</h3><p>Which properties must remain invariant across visual, voice, and haptic renderers?</p></article>
-        <article><h3>Attention calibration</h3><p>Can declared estimates predict measured demand across vehicles, contexts, and modalities?</p></article>
-        <article><h3>Trust calibration</h3><p>What provenance helps occupants appropriately trust claims from ADAS and AI agents?</p></article>
-        <article><h3>Fallback consistency</h3><p>Does meaning and urgency survive renderer failure or a change of modality?</p></article>
-        <article><h3>Evidence semantics</h3><p>When should delivery, noticing, comprehension, and acknowledgement be separate claims?</p></article>
-        <article><h3>Architectural cost</h3><p>Does shared policy reduce duplication without unacceptable latency or centralisation risk?</p></article>
-      </div>
-      <aside class="falsification">
-        <span>WHAT WOULD NARROW OR REJECT SIA?</span>
-        <p>A minimal implementation should be narrowed or rejected if it does not reduce duplicated policy, fails to produce auditable deterministic behaviour, or adds costs and latency that outweigh its integration benefit.</p>
-      </aside>
-      <div class="related-heading"><h3>Research basis and adjacent systems</h3><p>Standards, production frameworks, and academic antecedents are related evidence—not interchangeable categories.</p></div>
-      <div class="related-table-wrap">
-        <table class="related-table">
-          <thead><tr><th>Approach</th><th>Primary abstraction</th><th>Rendering scope</th><th>Semantic authority</th><th>Delivery evidence</th></tr></thead>
-          <tbody>
-            <tr><td>VSS / data layers</td><td>Vehicle signals</td><td>None</td><td>No</td><td>No</td></tr>
-            <tr><td>Android app templates</td><td>Application UI templates</td><td>One ecosystem</td><td>Platform permissions</td><td>Platform-specific</td></tr>
-            <tr><td>Qt / Kanzi</td><td>Concrete HMI implementation</td><td>Renderer-owned</td><td>No shared contract</td><td>Implementation-specific</td></tr>
-            <tr><td>W3C MMI / EMMA</td><td>Multimodal events and meaning</td><td>Generic</td><td>Not automotive policy</td><td>Not vehicle lifecycle evidence</td></tr>
-            <tr class="sia-row"><td>SIA</td><td>Occupant-facing interaction contract</td><td>External renderers remain</td><td>Yes</td><td>Yes</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="academic-heading">
-        <p class="eyebrow">SELECTED ACADEMIC ANTECEDENTS</p>
-        <p>These works motivate distinct parts of the problem; none already provides SIA’s combined authority, translation, and lifecycle-evidence contract.</p>
-      </div>
-      <div class="academic-sources">
-        <a href="https://www.dfki.de/web/forschung/projekte-publikationen/publikation/5695">
-          <small>AUTOMOTIVEUI 2011</small>
-          <b>Feld &amp; Müller — The Automotive Ontology</b>
-          <span>Shared in-vehicle knowledge and reasoning; an antecedent for semantic declarations.</span>
-        </a>
-        <a href="https://ceur-ws.org/Vol-2213/paper5.pdf">
-          <small>SSN 2018</small>
-          <b>Klotz et al. — VSSo</b>
-          <span>A formal ontology for vehicle signals; a data and context substrate rather than an interaction lifecycle.</span>
-        </a>
-        <a href="https://www.mdpi.com/2076-3417/15/10/5572">
-          <small>APPLIED SCIENCES 2025</small>
-          <b>Grobelna et al. — Design of Automotive HMI</b>
-          <span>A review of evolving UX, safety, security, and emerging-technology pressures on automotive HMI.</span>
-        </a>
-      </div>
-      <p class="research-links">Continue with the paper’s <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-position-in-the-ecosystem">research basis</a>, <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#12-relation-to-existing-standards-and-adjacent-work">standards alignment</a>, and <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#references">complete references</a>.</p>
     </section>
 
     <section class="lab" id="lab" aria-labelledby="lab-title">
@@ -487,9 +429,27 @@
       </div>
     </section>
 
+    <section class="research-section" id="research" aria-labelledby="research-title">
+      <div class="research-compact">
+        <div>
+          <p class="eyebrow">EVIDENCE BASE</p>
+          <h2 id="research-title">The proposal is testable</h2>
+        </div>
+        <div class="research-compact-copy">
+          <p>SIA builds on prior work in vehicle semantics, multimodal interaction, automotive HMI, and renderer frameworks. Its open questions concern cross-modal equivalence, attention calibration, provenance, delivery evidence, and architectural cost.</p>
+          <p><b>SIA should be narrowed or rejected</b> if a minimal implementation does not reduce duplicated policy, cannot produce deterministic auditable behaviour, or adds more latency and integration cost than it removes.</p>
+          <nav class="research-links" aria-label="Research and evidence links">
+            <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#2-related-work-and-position-in-the-ecosystem">Related work</a>
+            <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#13-open-questions-and-path-forward">Open questions</a>
+            <a href="https://github.com/yaneczech/SIA/blob/main/01_Semantic-Interaction-Architecture-sdv.md#references">References</a>
+          </nav>
+        </div>
+      </div>
+    </section>
+
     <section class="takeaway" aria-label="Key takeaway">
       <img class="takeaway-logo" src="../figures/sia-logo.svg" alt="SIA">
-      <p><b>Meaning and rules are defined once.</b><br>Every screen, voice channel, or future device can then apply them safely.</p>
+      <p><b>Meaning and policy are defined once.</b><br>Every surface consumes the same verified interaction contract without redefining it.</p>
     </section>
   </main>
 

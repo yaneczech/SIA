@@ -350,9 +350,17 @@ test('landing research and evidence claims stay inside the documented boundary',
     3,
     'research links must target rendered GitHub sections',
   );
-  for (const source of ['Feld &amp; Müller', 'Klotz et al.', 'Grobelna et al.']) {
-    assert.match(html, new RegExp(source), `landing page is missing the academic antecedent ${source}`);
+  for (const destination of ['Related work', 'Open questions', 'References']) {
+    assert.match(html, new RegExp(`>${destination}<`), `compact evidence block is missing ${destination}`);
   }
+  assert.match(html, /SIA should be narrowed or rejected/);
+  assert.ok(
+    html.indexOf('id="lab"') < html.indexOf('id="research"'),
+    'the evidence base should support the working demo instead of interrupting it',
+  );
+  assert.doesNotMatch(html, /class="research-grid"/);
+  assert.doesNotMatch(html, /class="related-table"/);
+  assert.doesNotMatch(html, /class="academic-sources"/);
 });
 
 test('the landing page routes each audience to a destination that exists', async () => {
@@ -364,7 +372,7 @@ test('the landing page routes each audience to a destination that exists', async
   const router = html.match(/<nav class="audience-router"[\s\S]*?<\/nav>/);
   assert.ok(router, 'audience router not found');
   const hrefs = [...router[0].matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(hrefs.length, 4, 'the router offers exactly four starting points');
+  assert.equal(hrefs.length, 3, 'the router offers exactly three task-oriented starting points');
 
   // In-page anchors must resolve, or a reader is routed into nothing.
   for (const href of hrefs.filter((h) => h.startsWith('#'))) {
@@ -380,7 +388,6 @@ test('the landing page routes each audience to a destination that exists', async
   assert.match(html, /id="audience-title"/);
   assert.match(css, /\.audience-router \{/);
   // It must collapse rather than overflow on narrow viewports.
-  assert.match(css, /\.audience-router \{ grid-template-columns: 1fr 1fr; \}/);
   assert.match(css, /\.audience-router \{ grid-template-columns: 1fr;/);
 
   // The Define/Decide/Prove triad was deliberately dropped; the layer-gap pills carry it.
